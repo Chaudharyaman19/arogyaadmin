@@ -198,7 +198,7 @@ export default function LoginPage() {
         }
 
         if (result && result.user && result.user.userType !== "INTERNAL") {
-          const msg = "This portal is for Arogya Sangoshthi Expo staff accounts only.";
+          const msg = "This portal is for Bharat Organic Expo staff accounts only.";
           setError(msg);
           showToast("error", msg);
           return;
@@ -470,8 +470,8 @@ export default function LoginPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
 
           <img
-            src="/bharat-organic-logo.png"
-            alt="Bharat Organic"
+            src="/logo1.webp"
+            alt="Logo"
           />
         </div>
 
@@ -550,8 +550,8 @@ export default function LoginPage() {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/admin.png"
-                alt="Bharat Organic"
+                src="/logo1.webp"
+                alt="Logo"
                 style={{ width: "100%", height: "100%", objectFit: "contain", transform: "scale(2.2)" }}
               />
             </div>
