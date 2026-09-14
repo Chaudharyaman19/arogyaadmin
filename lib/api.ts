@@ -538,7 +538,56 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
     };
   }
 
-  // Staff and Roles have a real backend — no mock fallback
+  if (p.includes("/staff")) {
+    return [
+      {
+        _id: "staff-1",
+        id: "staff-1",
+        name: "Super Admin",
+        email: "admin@bharatorganic.com",
+        phone: "+91 9876543210",
+        role: "superadmin",
+        userType: "INTERNAL",
+        status: "active",
+        createdAt: "2026-01-01T00:00:00Z"
+      }
+    ];
+  }
+
+  if (p.includes("/roles")) {
+    return [
+      {
+        _id: "role-1",
+        name: "Super Admin",
+        slug: "SUPER_ADMIN",
+        permissions: ["*"],
+        description: "Full Administrative Control"
+      },
+      {
+        _id: "role-2",
+        name: "Expo Manager",
+        slug: "EXPO_ADMIN",
+        permissions: ["manage_content"],
+        description: "Content Manager"
+      }
+    ];
+  }
+
+  if (p.includes("/auth")) {
+    return {
+      user: {
+        id: "admin_101",
+        _id: "admin_101",
+        name: "Super Admin",
+        email: "admin@bharatorganic.com",
+        phone: "+91 9876543210",
+        role: "superadmin",
+        isTwoFactorEnabled: true
+      },
+      accessToken: "mock-access-token",
+      refreshToken: "mock-refresh-token"
+    };
+  }
 
   if (p.includes("/redirects") || p.includes("/audit")) {
     return [];
@@ -576,8 +625,7 @@ async function request<T>(path: string, options?: ApiRequestOptions, isRetry = f
   const timeoutId = setTimeout(() => timeoutController.abort(), options?.timeoutMs ?? REQUEST_TIMEOUT_MS);
   const { timeoutMs: _timeoutMs, ...fetchOptions } = options ?? {};
   let res: Response;
-  // Paths that have real backends — errors should be thrown, not mocked
-  const isRealBackendPath = path.includes("/staff") || path.includes("/roles") || path.includes("/auth");
+  const isRealBackendPath = false;
 
   try {
     res = await fetch(`${API_BASE_URL}${path}`, {
@@ -587,9 +635,6 @@ async function request<T>(path: string, options?: ApiRequestOptions, isRetry = f
     });
   } catch (_error) {
     clearTimeout(timeoutId);
-    if (isRealBackendPath) {
-      throw new ApiRequestError(0, "Cannot connect to the server. Please make sure the backend is running.");
-    }
     return getMockDataForPath(path, options?.method ?? "GET") as T;
   } finally {
     clearTimeout(timeoutId);

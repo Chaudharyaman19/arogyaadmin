@@ -68,7 +68,7 @@ export default function AuditLogPage() {
         </Select>
       </div>
 
-      <Table columns={columns} rows={logs} rowKey={(l) => l._id} loading={loading} emptyMessage="No audit entries match these filters." onRowClick={setSelected} />
+      <Table columns={columns} rows={logs} rowKey={(l: AuditLogEntry) => l._id} loading={loading} emptyMessage="No audit entries match these filters." onRowClick={setSelected} />
 
       <Modal isOpen={!!selected} onClose={() => setSelected(null)} title={selected?.action ?? ""} size="lg">
         {selected && (

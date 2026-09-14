@@ -374,7 +374,7 @@ export default function SeoDashboardPage() {
                   note={search?.available ? search.metricNote : undefined}
                 >
                   {!search?.available ? (
-                    <p className="text-[12px] text-text-secondary">{search?.message ?? "Not available"}</p>
+                    <p className="text-[12px] text-text-secondary">{(search as any)?.message ?? "Not available"}</p>
                   ) : (
                     <>
                       <div className="mb-2 grid grid-cols-4 gap-2">
@@ -420,7 +420,7 @@ export default function SeoDashboardPage() {
 
                 <Panel title="Google Analytics 4">
                   {!analytics?.available ? (
-                    <p className="text-[12px] text-text-secondary">{analytics?.message ?? "Not available"}</p>
+                    <p className="text-[12px] text-text-secondary">{(analytics as any)?.message ?? "Not available"}</p>
                   ) : analytics.totals.sessions === 0 ? (
                     <p className="text-[12px] text-text-secondary">
                       The GA4 property is connected and authorised, but it returned no sessions for{" "}

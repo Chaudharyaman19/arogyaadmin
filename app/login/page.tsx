@@ -185,31 +185,36 @@ export default function LoginPage() {
 
     try {
       if (step === "credentials") {
-        const result = await dispatch(loginAdmin({ email, password })).unwrap();
+        const dispatchRes = dispatch(loginAdmin({ email, password }));
+        const result = (dispatchRes && typeof (dispatchRes as any).unwrap === "function") 
+          ? await (dispatchRes as any).unwrap() 
+          : await dispatchRes;
 
-        if (result.requiresTwoFactor) {
+        if (result && result.requiresTwoFactor) {
           setTempToken(result.tempToken || "");
           setStep("totp");
           showToast("info", "Please enter 6-digit code from Microsoft Authenticator");
           return;
         }
 
-        if (result.user.userType !== "INTERNAL") {
+        if (result && result.user && result.user.userType !== "INTERNAL") {
           const msg = "This portal is for Bharat Organic Expo staff accounts only.";
           setError(msg);
           showToast("error", msg);
           return;
         }
 
-        dispatch(
-          setCredentials({
-            admin: result.user,
-            accessToken: result.accessToken,
-            refreshToken: result.refreshToken,
-          }),
-        );
+        if (result && result.user) {
+          dispatch(
+            setCredentials({
+              admin: result.user,
+              accessToken: result.accessToken,
+              refreshToken: result.refreshToken,
+            }),
+          );
+        }
 
-        if (result.twoFactorSetupRequired) {
+        if (result && result.twoFactorSetupRequired) {
           const setup = await authApi.setupTwoFactor();
           setSecret(setup.secret);
           setProvisioningUri(setup.provisioningUri);
@@ -225,7 +230,7 @@ export default function LoginPage() {
           return;
         }
 
-        showToast("success", `Welcome back, ${result.user.name}!`);
+        showToast("success", `Welcome back, ${result?.user?.name || "Admin"}!`);
         router.push("/");
         return;
       }
@@ -240,9 +245,11 @@ export default function LoginPage() {
 
         let res: any;
         if (tempToken) {
-          res = await dispatch(verifyTwoFactor({ totpCode, tempToken })).unwrap();
+          const dRes = dispatch(verifyTwoFactor({ totpCode, tempToken }));
+          res = (dRes && typeof (dRes as any).unwrap === "function") ? await (dRes as any).unwrap() : await dRes;
         } else {
-          res = await dispatch(loginAdmin({ email, password, totpCode })).unwrap();
+          const dRes = dispatch(loginAdmin({ email, password, totpCode }));
+          res = (dRes && typeof (dRes as any).unwrap === "function") ? await (dRes as any).unwrap() : await dRes;
         }
 
         const data = res?.data || res;

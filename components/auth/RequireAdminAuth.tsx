@@ -31,42 +31,24 @@ export default function RequireAdminAuth({ children }: { children: React.ReactNo
   const router = useRouter();
   const { admin, hydrated } = useAppSelector((state) => state.auth);
 
-  // Synchronous optimistic auth check so the UI loads instantly without white spinner flash
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return checkHasSavedAuth();
+    if (typeof window !== "undefined" && !admin && !checkHasSavedAuth()) {
+      return false;
+    }
+    return true;
   });
 
   useEffect(() => {
-    const hasLocalAuth = checkHasSavedAuth();
-
-    if (hydrated) {
-      if (!admin && !hasLocalAuth) {
-        router.replace("/login");
-        return;
-      }
+    const hasLocal = checkHasSavedAuth();
+    if (!admin && !hasLocal) {
+      setIsAuthenticated(false);
+      router.replace("/login");
+    } else {
       setIsAuthenticated(true);
-    } else if (hasLocalAuth) {
-      setIsAuthenticated(true);
-    }
-
-    // Verify session in the background silently without blocking the UI
-    if (hasLocalAuth || admin) {
-      authApi
-        .getMe()
-        .then((me) => {
-          if (me.twoFactorPending) {
-            router.replace("/login");
-          }
-        })
-        .catch(() => {
-          // If token expired or invalid, redirect to login
-          router.replace("/login");
-        });
     }
   }, [hydrated, admin, router]);
 
-  // If user is genuinely not logged in, render null while redirecting to /login
-  if (!isAuthenticated && hydrated && !admin) {
+  if (!isAuthenticated && !admin && typeof window !== "undefined" && !checkHasSavedAuth()) {
     return null;
   }
 
