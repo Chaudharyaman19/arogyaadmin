@@ -679,7 +679,7 @@ export default function RequestsPage() {
               text-[#263A70]
             "
           >
-            Manage exhibitor stall bookings, B2B buyer registrations and expo participation requests for Bharat Organic Expo 2027.
+            Manage exhibitor stall bookings, B2B buyer registrations and expo participation requests for Arogya Expo 2027.
           </p>
 
           <div

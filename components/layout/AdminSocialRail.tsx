@@ -121,31 +121,31 @@ const ShareIcon = ({ className }: IconProps) => (
 const links = [
   {
     label: "X",
-    href: "https://x.com/mokshasewa",
+    href: "https://x.com/arogyasewa",
     color: "#000000",
     icon: XIcon,
   },
   {
     label: "Facebook",
-    href: "https://www.facebook.com/mokshasewa/",
+    href: "https://www.facebook.com/arogyasewa/",
     color: "#1877F2",
     icon: FacebookIcon,
   },
   {
     label: "Instagram",
-    href: "https://www.instagram.com/mokshasewa/",
+    href: "https://www.instagram.com/arogyasewa/",
     color: "#E4405F",
     icon: InstagramIcon,
   },
   {
     label: "LinkedIn",
-    href: "https://www.linkedin.com/company/moksha-sewaorg/",
+    href: "https://www.linkedin.com/company/arogya-sewaorg/",
     color: "#0077B5",
     icon: LinkedinIcon,
   },
   {
     label: "YouTube",
-    href: "https://www.youtube.com/@Mokshasewa",
+    href: "https://www.youtube.com/@Arogyasewa",
     color: "#FF0000",
     icon: YoutubeIcon,
   },
@@ -165,7 +165,7 @@ export default function AdminSocialRail() {
         -translate-y-1/2
         md:block
       "
-      aria-label="Moksha Sewa social media"
+      aria-label="Arogya Sewa social media"
     >
       {/* =========================================
           COLLAPSE / EXPAND BUTTON

@@ -9,9 +9,9 @@ export const defaultAdvisorySections: LandingSectionContent[] = [
     titlePrimary: "ADVISORY",
     titleSecondary: "BOARD MEMBERS",
     subtitle: "GUIDING. INSPIRING. TRANSFORMING.",
-    description: "Our Advisory Board comprises distinguished leaders, industry experts, and visionaries who bring strategic guidance, deep expertise and a shared commitment to drive Bharat Organic Expo towards a sustainable, innovative and impactful future.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg",
-    imageAlt: "Bharat Organic Expo 2027 Advisory Board Members",
+    description: "Our Advisory Board comprises distinguished leaders, industry experts, and visionaries who bring strategic guidance, deep expertise and a shared commitment to drive Arogya Expo towards a sustainable, innovative and impactful future.",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg",
+    imageAlt: "Arogya Expo 2027 Advisory Board Members",
     items: [
       { title: "LEADING VISIONARIES", subtitle: "From diverse industries", icon: "Users" },
       { title: "STRATEGIC GUIDANCE", subtitle: "For sustainable growth", icon: "Award" },
@@ -25,14 +25,14 @@ export const defaultAdvisorySections: LandingSectionContent[] = [
     enabled: true,
     eyebrow: "CHAIRMAN'S MESSAGE",
     title: "Leading Together for a Healthier Tomorrow",
-    subtitle: "Chairman, Bharat Organic Expo 2027",
-    description: "At Bharat Organic Expo 2027, we believe in the power of collaboration, innovation, and sustainability.",
+    subtitle: "Chairman, Arogya Expo 2027",
+    description: "At Arogya Expo 2027, we believe in the power of collaboration, innovation, and sustainability.",
     secondaryDescription: "This platform brings together visionaries, experts, and changemakers to create a lasting impact on health and organic wellness.",
     quote: "A global platform for innovation and collaboration in the organic, health & wellness industry. We aim to empower communities, promote sustainable practices, and drive transformative growth by connecting visionaries and eco-conscious enterprises worldwide.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg",
     imageAlt: "Mr. Vijay Sharma - Chairman",
     authorName: "Mr. Vijay Sharma",
-    authorDesignation: "Chairman, Bharat Organic Expo 2027",
+    authorDesignation: "Chairman, Arogya Expo 2027",
   },
   {
     key: "advisory-grid",
@@ -46,63 +46,63 @@ export const defaultAdvisorySections: LandingSectionContent[] = [
         label: "PRESIDENT",
         description: "International President of Our Ayurveda Mission, National Vice-President Arogya Bharti.",
         location: "India",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       },
       {
         title: "Professor (Vd.) Pradeep Kumar Prajapati",
         label: "DIRECTOR",
         description: "All India Institute of Ayurveda (AIIA)",
         location: "India",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       },
       {
         title: "Dr. Naresh Kumar Chhavania",
         label: "PRESIDENT",
         description: "IMA AYUS",
         location: "India",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       },
       {
         title: "Dr. Kamlesh Kumar Dwivedi",
         label: "MEMBER OF THE BOARD OF AYURVEDA",
         description: "National Commission for Indian System of Medicine (NCISM), Ministry of Ayush",
         location: "India",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       },
       {
         title: "Prof. (Dr.) Atul Babu Varshney",
         label: "MEMBER OF THE BOARD OF AYURVEDA",
         description: "National Commission for Indian System of Medicine (NCISM), Ministry of Ayush",
         location: "India",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       },
       {
         title: "Dr. Sandeep Marwah",
         label: "FOUNDER OF NOIDA FILM CITY",
         description: "Marwah Studios",
         location: "India",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       },
       {
         title: "ACHARYA SHRI JAGDISHJI MAHARAJ",
         label: "FOUNDER OF NAMO GANGE TRUST",
         description: "",
         location: "India",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       },
       {
         title: "Dr. D.N. Sharma",
         label: "VICE PRESIDENT",
         description: "International Naturopathy Organisation (INO)",
         location: "India",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       },
       {
         title: "Dr. Rohit Bhandari",
         label: "FOUNDER & DIRECTOR",
         description: "The Homeo Healers Homeopathy Worldwide",
         location: "India",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       }
     ],
   },
@@ -159,9 +159,9 @@ export const defaultNominateAdvisorySections: LandingSectionContent[] = [
     eyebrow: "NOMINATE A LEADER",
     titlePrimary: "NOMINATE AN",
     titleSecondary: "ADVISORY BOARD MEMBER",
-    subtitle: "Help shape the future of Bharat Organic Expo 2027.",
+    subtitle: "Help shape the future of Arogya Expo 2027.",
     description: "Do you know a visionary leader, industry pioneer, or subject matter expert who can guide the organic & natural ecosystem? Submit your nomination below.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg",
     buttonLabel: "VIEW ADVISORY BOARD",
     buttonHref: "/about/advisory_board_member",
   },

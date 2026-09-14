@@ -199,7 +199,7 @@ export default function AddNewPostPage() {
                       className="h-[40px] w-full rounded-[6px] border border-[#dfe4e8] bg-white px-[12px] text-[10.5px] font-semibold text-[#2f3d58] outline-none"
                     >
                       <option value="">Select Category</option>
-                      <option>Moksha Sewa</option>
+                      <option>Arogya Sewa</option>
                       <option>Awareness</option>
                       <option>Stories</option>
                       <option>Guidance</option>
@@ -215,7 +215,7 @@ export default function AddNewPostPage() {
                       className="h-[40px] w-full rounded-[6px] border border-[#dfe4e8] bg-white px-[13px] text-[10.5px] font-semibold text-[#2d3b58] outline-none placeholder:text-[#8d97aa]"
                     />
                     <p className="mt-[5px] text-[8.8px] font-semibold text-[#728096]">
-                      E.g. moksha-sewa, awareness, dignity, support
+                      E.g. arogya-sewa, awareness, dignity, support
                     </p>
                   </div>
                 </div>
@@ -347,9 +347,9 @@ export default function AddNewPostPage() {
                     <Globe2 className="h-[15px] w-[15px]" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[9px] font-semibold text-[#35445f]">mokshasewa.org</p>
+                    <p className="text-[9px] font-semibold text-[#35445f]">arogyabharat.org</p>
                     <p className="mt-[2px] text-[8.5px] font-semibold text-[#5f6c82]">
-                      https://www.mokshasewa.org/{slug.trim() || "your-post-url"}
+                      https://www.arogyabharat.org/{slug.trim() || "your-post-url"}
                     </p>
                   </div>
                 </div>

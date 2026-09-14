@@ -94,7 +94,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
       requester: {
         id: "admin-1",
         name: "Expo Super Admin",
-        email: "admin@bharatorganicexpo.com",
+        email: "admin@arogyabharat.org",
         twoFactorEnabled: true
       },
       approvers: []
@@ -123,7 +123,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
       {
         _id: "svc-1",
         category: "DOMAIN",
-        name: "Bharat Organic Domain (bharatorganicexpo.com)",
+        name: "Arogya Bharat Domain (arogyabharat.org)",
         provider: "GoDaddy Inc",
         accountIdentifier: "BOE-DOM-2027",
         loginUrl: "https://godaddy.com",
@@ -136,7 +136,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
         currency: "INR",
         billingCycle: "YEARLY",
         details: {
-          domainName: "bharatorganicexpo.com",
+          domainName: "arogyabharat.org",
           registrar: "GoDaddy",
           dnsProvider: "Cloudflare",
           nameservers: "ns1.cloudflare.com, ns2.cloudflare.com"
@@ -169,7 +169,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
       {
         _id: "svc-3",
         category: "SSL_CERTIFICATE",
-        name: "Wildcard SSL Certificate (*.bharatorganicexpo.com)",
+        name: "Wildcard SSL Certificate (*.arogyabharat.org)",
         provider: "Let's Encrypt",
         accountIdentifier: "SSL-BOE-WILD",
         loginUrl: "https://letsencrypt.org",
@@ -179,7 +179,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
         remindersEnabled: true,
         pricingType: "FREE",
         details: {
-          coveredDomains: "bharatorganicexpo.com, *.bharatorganicexpo.com",
+          coveredDomains: "arogyabharat.org, *.arogyabharat.org",
           issuer: "Let's Encrypt Authority"
         },
         createdAt: "2026-01-01T10:00:00Z"
@@ -243,12 +243,12 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
     return [
       {
         _id: "blog-1",
-        title: "Bharat Organic Expo 2027: India's Largest Organic & Herbal Event",
-        slug: "bharat-organic-expo-2027-event",
-        excerpt: "Join global industry leaders and organic producers at Yashobhoomi, New Delhi.",
-        content: "<p>Welcome to Bharat Organic Expo 2027...</p>",
+        title: "Arogya Expo 2027: India's Premier Healthcare & Wellness Event",
+        slug: "arogya-expo-2027-event",
+        excerpt: "Join global healthcare leaders, AYUSH experts, and wellness producers at Yashobhoomi, New Delhi.",
+        content: "<p>Welcome to Arogya Expo 2027...</p>",
         author: "Admin Team",
-        tags: ["Organic Food", "Exhibition", "Delhi"],
+        tags: ["Healthcare", "Wellness", "AYUSH", "Exhibition"],
         isPublished: true,
         publishedAt: "2026-08-01T10:00:00Z",
         createdAt: "2026-08-01T10:00:00Z"
@@ -501,7 +501,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
     return [
       {
         _id: "faq-1",
-        question: "What are the dates for Bharat Organic Expo 2027?",
+        question: "What are the dates for Arogya Expo 2027?",
         answer: "The expo will be held at Yashobhoomi (IICC), Dwarka, New Delhi.",
         category: "General",
         order: 1,
@@ -517,7 +517,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
         _id: "gal-1",
         type: "image",
         url: "/images/hero-bg.jpg",
-        caption: "Bharat Organic Expo Pavilion",
+        caption: "Arogya Expo Pavilion",
         category: "Expo",
         isActive: true,
         createdAt: "2026-01-01T10:00:00Z"
@@ -528,10 +528,10 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
   if (p.includes("/settings")) {
     return {
       _id: "settings-1",
-      siteName: "Bharat Organic Expo 2027",
+      siteName: "Arogya Bharat Portal 2027",
       helplineNumber: "+91 11 4567 8900",
       whatsappNumber: "+91 9876543210",
-      supportEmail: "info@bharatorganicexpo.com",
+      supportEmail: "info@arogyabharat.org",
       address: "Yashobhoomi (IICC), Dwarka, Sector 25, New Delhi",
       banners: [],
       socialLinks: []
@@ -624,7 +624,7 @@ async function request<T>(path: string, options?: ApiRequestOptions, isRetry = f
   };
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
   if (typeof window !== "undefined" && (path.startsWith("/system-services/admin") || path === "/system-services/access/status")) {
-    const grant = window.sessionStorage.getItem("moksha_system_services_grant");
+    const grant = window.sessionStorage.getItem("arogya_system_services_grant");
     if (grant) headers["X-System-Services-Grant"] = grant;
   }
 
@@ -682,7 +682,7 @@ async function requestHtml(path: string): Promise<string> {
     if (!res.ok) throw new ApiRequestError(res.status, "Could not load this document.");
     return res.text();
   } catch {
-    return "<div>Mock HTML Document for Bharat Organic Expo</div>";
+    return "<div>Mock HTML Document for Arogya Expo</div>";
   }
 }
 

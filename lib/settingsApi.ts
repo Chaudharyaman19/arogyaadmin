@@ -4,10 +4,10 @@ import { api } from "./api";
 const SETTINGS_KEY = "bharat_organic_admin_settings_v3";
 
 const defaultMockSettings: Settings = {
-  websiteName: "Bharat Organic Expo 2027",
+  websiteName: "Arogya Bharat Portal 2027",
   fullPaymentDiscount: 5,
   currency: "INR",
-  contactEmail: "info@bharatorganicexpo.com",
+  contactEmail: "info@arogyabharat.org",
   contactPhone: "+91 9654900525"
 } as any;
 

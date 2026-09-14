@@ -38,7 +38,7 @@ type BlogPost = {
 const POSTS: BlogPost[] = [
   {
     id: 1,
-    title: "Bharat Organic Expo 2027 Announced at Yashobhoomi, Delhi",
+    title: "Arogya Expo 2027 Announced at Yashobhoomi, Delhi",
     category: "Expo News",
     status: "Published",
     views: 1245,

@@ -621,7 +621,7 @@ export default function ExhibitorListPage() {
     return exhibitors.find((item) => item.id === selectedId) || exhibitors[0];
   }, [exhibitors, selectedId]);
 
-  const defaultCloudinaryLogo = "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg";
+  const defaultCloudinaryLogo = "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg";
 
   // Open modal for Create
   const handleOpenCreate = () => {
@@ -631,7 +631,7 @@ export default function ExhibitorListPage() {
     setFormLocation("India");
     setFormOrder(exhibitors.length + 1);
     setFormLogo(defaultCloudinaryLogo);
-    setFormAltText("Exhibitor Brand Logo - Bharat Organic Expo");
+    setFormAltText("Exhibitor Brand Logo - Arogya Expo");
     setFormStatus("Published");
     setFormWebsiteUrl("");
     setFormFileSize("15.0 KB");
@@ -761,7 +761,7 @@ export default function ExhibitorListPage() {
         setFormLogo(uploadedUrl);
         setFormFileSize(sizeStr);
         if (!formAltText) {
-          setFormAltText(`${formName || "Exhibitor"} Brand Logo - Bharat Organic Expo`);
+          setFormAltText(`${formName || "Exhibitor"} Brand Logo - Arogya Expo`);
         }
       }
     }
@@ -774,7 +774,7 @@ export default function ExhibitorListPage() {
     const activeAdmin = getAdminName();
     const finalName = formName.trim() || "Exhibitor Brand";
     const finalLogo = formLogo.trim() || "/exhibitors/1.jpg";
-    const finalAlt = formAltText.trim() || `${finalName} Brand Logo - Bharat Organic Expo Exhibitor`;
+    const finalAlt = formAltText.trim() || `${finalName} Brand Logo - Arogya Expo Exhibitor`;
     const finalOrder = Number(formOrder) || (editingItem ? editingItem.order : exhibitors.length + 1);
     const timeNow = formatTimestamp();
 
@@ -1852,7 +1852,7 @@ export default function ExhibitorListPage() {
               required
               value={formAltText}
               onChange={(e) => setFormAltText(e.target.value)}
-              placeholder="e.g. Ropuiliani Organic Food Exhibitor Logo - Bharat Organic Expo"
+              placeholder="e.g. Ropuiliani Organic Food Exhibitor Logo - Arogya Expo"
               hint="Unique for every exhibitor. Embedded into HTML <img alt='...'> tag for image SEO and screen readers."
             />
           </div>

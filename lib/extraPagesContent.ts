@@ -9,7 +9,7 @@ export const defaultServicesSections: ExtraSectionContent[] = [
     title: "Comprehensive Final Journey Support With Care & Dignity",
     subtitle: "A humanitarian initiative of Namo Gange Trust.",
     description: "Providing compassionate, end-to-end assistance including hearse vans, priest coordination, funeral samagri, prayer hall arrangements, and family support.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164944/moksha-sewa/hero-images/dignity-in-every-final-journey-bg.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164944/arogya-sewa/hero-images/dignity-in-every-final-journey-bg.png",
     buttonLabel: "Request Sewa Help",
     buttonHref: "/request-help",
     secondaryButtonLabel: "Call Helpline",
@@ -22,7 +22,7 @@ export const defaultServicesSections: ExtraSectionContent[] = [
     eyebrow: "Transport Sewa",
     title: "Ambulance & Hearse Van Assistance",
     description: "24/7 dignified transport support across Delhi, Noida, Ghaziabad and NCR with trained drivers and hygienic vehicles.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165000/moksha-sewa/assets/about-optimized/existimage.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165000/arogya-sewa/assets/about-optimized/existimage.png",
     buttonLabel: "Book Transport",
     buttonHref: "/request-help",
     items: [
@@ -38,7 +38,7 @@ export const defaultServicesSections: ExtraSectionContent[] = [
     eyebrow: "Final Rites",
     title: "Dignified Funeral & Cremation Support",
     description: "Assistance with cremation ground bookings, wood or electric rites, and complete ritual management.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165060/moksha-sewa/assets/about-reference/story-ghat-temple.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165060/arogya-sewa/assets/about-reference/story-ghat-temple.png",
     buttonLabel: "Learn More",
     buttonHref: "/contact",
     items: [
@@ -53,7 +53,7 @@ export const defaultServicesSections: ExtraSectionContent[] = [
     eyebrow: "Spiritual Guidance",
     title: "Vedic Pandit & Priest Coordination",
     description: "Experienced Vedic priests to perform last rites, antim sanskar, and prayer ceremonies with utmost reverence.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165070/moksha-sewa/assets/about-reference/who-we-are-background-v2.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165070/arogya-sewa/assets/about-reference/who-we-are-background-v2.png",
     items: [
       { title: "Vedic Rites", description: "Customary rituals conducted with sacred precision." },
       { title: "Multilingual Support", description: "Priests versed in regional traditions and languages." },
@@ -66,7 +66,7 @@ export const defaultServicesSections: ExtraSectionContent[] = [
     eyebrow: "Arrangements",
     title: "Prayer Hall Booking & Samagri Kit",
     description: "Providing complete eco-friendly samagri kits and arranging prayer halls for shradhanjali or chautha.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165059/moksha-sewa/assets/about-reference/story-evening-ghat.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165059/arogya-sewa/assets/about-reference/story-evening-ghat.png",
   },
   {
     key: "services-harsevan",
@@ -75,7 +75,7 @@ export const defaultServicesSections: ExtraSectionContent[] = [
     eyebrow: "Harsevan",
     title: "Harsevan Vehicle Support",
     description: "Specially dedicated vehicles for traditional carrying and respect during the procession.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165001/moksha-sewa/assets/about-optimized/family-support.webp",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165001/arogya-sewa/assets/about-optimized/family-support.webp",
   },
   {
     key: "services-decoration",
@@ -84,7 +84,7 @@ export const defaultServicesSections: ExtraSectionContent[] = [
     eyebrow: "Floral Tributes",
     title: "Floral & Vahan Decoration",
     description: "Thoughtfully designed floral tributes and vehicle decorations to honor the memory of the departed.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164983/moksha-sewa/assets/about-optimized/about-hero-new.webp",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164983/arogya-sewa/assets/about-optimized/about-hero-new.webp",
   },
   {
     key: "services-calling-relatives",
@@ -93,7 +93,7 @@ export const defaultServicesSections: ExtraSectionContent[] = [
     eyebrow: "Family Coordination",
     title: "Inform Relatives & Support Center",
     description: "Assisting bereaved families with broadcast notifications, venue guidance, and relative coordination.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165070/moksha-sewa/assets/about-reference/who-we-are-background-v2.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165070/arogya-sewa/assets/about-reference/who-we-are-background-v2.png",
   },
   {
     key: "services-special",
@@ -102,7 +102,7 @@ export const defaultServicesSections: ExtraSectionContent[] = [
     eyebrow: "Custom Support",
     title: "Special Needs & Custom Assistance",
     description: "Tailored support for out-of-station families, legal documentation help, and emergency assistance.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165000/moksha-sewa/assets/about-optimized/existimage.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165000/arogya-sewa/assets/about-optimized/existimage.png",
   },
 ];
 
@@ -127,9 +127,9 @@ export const defaultUnclaimedBodySections: ExtraSectionContent[] = [
     enabled: true,
     eyebrow: "Unclaimed Body Sewa",
     title: "Ensuring Final Dignity\nFor Every Departed Soul",
-    subtitle: "A Sacred Duty Undertaken By Moksha Sewa",
+    subtitle: "A Sacred Duty Undertaken By Arogya Sewa",
     description: "Standing for those who have no one. We perform final rites for authorised unclaimed bodies after strict police & legal verification.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164944/moksha-sewa/hero-images/dignity-in-every-final-journey-bg.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164944/arogya-sewa/hero-images/dignity-in-every-final-journey-bg.png",
     buttonLabel: "Report Unclaimed Case",
     buttonHref: "/request-help",
   },
@@ -139,8 +139,8 @@ export const defaultUnclaimedBodySections: ExtraSectionContent[] = [
     enabled: true,
     eyebrow: "Understanding The Mission",
     title: "Standing Beside The Unknown & Forgotten",
-    description: "Every human life deserves a respectful farewell. Moksha Sewa coordinates with local police and hospital authorities to perform sacred rites.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164982/moksha-sewa/assets/about-optimized/a_mission.png",
+    description: "Every human life deserves a respectful farewell. Arogya Sewa coordinates with local police and hospital authorities to perform sacred rites.",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164982/arogya-sewa/assets/about-optimized/a_mission.png",
     items: [
       { description: "Support proceeds only after the required verification and authorisation from the competent authority." },
       { description: "Police, hospital, municipal and legal procedures must be completed wherever applicable." },
@@ -197,9 +197,9 @@ export const defaultUnclaimedBodySections: ExtraSectionContent[] = [
     name: "Organisation Behind Mission",
     enabled: true,
     eyebrow: "Namo Gange Trust",
-    title: "The Organisation Behind Moksha Sewa",
+    title: "The Organisation Behind Arogya Sewa",
     description: "A Humanitarian Initiative of Namo Gange Trust.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165236/moksha-sewa/assets/logo-moksha-seva.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165236/arogya-sewa/assets/logo-arogya-seva.png",
     items: [
       { title: "Governance", description: "Ethical leadership and transparent processes at every step." },
       { title: "Social Service", description: "Working for community welfare and meaningful social impact." },
@@ -215,11 +215,11 @@ export const defaultUnclaimedBodySections: ExtraSectionContent[] = [
     title: "Frequently Asked Questions",
     description: "About Unclaimed Body Sewa",
     items: [
-      { title: "What is an unclaimed body?", description: "The legal or administrative status of a deceased person is determined by competent authorities under applicable procedures. Moksha Sewa does not independently declare a body to be unclaimed." },
+      { title: "What is an unclaimed body?", description: "The legal or administrative status of a deceased person is determined by competent authorities under applicable procedures. Arogya Sewa does not independently declare a body to be unclaimed." },
       { title: "Who can request Unclaimed Body Sewa?", description: "Hospital authorities, police officers, or verified social workers can notify us." },
       { title: "What documents or authorisation may be required?", description: "Police clearance certificates, official hospital handovers, and statutory waiting periods are verified." },
-      { title: "What support can Moksha Sewa provide?", description: "Final-journey transport, cremation coordination, and basic ritual materials." },
-      { title: "Does Moksha Sewa declare a body legally unclaimed?", description: "No, we do not declare bodies as unclaimed. We only assist cases authorised by competent authorities." },
+      { title: "What support can Arogya Sewa provide?", description: "Final-journey transport, cremation coordination, and basic ritual materials." },
+      { title: "Does Arogya Sewa declare a body legally unclaimed?", description: "No, we do not declare bodies as unclaimed. We only assist cases authorised by competent authorities." },
       { title: "Where is Unclaimed Body Sewa currently available?", description: "Please contact our coordination desk for availability in your region." },
     ],
   },
@@ -257,10 +257,10 @@ export const defaultVolunteerSections: ExtraSectionContent[] = [
     eyebrow: "Be Part Of The Sewa",
     title: "Offer Your Time & Heart to Serve the Final Journey",
     subtitle: "Join a Dedicated Network of Compassionate Citizens",
-    description: "Volunteers are the backbone of Moksha Sewa. Help coordinate transport, support grieving families, or assist during last rites.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164963/moksha-sewa/hero-images/volunteer-elderly-woman.png",
-    secondaryImage: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164964/moksha-sewa/hero-images/volunteer-hero-second.png",
-    logoImage: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164952/moksha-sewa/hero-images/image6.png",
+    description: "Volunteers are the backbone of Arogya Sewa. Help coordinate transport, support grieving families, or assist during last rites.",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164963/arogya-sewa/hero-images/volunteer-elderly-woman.png",
+    secondaryImage: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164964/arogya-sewa/hero-images/volunteer-hero-second.png",
+    logoImage: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164952/arogya-sewa/hero-images/image6.png",
     buttonLabel: "Register As Volunteer",
     buttonHref: "/volunteer/register",
   },
@@ -269,7 +269,7 @@ export const defaultVolunteerSections: ExtraSectionContent[] = [
     name: "Volunteer Code of Conduct",
     enabled: true,
     eyebrow: "Responsibility & Ethics",
-    title: "Principles That Guide Every Moksha Volunteer",
+    title: "Principles That Guide Every Arogya Volunteer",
     description: "We uphold strict standards of empathy, privacy, dignity, and zero commercial interest in all our activities.",
     items: [
       { title: "Empathetic Conduct", description: "Be respectful and patient with grieving families." },
@@ -329,7 +329,7 @@ export const defaultVolunteerSections: ExtraSectionContent[] = [
       { title: "Identity Verification" },
       { title: "Upload Photograph *" },
       { title: "Upload ID Proof (Aadhaar / PAN) *" },
-      { title: "I agree to the Moksha Sewa" },
+      { title: "I agree to the Arogya Sewa" },
       { title: "Volunteer Code of Conduct" }
     ]
   },
@@ -446,8 +446,8 @@ export const defaultPartnershipSections: ExtraSectionContent[] = [
     eyebrow: "Collaborate With Us",
     title: "Partnering To Expand Dignified Last Rites Across Regions",
     subtitle: "Hospitals, NGOs, Municipalities & Social Organizations",
-    description: "Join hands with Moksha Sewa to streamline unclaimed body handling, ambulance networks, and subsidised family support.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165302/moksha-sewa/assets/partnership/hero.png",
+    description: "Join hands with Arogya Sewa to streamline unclaimed body handling, ambulance networks, and subsidised family support.",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165302/arogya-sewa/assets/partnership/hero.png",
     buttonLabel: "Become A Partner",
     buttonHref: "#partner-form",
     secondaryButtonLabel: "Explore Partnerships",
@@ -481,10 +481,10 @@ export const defaultPartnershipSections: ExtraSectionContent[] = [
     eyebrow: "Accountability First",
     title: "High Standards Of Compliance & Ethics",
     description: "Every partnership operates within strict legal permissions and transparent auditing frameworks.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165000/moksha-sewa/assets/about-optimized/existimage.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165000/arogya-sewa/assets/about-optimized/existimage.png",
     buttonLabel: "Know Namo Gange Trust",
     buttonHref: "#",
-    secondaryTitle: "Moksha Sewa",
+    secondaryTitle: "Arogya Sewa",
     secondaryDescription: "A Namo Gange Trust Initiative",
     sloganTitle: "A Journey to Healthy World...",
     items: [
@@ -523,7 +523,7 @@ export const defaultPartnershipSections: ExtraSectionContent[] = [
     eyebrow: "Reach Out",
     title: "Submit Your Partnership Proposal",
     description: "Fill in your institution details and our team will get in touch shortly.",
-    legalNotice: "Moksha Sewa partnerships are structured strictly for humanitarian service, transparency and non-commercial impact. Submitting an enquiry does not constitute a formal agreement.",
+    legalNotice: "Arogya Sewa partnerships are structured strictly for humanitarian service, transparency and non-commercial impact. Submitting an enquiry does not constitute a formal agreement.",
     submitLabel: "Submit Partnership Enquiry",
     quote: "Your information is secure and will only be used for partnership communication.",
     items: [
@@ -547,7 +547,7 @@ export const defaultPartnershipSections: ExtraSectionContent[] = [
       { title: "Responsible Collaboration", description: "Defined roles, clear processes and mutual accountability.", value: "ShieldCheck" },
       { title: "Trust & Transparency", description: "Collaboration built on honesty, privacy and responsible communication.", value: "Handshake" },
       { title: "Human Dignity First", description: "Every partnership is guided by respect, dignity and compassion.", value: "HeartHands" },
-      { title: "Who can partner with Moksha Sewa?", description: "We welcome partnerships from hospitals, institutions, NGOs, service providers, professional organisations and community networks that share our commitment to dignity and humanitarian service." },
+      { title: "Who can partner with Arogya Sewa?", description: "We welcome partnerships from hospitals, institutions, NGOs, service providers, professional organisations and community networks that share our commitment to dignity and humanitarian service." },
       { title: "What types of partnerships are possible?", description: "Partnerships may include institutional coordination, service partnership, community collaboration, professional support, volunteer engagement and other mission-aligned collaborations." },
       { title: "Does submitting an enquiry make us an official partner?", description: "No. Submitting an enquiry does not create or imply any formal partnership. All partnerships are subject to review, mutual agreement and applicable requirements." },
       { title: "How are partnership roles and responsibilities defined?", description: "Where a partnership is explored further, roles, responsibilities, communication protocols and expectations are clearly defined and mutually agreed upon." },
@@ -589,8 +589,8 @@ export const defaultCSRSections: ExtraSectionContent[] = [
     eyebrow: "Corporate Social Responsibility",
     title: "Empower Dignified Final Rites Support\nThrough Corporate CSR",
     subtitle: "Fulfilling Social Impact With Complete Tax Exemption & Audits",
-    description: "Partner with Namo Gange Trust's Moksha Sewa initiative to sponsor hearse vans, cremation kits, and unclaimed body rites.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165101/moksha-sewa/assets/csr/csr-hero-photo.jpg",
+    description: "Partner with Namo Gange Trust's Arogya Sewa initiative to sponsor hearse vans, cremation kits, and unclaimed body rites.",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165101/arogya-sewa/assets/csr/csr-hero-photo.jpg",
     buttonLabel: "Discuss a CSR Partnership",
     buttonHref: "#csr-enquiry",
     secondaryButtonLabel: "Request Organisation Profile",
@@ -613,14 +613,14 @@ export const defaultCSRSections: ExtraSectionContent[] = [
     eyebrow: "Where Your CSR Support Helps",
     title: "Meaningful Support at a Deeply Human Moment.",
     description: "CSR collaborations can help strengthen essential final-journey\nassistance for eligible and verified humanitarian cases.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165112/moksha-sewa/assets/csr/meaningful-support-bg.jpg",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165112/arogya-sewa/assets/csr/meaningful-support-bg.jpg",
     bottomStatement: "Important Note:\nSupport is case-based and subject to verification, applicable formalities, availability and the mutually agreed project scope.",
     items: [
-      { title: "Final-Journey\nTransport", description: "Dignified and respectful\ntransport for the departed.", value: "Ambulance", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165105/moksha-sewa/assets/csr/journey-1.jpg" },
-      { title: "Cremation &\nLast-Rites Support", description: "Coordination of cremation\nand last-rites with care.", value: "Fire", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165106/moksha-sewa/assets/csr/journey-2.jpg" },
-      { title: "Ritual\nEssentials", description: "Providing essential materials\nrequired for rituals.", value: "Ritual", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165107/moksha-sewa/assets/csr/journey-3.jpg" },
-      { title: "Family\nGuidance", description: "Supporting families with guidance\nand necessary formalities.", value: "Family", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165109/moksha-sewa/assets/csr/journey-4.jpg" },
-      { title: "On-Ground\nAssistance", description: "On-ground support with compassion,\ndignity and respect.", value: "HeartHands", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165110/moksha-sewa/assets/csr/journey-5.jpg" }
+      { title: "Final-Journey\nTransport", description: "Dignified and respectful\ntransport for the departed.", value: "Ambulance", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165105/arogya-sewa/assets/csr/journey-1.jpg" },
+      { title: "Cremation &\nLast-Rites Support", description: "Coordination of cremation\nand last-rites with care.", value: "Fire", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165106/arogya-sewa/assets/csr/journey-2.jpg" },
+      { title: "Ritual\nEssentials", description: "Providing essential materials\nrequired for rituals.", value: "Ritual", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165107/arogya-sewa/assets/csr/journey-3.jpg" },
+      { title: "Family\nGuidance", description: "Supporting families with guidance\nand necessary formalities.", value: "Family", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165109/arogya-sewa/assets/csr/journey-4.jpg" },
+      { title: "On-Ground\nAssistance", description: "On-ground support with compassion,\ndignity and respect.", value: "HeartHands", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165110/arogya-sewa/assets/csr/journey-5.jpg" }
     ]
   },
   {
@@ -630,7 +630,7 @@ export const defaultCSRSections: ExtraSectionContent[] = [
     eyebrow: "100% Tax Benefit",
     title: "80G & 12A Certified Legal Compliance",
     description: "All corporate donations receive tax deduction benefits under Section 80G with audited utilization certificates.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165099/moksha-sewa/assets/csr/compliance-photo.jpg",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165099/arogya-sewa/assets/csr/compliance-photo.jpg",
     supportTitle: "Rigorous Due Diligence",
     supportDescription: "We strictly adhere to ethical practices, maintaining transparency and compliance in every project.",
     bottomStatement: "Transparent operations\nsupported by robust audits",
@@ -647,11 +647,11 @@ export const defaultCSRSections: ExtraSectionContent[] = [
     key: "csr-responsibility",
     name: "Institutional Governance",
     enabled: true,
-    eyebrow: "The Organisation Behind Moksha Sewa",
+    eyebrow: "The Organisation Behind Arogya Sewa",
     title: "Institutional Responsibility\nBehind the Mission.",
-    description: "Moksha Sewa is an initiative of Namo Gange Trust.\nThrough this institutional framework, the initiative\nseeks to build responsible humanitarian collaborations\ncentred on dignity, service and accountability.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165104/moksha-sewa/assets/csr/institutional-responsibility-bg.jpg",
-    partnerLogoImage: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164958/moksha-sewa/hero-images/namo-gange-logo.webp",
+    description: "Arogya Sewa is an initiative of Namo Gange Trust.\nThrough this institutional framework, the initiative\nseeks to build responsible humanitarian collaborations\ncentred on dignity, service and accountability.",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165104/arogya-sewa/assets/csr/institutional-responsibility-bg.jpg",
+    partnerLogoImage: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164958/arogya-sewa/hero-images/namo-gange-logo.webp",
     buttonLabel: "Know Namo Gange Trust",
     buttonHref: "#",
     supportTitle: "Our Institutional Pillars",
@@ -673,9 +673,9 @@ export const defaultCSRSections: ExtraSectionContent[] = [
     buttonLabel: "Discuss a CSR Partnership",
     buttonHref: "#csr-enquiry",
     items: [
-      { title: "Project Partnership", description: "Support a defined humanitarian programme with mutually agreed objectives, scope and reporting.", value: "Handshake", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165114/moksha-sewa/assets/csr/model-project.jpg" },
-      { title: "Employee Volunteering", description: "Create suitable opportunities for employees to contribute their time, skills and participation.", value: "People", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165116/moksha-sewa/assets/csr/model-volunteering.jpg" },
-      { title: "Institutional Partnership", description: "Collaborate through hospitals, institutions, organisations and community networks where appropriate.", value: "Institution", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165113/moksha-sewa/assets/csr/model-institutional.jpg" },
+      { title: "Project Partnership", description: "Support a defined humanitarian programme with mutually agreed objectives, scope and reporting.", value: "Handshake", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165114/arogya-sewa/assets/csr/model-project.jpg" },
+      { title: "Employee Volunteering", description: "Create suitable opportunities for employees to contribute their time, skills and participation.", value: "People", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165116/arogya-sewa/assets/csr/model-volunteering.jpg" },
+      { title: "Institutional Partnership", description: "Collaborate through hospitals, institutions, organisations and community networks where appropriate.", value: "Institution", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165113/arogya-sewa/assets/csr/model-institutional.jpg" },
     ],
   },
   {
@@ -685,10 +685,10 @@ export const defaultCSRSections: ExtraSectionContent[] = [
     eyebrow: "Corporate Inquiry",
     title: "Connect With Our CSR Leadership Team",
     description: "Share your company's CSR priorities and we will create a tailored proposal.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165136/moksha-sewa/assets/csr/responsible-partnership-conversation.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165136/arogya-sewa/assets/csr/responsible-partnership-conversation.png",
     contactTitle: "CSR Partnership Enquiry",
     phoneNumber: "+91 92201 47229",
-    contactEmail: "csr@mokshasewa.org",
+    contactEmail: "csr@arogyabharat.org",
     contactAddress: "Delhi • Ghaziabad • Noida",
     submitLabel: "Submit CSR Enquiry",
     submittedLabel: "Inquiry Submitted",
@@ -741,7 +741,7 @@ export const defaultRequestHelpSections: ExtraSectionContent[] = [
     title: "Request Cremation Assistance",
     subtitle: "We Are Here To Stand Beside You In Your Hour Of Need",
     description: "We are here to support you with compassion, dignity and care in your time of need.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165000/moksha-sewa/assets/about-optimized/existimage.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165000/arogya-sewa/assets/about-optimized/existimage.png",
     phoneLabel: "Helpline Number",
     phoneNumber: "+91 9220147229",
     buttonLabel: "Call Helpline Now",
@@ -754,18 +754,18 @@ export const defaultRequestHelpSections: ExtraSectionContent[] = [
     eyebrow: "Submit Details",
     title: "Request Assistance",
     description: "Please fill in accurate information to help our emergency coordinators dispatch prompt support.",
-    secondaryTitle: "Why Families Trust Moksha Sewa",
+    secondaryTitle: "Why Families Trust Arogya Sewa",
     secondaryDescription: "Compassionate guidance, verified coordination and confidential support at every step.",
     submitLabel: "Request Assistance Now",
     submittedLabel: "Request Received",
     secondaryButtonLabel: "Already submitted? Track your request →",
     secondaryButtonHref: "/track",
     bottomStatement: "॥ अन्तिम सेवा, हमारी श्रद्धा और आपका विश्वास ॥",
-    legalNotice: "I consent to Moksha Sewa using these details only to provide the requested cremation assistance.",
+    legalNotice: "I consent to Arogya Sewa using these details only to provide the requested cremation assistance.",
     supportTitle: "In Sewa, we find peace. In supporting each other, we honor life.",
     supportDescription: "With Sewa in our heart, we walk with you in this journey.",
     quote: "Your information is safe and secure with us. We provide confidential support.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165420/moksha-sewa/assets/route-optimized/request-trust-ritual.webp",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165420/arogya-sewa/assets/route-optimized/request-trust-ritual.webp",
     items: [
       { title: "24/7 Immediate Support", description: "We are available round the clock whenever you need us." },
       { title: "Verified & Compassionate Team", description: "Trained professionals you can trust, with experience and empathy." },
@@ -809,7 +809,7 @@ export const defaultDonationSections: ExtraSectionContent[] = [
     title: "Your Contribution Restores\nSacred Dignity To Human Life",
     subtitle: "100% Tax Exempted Under Section 80G",
     description: "Support free ambulance movement, woodless cremation, priest samagri kits, and unclaimed body rites.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164932/moksha-sewa/hero-images/3.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788164932/arogya-sewa/hero-images/3.png",
     buttonLabel: "Donate Now",
     buttonHref: "#donation-form",
   },
@@ -824,14 +824,14 @@ export const defaultDonationSections: ExtraSectionContent[] = [
       {
         title: "Support a Final Journey",
         description: "Indicative contribution toward verified last-rites assistance and related programme needs.",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165250/moksha-sewa/assets/namo-gange/vol2.png",
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165250/arogya-sewa/assets/namo-gange/vol2.png",
         value: "1100",
         features: ["Case support", "Most needed", "Mission fund", "General support"]
       },
       {
         title: "Last-Rites Assistance",
         description: "Indicative contribution toward essential ritual materials and case-based support.",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165251/moksha-sewa/assets/namo-gange/vol3.png",
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165251/arogya-sewa/assets/namo-gange/vol3.png",
         value: "2100",
         label: "MISSION NEED",
         features: ["Ritual support", "Guidance", "Materials", "Case care"]
@@ -839,14 +839,14 @@ export const defaultDonationSections: ExtraSectionContent[] = [
       {
         title: "Transport Support",
         description: "Indicative contribution toward ambulance or hearse-van coordination for verified cases.",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165253/moksha-sewa/assets/namo-gange/vol4.png",
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165253/arogya-sewa/assets/namo-gange/vol4.png",
         value: "5100",
         features: ["Readiness", "Transport care", "Helpline support", "Coordination"]
       },
       {
         title: "Family Relief Support",
         description: "Indicative contribution toward food, water and basic relief where verified need exists.",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165258/moksha-sewa/assets/namo-gange/vol5.png",
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165258/arogya-sewa/assets/namo-gange/vol5.png",
         value: "11000",
         features: ["Meal support", "Family relief", "Essentials", "Community care"]
       },
@@ -912,10 +912,10 @@ export const defaultContactSections: ExtraSectionContent[] = [
     title: "We Are Here To Assist You\n24 Hours A Day",
     subtitle: "Reach Out For Help, Inquiries, Or Volunteer Guidance",
     description: "Connect with our central coordination desk in Delhi NCR via phone, email, or office visit.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165070/moksha-sewa/assets/about-reference/who-we-are-background-v2.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165070/arogya-sewa/assets/about-reference/who-we-are-background-v2.png",
     phoneLabel: "24/7 Helpline",
     phoneNumber: "1800123456",
-    contactEmail: "info@mokshasewa.org",
+    contactEmail: "info@arogyabharat.org",
     contactAddress: "Namo Gange Trust, Delhi • Ghaziabad • Noida",
   },
   {
@@ -966,8 +966,8 @@ export const defaultContactSections: ExtraSectionContent[] = [
     title: "Office Locations",
     description: "Find our head office and regional branches.",
     items: [
-      { title: "Head Office", subtitle: "Ghaziabad, Uttar Pradesh", description: "12/52, Site - 2, Sunrise Industrial Area, Mohan Nagar, Sahibabad, Ghaziabad, Uttar Pradesh, India", value: "+91 98183 53841", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165096/moksha-sewa/assets/contact/im.png" },
-      { title: "London Office", subtitle: "Luton, England", description: "Registration address: 6 Liddel Close, Luton, Bedfordshire, United Kingdom LU3 1TW", value: "+44 7429 519276", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165092/moksha-sewa/assets/contact/en.png" },
+      { title: "Head Office", subtitle: "Ghaziabad, Uttar Pradesh", description: "12/52, Site - 2, Sunrise Industrial Area, Mohan Nagar, Sahibabad, Ghaziabad, Uttar Pradesh, India", value: "+91 98183 53841", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165096/arogya-sewa/assets/contact/im.png" },
+      { title: "London Office", subtitle: "Luton, England", description: "Registration address: 6 Liddel Close, Luton, Bedfordshire, United Kingdom LU3 1TW", value: "+44 7429 519276", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165092/arogya-sewa/assets/contact/en.png" },
     ]
   },
 ];
@@ -995,7 +995,7 @@ export const defaultTrackSections: ExtraSectionContent[] = [
     title: "Track Case Or Request Progress In Real-Time",
     subtitle: "Transparent & Accountable Verification System",
     description: "Enter your Request Number or Case ID to view live verification, volunteer assignment, and completion status.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165000/moksha-sewa/assets/about-optimized/existimage.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165000/arogya-sewa/assets/about-optimized/existimage.png",
   },
   {
     key: "track-info",
@@ -1130,7 +1130,7 @@ export const defaultAmbulanceSections: ExtraSectionContent[] = [
     enabled: true,
     title: "Your Donation Brings Peace",
     description: "Your kind contribution helps us provide ambulance, hearse and last-journey support to families who cannot afford it. Together, we can bring comfort, dignity and peace in their most difficult moments.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg",
     buttonLabel: "Donate for Ambulance Service",
     buttonHref: "/donation",
     secondaryButtonLabel: "Support Our Sewa",
@@ -1158,7 +1158,7 @@ export const defaultPanditSections: ExtraSectionContent[] = [
     title: "Priest Support",
     subtitle: "For a Dignified Final Journey.",
     description: "Experienced Pandit Ji's guide your family with compassion, clarity and reverence in every sacred ritual of your loved one's journey.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165283/moksha-sewa/assets/panditservices/hero-real.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165283/arogya-sewa/assets/panditservices/hero-real.png",
     buttonLabel: "Request Priest Support",
     buttonHref: "/request-help",
     secondaryButtonLabel: "Donate for Ritual Support",
@@ -1169,10 +1169,10 @@ export const defaultPanditSections: ExtraSectionContent[] = [
     name: "Pandit Highlights",
     enabled: true,
     items: [
-      { title: "Experienced Pandit Ji", description: "Learned and compassionate guidance", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165275/moksha-sewa/assets/panditservices/feature-pandit.png" },
-      { title: "Vedic Guidance", description: "Guidance based on Hindu traditions", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165279/moksha-sewa/assets/panditservices/feature-vedic.png" },
-      { title: "Ritual Planning", description: "Complete ritual planning and coordination", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165276/moksha-sewa/assets/panditservices/feature-planning.png" },
-      { title: "Regional Traditions", description: "Rituals according to family customs", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165277/moksha-sewa/assets/panditservices/feature-traditions.png" }
+      { title: "Experienced Pandit Ji", description: "Learned and compassionate guidance", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165275/arogya-sewa/assets/panditservices/feature-pandit.png" },
+      { title: "Vedic Guidance", description: "Guidance based on Hindu traditions", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165279/arogya-sewa/assets/panditservices/feature-vedic.png" },
+      { title: "Ritual Planning", description: "Complete ritual planning and coordination", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165276/arogya-sewa/assets/panditservices/feature-planning.png" },
+      { title: "Regional Traditions", description: "Rituals according to family customs", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165277/arogya-sewa/assets/panditservices/feature-traditions.png" }
     ],
   },
   {
@@ -1202,12 +1202,12 @@ export const defaultPanditSections: ExtraSectionContent[] = [
     enabled: true,
     title: "Ritual Support at Every Step",
     items: [
-      { title: "Pre-Ritual Consultation", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165285/moksha-sewa/assets/panditservices/ritual-1.png" },
-      { title: "Antim Sanskar Vidhi", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165286/moksha-sewa/assets/panditservices/ritual-2.png" },
-      { title: "Mukhagni Guidance", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165288/moksha-sewa/assets/panditservices/ritual-3.png" },
-      { title: "Asthi Visarjan", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165289/moksha-sewa/assets/panditservices/ritual-4.png" },
-      { title: "Pind Daan", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165290/moksha-sewa/assets/panditservices/ritual-5.png" },
-      { title: "Tehrvi & Shanti Paath", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165291/moksha-sewa/assets/panditservices/ritual-6.png" }
+      { title: "Pre-Ritual Consultation", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165285/arogya-sewa/assets/panditservices/ritual-1.png" },
+      { title: "Antim Sanskar Vidhi", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165286/arogya-sewa/assets/panditservices/ritual-2.png" },
+      { title: "Mukhagni Guidance", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165288/arogya-sewa/assets/panditservices/ritual-3.png" },
+      { title: "Asthi Visarjan", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165289/arogya-sewa/assets/panditservices/ritual-4.png" },
+      { title: "Pind Daan", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165290/arogya-sewa/assets/panditservices/ritual-5.png" },
+      { title: "Tehrvi & Shanti Paath", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165291/arogya-sewa/assets/panditservices/ritual-6.png" }
     ],
   },
   {
@@ -1216,10 +1216,10 @@ export const defaultPanditSections: ExtraSectionContent[] = [
     enabled: true,
     title: "Pandit Ji Roles",
     items: [
-      { title: "Samagri Guidance", description: "Right samagri for every sacred ritual.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165293/moksha-sewa/assets/panditservices/roles-1.png" },
-      { title: "Prayer Hall Ceremony", description: "Rituals conducted with peace and reverence.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165294/moksha-sewa/assets/panditservices/roles-2.png" },
-      { title: "Family Ritual Explanation", description: "Simple guidance at every sacred step.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165295/moksha-sewa/assets/panditservices/roles-3.png" },
-      { title: "Post-Ritual Support", description: "Guidance for remaining rituals and timelines.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165296/moksha-sewa/assets/panditservices/roles-4.png" }
+      { title: "Samagri Guidance", description: "Right samagri for every sacred ritual.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165293/arogya-sewa/assets/panditservices/roles-1.png" },
+      { title: "Prayer Hall Ceremony", description: "Rituals conducted with peace and reverence.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165294/arogya-sewa/assets/panditservices/roles-2.png" },
+      { title: "Family Ritual Explanation", description: "Simple guidance at every sacred step.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165295/arogya-sewa/assets/panditservices/roles-3.png" },
+      { title: "Post-Ritual Support", description: "Guidance for remaining rituals and timelines.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165296/arogya-sewa/assets/panditservices/roles-4.png" }
     ],
   },
   {
@@ -1239,7 +1239,7 @@ export const defaultPanditSections: ExtraSectionContent[] = [
     enabled: true,
     title: "Your Support Helps Families Receive Dignified & Sacred Final Rites",
     description: "Every act of kindness becomes a blessing for many.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165284/moksha-sewa/assets/panditservices/hero.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165284/arogya-sewa/assets/panditservices/hero.png",
     buttonLabel: "Donate for Ritual Support",
     buttonHref: "/donation",
   },
@@ -1263,7 +1263,7 @@ export const defaultFuneralSections: ExtraSectionContent[] = [
     enabled: true,
     title: "Wood & Ritual Items",
     subtitle: "Arranged With Deep Respect.",
-    description: "At Moksha Sewa, we understand the financial and emotional burden of the final rites. We help eligible families coordinate cremation wood, shroud cloth (Kafan), flowers, lamps, and essential prayer items subject to verification and availability.",
+    description: "At Arogya Sewa, we understand the financial and emotional burden of the final rites. We help eligible families coordinate cremation wood, shroud cloth (Kafan), flowers, lamps, and essential prayer items subject to verification and availability.",
     image: "/woodrituals/hero.webp",
     buttonLabel: "Request Wood & Items",
     buttonHref: "/request-help",
@@ -1347,7 +1347,7 @@ export const defaultFuneralDecorationSections: ExtraSectionContent[] = [
     title: "Funeral Decoration",
     subtitle: "A Beautiful Final Journey.",
     description: "We believe in bidding farewell with utmost respect and serenity. Our volunteers arrange traditional floral decorations for the hearse van, pyre, and prayer hall using fresh and sacred flowers to honor the departed soul.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165195/moksha-sewa/assets/how-we-help/three.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165195/arogya-sewa/assets/how-we-help/three.png",
     buttonLabel: "Request Decoration",
     buttonHref: "/request-help",
     secondaryButtonLabel: "24x7 Helpline",
@@ -1432,7 +1432,7 @@ export const defaultPrayerHallSections: ExtraSectionContent[] = [
     title: "Ground & Prayer Support",
     subtitle: "Creating A Space For Peace.",
     description: "Finding the right place to grieve and pray is essential. We assist with cremation-ground coordination, setting up serene prayer halls, and providing calm guidance for the entire family.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165319/moksha-sewa/assets/prayerhallservices/hero-real.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165319/arogya-sewa/assets/prayerhallservices/hero-real.png",
     buttonLabel: "Request Support",
     buttonHref: "/request-help",
     secondaryButtonLabel: "Donate for Support",
@@ -1443,10 +1443,10 @@ export const defaultPrayerHallSections: ExtraSectionContent[] = [
     name: "Prayer Hall Highlights",
     enabled: true,
     items: [
-      { title: "Ground Coordination", description: "Seamless coordination with ground staff and family members.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165310/moksha-sewa/assets/prayerhallservices/feature-ground.png" },
-      { title: "Prayer Setup", description: "Serene prayer arrangements prepared with care and respect.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165316/moksha-sewa/assets/prayerhallservices/feature-setup.png" },
-      { title: "Family Support", description: "Gentle guidance and assistance for family members throughout.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165309/moksha-sewa/assets/prayerhallservices/feature-family.png" },
-      { title: "Peaceful Environment", description: "A calm and respectful space for prayer, mourning and remembrance.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165312/moksha-sewa/assets/prayerhallservices/feature-peace.png" }
+      { title: "Ground Coordination", description: "Seamless coordination with ground staff and family members.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165310/arogya-sewa/assets/prayerhallservices/feature-ground.png" },
+      { title: "Prayer Setup", description: "Serene prayer arrangements prepared with care and respect.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165316/arogya-sewa/assets/prayerhallservices/feature-setup.png" },
+      { title: "Family Support", description: "Gentle guidance and assistance for family members throughout.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165309/arogya-sewa/assets/prayerhallservices/feature-family.png" },
+      { title: "Peaceful Environment", description: "A calm and respectful space for prayer, mourning and remembrance.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165312/arogya-sewa/assets/prayerhallservices/feature-peace.png" }
     ],
   },
   {
@@ -1476,12 +1476,12 @@ export const defaultPrayerHallSections: ExtraSectionContent[] = [
     enabled: true,
     title: "Our Complete Support",
     items: [
-      { title: "Ground Booking", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165329/moksha-sewa/assets/prayerhallservices/support-1.png" },
-      { title: "Floral Setup", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165330/moksha-sewa/assets/prayerhallservices/support-2.png" },
-      { title: "Seating Arrangements", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165332/moksha-sewa/assets/prayerhallservices/support-3.png" },
-      { title: "Audio & Mic Setup", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165333/moksha-sewa/assets/prayerhallservices/support-4.png" },
-      { title: "Pandit Ji Coordination", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165334/moksha-sewa/assets/prayerhallservices/support-5.png" },
-      { title: "Guest Management", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165335/moksha-sewa/assets/prayerhallservices/support-6.png" }
+      { title: "Ground Booking", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165329/arogya-sewa/assets/prayerhallservices/support-1.png" },
+      { title: "Floral Setup", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165330/arogya-sewa/assets/prayerhallservices/support-2.png" },
+      { title: "Seating Arrangements", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165332/arogya-sewa/assets/prayerhallservices/support-3.png" },
+      { title: "Audio & Mic Setup", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165333/arogya-sewa/assets/prayerhallservices/support-4.png" },
+      { title: "Pandit Ji Coordination", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165334/arogya-sewa/assets/prayerhallservices/support-5.png" },
+      { title: "Guest Management", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165335/arogya-sewa/assets/prayerhallservices/support-6.png" }
     ],
   },
   {
@@ -1490,10 +1490,10 @@ export const defaultPrayerHallSections: ExtraSectionContent[] = [
     enabled: true,
     title: "Ground Support Roles",
     items: [
-      { title: "Venue Coordination", description: "Suitable venue coordination for every sacred ritual.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165323/moksha-sewa/assets/prayerhallservices/roles-1.png" },
-      { title: "Setup & Decor", description: "Peaceful arrangements prepared with care and dignity.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165325/moksha-sewa/assets/prayerhallservices/roles-2.png" },
-      { title: "Guest Assistance", description: "Clear and compassionate guidance for guests at every step.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165326/moksha-sewa/assets/prayerhallservices/roles-3.png" },
-      { title: "Post-Prayer Cleanup", description: "Respectful clearing and coordination after rituals conclude.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165328/moksha-sewa/assets/prayerhallservices/roles-4.png" }
+      { title: "Venue Coordination", description: "Suitable venue coordination for every sacred ritual.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165323/arogya-sewa/assets/prayerhallservices/roles-1.png" },
+      { title: "Setup & Decor", description: "Peaceful arrangements prepared with care and dignity.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165325/arogya-sewa/assets/prayerhallservices/roles-2.png" },
+      { title: "Guest Assistance", description: "Clear and compassionate guidance for guests at every step.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165326/arogya-sewa/assets/prayerhallservices/roles-3.png" },
+      { title: "Post-Prayer Cleanup", description: "Respectful clearing and coordination after rituals conclude.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165328/arogya-sewa/assets/prayerhallservices/roles-4.png" }
     ],
   },
   {
@@ -1513,7 +1513,7 @@ export const defaultPrayerHallSections: ExtraSectionContent[] = [
     enabled: true,
     title: "Your Support Helps Families Receive Dignified & Sacred Final Rites",
     description: "Every act of kindness becomes a blessing for many.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165320/moksha-sewa/assets/prayerhallservices/hero.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165320/arogya-sewa/assets/prayerhallservices/hero.png",
     buttonLabel: "Donate for Support",
     buttonHref: "/donation",
   },
@@ -1538,8 +1538,8 @@ export const defaultSpecialServiceSections: ExtraSectionContent[] = [
     eyebrow: "Extended Family Support",
     title: "Family Support",
     subtitle: "Standing Beside You.",
-    description: "Beyond the final rites, Moksha Sewa helps eligible families with case-based guidance, relief coordination and compassionate support, subject to verification and availability.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165157/moksha-sewa/assets/family-support/hero-bg-2.png",
+    description: "Beyond the final rites, Arogya Sewa helps eligible families with case-based guidance, relief coordination and compassionate support, subject to verification and availability.",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165157/arogya-sewa/assets/family-support/hero-bg-2.png",
     buttonLabel: "Request Support",
     buttonHref: "/request-help",
     secondaryButtonLabel: "24x7 Helpline",
@@ -1550,14 +1550,14 @@ export const defaultSpecialServiceSections: ExtraSectionContent[] = [
     name: "Special Service Highlights",
     enabled: true,
     items: [
-      { title: "Emotional Support", description: "Counseling and a sympathetic ear for grieving families.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165435/moksha-sewa/assets/serving/counseling-support.png" },
-      { title: "Tehravi Khana", description: "Respectful management of the 13th-day meal for grieving families.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165439/moksha-sewa/assets/serving/food-essentials.png" },
-      { title: "Formalities", description: "Help with death certificates and important legal procedures.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165436/moksha-sewa/assets/serving/document-assistance.png" },
-      { title: "Ambulance", description: "Transport support for eligible cases after required verification.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165438/moksha-sewa/assets/serving/emergency-transport.png" },
-      { title: "Eligibility Based", description: "Assistance is provided subject to verification and availability.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165433/moksha-sewa/assets/serving/community-outreach.png" },
-      { title: "Hospital Care", description: "On-ground help and coordination during hospital discharge formalities.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165440/moksha-sewa/assets/serving/hospital-support.png" },
-      { title: "Ground Help", description: "Volunteers support and guide families carefully at every step.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165442/moksha-sewa/assets/serving/on-ground-support.png" },
-      { title: "Remote Reach", description: "Extending compassionate and dignified support to remote areas.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165447/moksha-sewa/assets/serving/rural-remote-reach.png" }
+      { title: "Emotional Support", description: "Counseling and a sympathetic ear for grieving families.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165435/arogya-sewa/assets/serving/counseling-support.png" },
+      { title: "Tehravi Khana", description: "Respectful management of the 13th-day meal for grieving families.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165439/arogya-sewa/assets/serving/food-essentials.png" },
+      { title: "Formalities", description: "Help with death certificates and important legal procedures.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165436/arogya-sewa/assets/serving/document-assistance.png" },
+      { title: "Ambulance", description: "Transport support for eligible cases after required verification.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165438/arogya-sewa/assets/serving/emergency-transport.png" },
+      { title: "Eligibility Based", description: "Assistance is provided subject to verification and availability.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165433/arogya-sewa/assets/serving/community-outreach.png" },
+      { title: "Hospital Care", description: "On-ground help and coordination during hospital discharge formalities.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165440/arogya-sewa/assets/serving/hospital-support.png" },
+      { title: "Ground Help", description: "Volunteers support and guide families carefully at every step.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165442/arogya-sewa/assets/serving/on-ground-support.png" },
+      { title: "Remote Reach", description: "Extending compassionate and dignified support to remote areas.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165447/arogya-sewa/assets/serving/rural-remote-reach.png" }
     ],
   },
   {
@@ -1578,7 +1578,7 @@ export const defaultSpecialServiceSections: ExtraSectionContent[] = [
     enabled: true,
     title: "Empowered by <br class=\"hidden lg:block\" /><span class=\"text-[#9A6A31]\">Namo Gange Volunteers</span>",
     description: "Our widespread network of dedicated volunteers is always ready to mobilize. They step forward to organize meals, manage hospital formalities, and support grieving families.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165001/moksha-sewa/assets/about-optimized/family-support.webp",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165001/arogya-sewa/assets/about-optimized/family-support.webp",
     items: [],
   },
   {
@@ -1594,7 +1594,7 @@ export const defaultSpecialServiceSections: ExtraSectionContent[] = [
     eyebrow: "Holistic Support System",
     title: "An Extended Family <br /><span class=\"text-[#9A6A31]\">For Those Who Need One</span>",
     description: "\"Our service does not end at the cremation ground. We believe in providing holistic support that helps a family get back on its feet while remembering their departed with love and peace.\"",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165440/moksha-sewa/assets/serving/hospital-support.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165440/arogya-sewa/assets/serving/hospital-support.png",
     buttonLabel: "Know More About Our Work",
     buttonHref: "/contact",
     items: [
@@ -1617,8 +1617,8 @@ export const defaultSpecialServiceSections: ExtraSectionContent[] = [
     enabled: true,
     title: "Your Support Helps Us <br />Feed Grieving Families",
     description: "By donating, you help us organize Tehravi Khana and provide continued assistance for families who cannot afford the post-cremation rituals and meals.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165435/moksha-sewa/assets/serving/counseling-support.png",
-    buttonLabel: "Donate to Moksha Sewa",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165435/arogya-sewa/assets/serving/counseling-support.png",
+    buttonLabel: "Donate to Arogya Sewa",
     buttonHref: "/donation",
     secondaryButtonLabel: "Support Our Seva",
     secondaryButtonHref: "/volunteer/register",
@@ -1644,7 +1644,7 @@ export const defaultCallingRelativesSections: ExtraSectionContent[] = [
     title: "Family & Relative Support",
     subtitle: "Compassionate Communication.",
     description: "In times of sudden loss, making phone calls to inform relatives can be emotionally draining. Our compassionate volunteers take this burden off your shoulders, respectfully notifying all extended family members and friends.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165435/moksha-sewa/assets/serving/counseling-support.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165435/arogya-sewa/assets/serving/counseling-support.png",
     buttonLabel: "Request Assistance",
     buttonHref: "/request-help",
     secondaryButtonLabel: "24x7 Helpline",
@@ -1729,7 +1729,7 @@ export const defaultHarsevanSections: ExtraSectionContent[] = [
     title: "Hearse Van (Shav Vahan)",
     subtitle: "For a Dignified Final Journey.",
     description: "The final journey should be carried out with the utmost dignity. We help coordinate Hearse Van (Shav Vahan) support for eligible cases, subject to verification, location and availability.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165438/moksha-sewa/assets/serving/emergency-transport.png",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165438/arogya-sewa/assets/serving/emergency-transport.png",
     buttonLabel: "Request Hearse Van",
     buttonHref: "/request-help",
     secondaryButtonLabel: "24x7 Helpline",
@@ -1779,7 +1779,7 @@ export const defaultHarsevanSections: ExtraSectionContent[] = [
     name: "Harsevan Why Families Trust Us",
     enabled: true,
     title: "&quot;We ensure their final journey is as peaceful and dignified as the life they lived.&quot;",
-    description: "You should never have to worry about transportation logistics while mourning. Moksha Sewa stands ready to help you navigate this difficult time.",
+    description: "You should never have to worry about transportation logistics while mourning. Arogya Sewa stands ready to help you navigate this difficult time.",
     items: [],
   },
   {
@@ -1819,7 +1819,7 @@ export const defaultPrivacySections: ExtraSectionContent[] = [
     eyebrow: "Legal Information",
     title: "Privacy Policy",
     subtitle: "Your privacy is important to us.",
-    description: "This Privacy Policy explains how Moksha Sewa (an initiative of Namo Gange Trust) collects, uses, protects, and shares your personal information when you visit our website or use our services.",
+    description: "This Privacy Policy explains how Arogya Sewa (an initiative of Namo Gange Trust) collects, uses, protects, and shares your personal information when you visit our website or use our services.",
     items: [
       { label: "Effective Date", value: "17 August 2026" },
       { label: "Last Updated", value: "17 August 2026" },
@@ -1832,7 +1832,7 @@ export const defaultPrivacySections: ExtraSectionContent[] = [
     name: "Privacy Content",
     enabled: true,
     items: [
-      { title: "About Moksha Sewa", description: "Moksha Sewa provides humanitarian assistance relating to dignified final-rites support, particularly for eligible economically weaker families and legally authorised unclaimed cases.\n\nOur services include ambulance/hearse-van coordination, cremation-ground support, wood, cloth, flowers and ritual-material assistance, priest and ritual guidance, family guidance, hospital and ground coordination, food and basic-essentials assistance, volunteer support and documentation guidance.\n\nAll assistance is subject to case verification, availability and applicable legal, police, hospital, municipal and other competent-authority requirements." },
+      { title: "About Arogya Sewa", description: "Arogya Sewa provides humanitarian assistance relating to dignified final-rites support, particularly for eligible economically weaker families and legally authorised unclaimed cases.\n\nOur services include ambulance/hearse-van coordination, cremation-ground support, wood, cloth, flowers and ritual-material assistance, priest and ritual guidance, family guidance, hospital and ground coordination, food and basic-essentials assistance, volunteer support and documentation guidance.\n\nAll assistance is subject to case verification, availability and applicable legal, police, hospital, municipal and other competent-authority requirements." },
       { title: "Information We Collect", description: "We collect only the information that is necessary for providing our services and improving our experience.\n\n• Name, mobile number, email address\n• Communication preferences\n• City/location and address or service location where required\n• Nature of assistance required and details of the case\n• Documents or details required for legal / authority formalities" },
       { title: "How We Use Your Information", description: "We may use your personal information to:\n\n• Respond to requests for Seva assistance.\n• Verify and assess assistance requests.\n• Coordinate eligible support with families, volunteers, hospitals, cremation grounds and authorities.\n• Maintain records relating to donations, assistance and enquiries.\n• Prevent fraud, misuse and unauthorised activity." },
       { title: "Your Privacy Rights", description: "Subject to applicable law, you may have the following rights regarding your personal data:\n\n• Right to be Informed\n• Right to Access\n• Right to Correction\n• Right to Erasure\n• Right to Withdraw Consent" }
@@ -1855,7 +1855,7 @@ export const defaultPrivacySections: ExtraSectionContent[] = [
       {
         title: "Our Commitment",
         description: "We are committed to transparency and protecting your personal information.\n\nWe collect only what we need and use it responsibly to serve humanity.",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165338/moksha-sewa/assets/privacy-policy/our_commitment.webp"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165338/arogya-sewa/assets/privacy-policy/our_commitment.webp"
       }
     ]
   }
@@ -1880,7 +1880,7 @@ export const defaultTermsSections: ExtraSectionContent[] = [
     eyebrow: "Legal Information",
     title: "Terms & Conditions",
     subtitle: "Please read these terms carefully.",
-    description: "These terms govern your use of the Moksha Sewa platform and services.",
+    description: "These terms govern your use of the Arogya Sewa platform and services.",
     items: [
       { label: "Effective Date", value: "17 August 2026" },
       { label: "Last Updated", value: "17 August 2026" },
@@ -1893,8 +1893,8 @@ export const defaultTermsSections: ExtraSectionContent[] = [
     name: "Terms Content",
     enabled: true,
     items: [
-      { title: "Acceptance of Terms", description: "By accessing or using the Moksha Sewa website and our services, you agree to these Terms & Conditions and our Privacy Policy. If you do not agree, please do not use our website or services." },
-      { title: "About Moksha Sewa", description: "Moksha Sewa, an initiative of Namo Gange Trust, is dedicated to providing dignified final-rites support and humanitarian assistance to eligible individuals and families, especially for unclaimed and underprivileged cases. Our services are subject to verification, availability and applicable laws." },
+      { title: "Acceptance of Terms", description: "By accessing or using the Arogya Sewa website and our services, you agree to these Terms & Conditions and our Privacy Policy. If you do not agree, please do not use our website or services." },
+      { title: "About Arogya Sewa", description: "Arogya Sewa, an initiative of Namo Gange Trust, is dedicated to providing dignified final-rites support and humanitarian assistance to eligible individuals and families, especially for unclaimed and underprivileged cases. Our services are subject to verification, availability and applicable laws." },
       { title: "Use of Our Website", description: "You agree to use our website only for lawful purposes and in a manner that does not infringe the rights of, restrict or inhibit anyone else's use. You must not attempt to gain unauthorized access, interfere with the functioning of the website or introduce harmful code." },
       { title: "Our Services", description: "Services include assistance with ambulance/hearse-van, cremation-ground support, ritual materials, priest guidance, documentation support, food and basic-essentials assistance, volunteer support and related humanitarian services. All services are subject to verification, availability and legal requirements." },
       { title: "Eligibility", description: "Our services are intended for individuals/families in genuine need. We may request information and documents for verification. We reserve the right to accept or decline any request at our sole discretion." },
@@ -1902,7 +1902,7 @@ export const defaultTermsSections: ExtraSectionContent[] = [
       { title: "Requests for Assistance", description: "All requests are subject to verification and availability of resources. Assistance will be provided in accordance with our policies, priorities and capacity. We do not guarantee immediate or specific outcomes." },
       { title: "Donations & Payments", description: "Donations are voluntary and non-refundable. Transactions are processed securely through authorised payment gateways. We do not store your card details, CVV, UPI PIN or net-banking passwords." },
       { title: "Volunteer Engagement", description: "Volunteers must act with compassion, integrity and respect. We reserve the right to accept, assign or terminate volunteer participation based on suitability and conduct." },
-      { title: "Content & Intellectual Property", description: "All content on this website, including text, images, logos and graphics, is the property of Moksha Sewa or its licensors. You may not copy, reproduce or use our content without prior written permission." }
+      { title: "Content & Intellectual Property", description: "All content on this website, including text, images, logos and graphics, is the property of Arogya Sewa or its licensors. You may not copy, reproduce or use our content without prior written permission." }
     ]
   },
   {
@@ -1922,7 +1922,7 @@ export const defaultTermsSections: ExtraSectionContent[] = [
       {
         title: "Our Commitment",
         description: "We are committed to transparency and upholding these guidelines for all users.\n\nPlease read carefully before engaging with our services.",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165338/moksha-sewa/assets/privacy-policy/our_commitment.webp"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165338/arogya-sewa/assets/privacy-policy/our_commitment.webp"
       }
     ]
   }
@@ -1947,7 +1947,7 @@ export const defaultRefundSections: ExtraSectionContent[] = [
     eyebrow: "Legal Information",
     title: "Refund Policy",
     subtitle: "Please read our refund terms carefully",
-    description: "At Moksha Sewa, we ensure complete transparency in all our donation and transaction processes. This Refund Policy explains the conditions under which refunds may be considered.",
+    description: "At Arogya Sewa, we ensure complete transparency in all our donation and transaction processes. This Refund Policy explains the conditions under which refunds may be considered.",
     items: [
       { label: "Effective Date", value: "17 August 2026" },
       { label: "Last Updated", value: "17 August 2026" },
@@ -1960,10 +1960,10 @@ export const defaultRefundSections: ExtraSectionContent[] = [
     name: "Main Sections",
     enabled: true,
     items: [
-      { title: "General Donation Policy", description: "As a charitable organisation, Moksha Sewa depends entirely on voluntary donations to fund our humanitarian services. Because these funds are immediately allocated to active cases, ambulance fuel, ritual materials, and daily operations, donations are generally considered final and non-refundable." },
+      { title: "General Donation Policy", description: "As a charitable organisation, Arogya Sewa depends entirely on voluntary donations to fund our humanitarian services. Because these funds are immediately allocated to active cases, ambulance fuel, ritual materials, and daily operations, donations are generally considered final and non-refundable." },
       { title: "Accidental Multiple Deductions", description: "If due to a technical error, network issue, or gateway glitch, your account is charged multiple times for a single donation attempt, you are eligible for a refund of the duplicate amount(s)." },
       { title: "Erroneous Donation Amount", description: "If you accidentally typed a significantly higher amount than intended (e.g., entering ₹10,000 instead of ₹1,000) and notify us immediately within 24 hours, we may review the request on a case-by-case basis." },
-      { title: "How to Request a Refund", description: "To request a refund for an accidental or duplicate transaction, you must write to us at info@mokshasewa.org within 3 days (72 hours) of the transaction." },
+      { title: "How to Request a Refund", description: "To request a refund for an accidental or duplicate transaction, you must write to us at info@arogyabharat.org within 3 days (72 hours) of the transaction." },
       { title: "Processing Time", description: "Once a refund is approved by our finance committee, it will be initiated back to the original payment source (credit card, debit card, UPI, or bank account). This process typically takes 7-10 working days, depending on your bank or payment provider." },
       { title: "Tax Exemption (80G) Certificates", description: "If an 80G tax exemption receipt has already been generated and dispatched to you for a specific donation, that donation cannot be refunded under any circumstances, as the transaction has already been legally recorded for tax purposes." }
     ]
@@ -2002,7 +2002,7 @@ export const defaultRefundSections: ExtraSectionContent[] = [
     key: "refund-intro",
     name: "Introduction Text",
     enabled: true,
-    description: "Moksha Sewa (an initiative of Namo Gange Trust) is a non-profit organisation. Donations made to support our humanitarian activities are voluntary and non-refundable except as provided in this Refund Policy."
+    description: "Arogya Sewa (an initiative of Namo Gange Trust) is a non-profit organisation. Donations made to support our humanitarian activities are voluntary and non-refundable except as provided in this Refund Policy."
   },
   {
     key: "refund-sidebar",
@@ -2016,7 +2016,7 @@ export const defaultRefundSections: ExtraSectionContent[] = [
       {
         title: "Our Commitment",
         description: "We are committed to transparency and accountability in managing all donations.\n\nEvery contribution directly supports our mission to serve humanity.",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165338/moksha-sewa/assets/privacy-policy/our_commitment.webp"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165338/arogya-sewa/assets/privacy-policy/our_commitment.webp"
       }
     ]
   }
@@ -2080,7 +2080,7 @@ export const defaultConductSections: ExtraSectionContent[] = [
       {
         title: "Our Commitment",
         description: "We are committed to maintaining a respectful, safe, and supportive environment.\n\nBy engaging with our community, you agree to uphold these values.",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165338/moksha-sewa/assets/privacy-policy/our_commitment.webp"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165338/arogya-sewa/assets/privacy-policy/our_commitment.webp"
       }
     ]
   }

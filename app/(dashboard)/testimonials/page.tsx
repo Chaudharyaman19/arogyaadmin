@@ -48,7 +48,7 @@ const TESTIMONIALS: Testimonial[] = [
     name: "Dr. Meera Sharma",
     role: "Exhibitor",
     message:
-      "Bharat Organic Expo provided incredible exposure for our organic spice brand. We secured 15+ international trade contracts!",
+      "Arogya Expo provided incredible exposure for our organic spice brand. We secured 15+ international trade contracts!",
     category: "Exhibitor",
     rating: 5,
     status: "Published",
@@ -100,7 +100,7 @@ const TESTIMONIALS: Testimonial[] = [
     name: "Dr. Arvind Kumar",
     role: "Sponsor",
     message:
-      "Proud to sponsor Bharat Organic Expo. High-quality delegates, trade visitors and great brand visibility!",
+      "Proud to sponsor Arogya Expo. High-quality delegates, trade visitors and great brand visibility!",
     category: "Sponsor",
     rating: 4.5,
     status: "Pending Review",

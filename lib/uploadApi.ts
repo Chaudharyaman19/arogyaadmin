@@ -6,7 +6,7 @@ export interface UploadResult {
 }
 
 export const uploadApi = {
-  file: (file: File, folder = "moksha-sewa/avatars") => {
+  file: (file: File, folder = "arogya-sewa/avatars") => {
     const formData = new FormData();
     formData.append("file", file);
     return api.postForm<UploadResult>(`/uploads?folder=${encodeURIComponent(folder)}`, formData);

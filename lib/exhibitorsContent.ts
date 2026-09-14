@@ -71,7 +71,7 @@ export const defaultExhibitorsSections: LandingSectionContent[] = [
     key: "exhibitors-hero",
     name: "HeroSection",
     enabled: true,
-    title: "Meet Leading Exhibitors at Bharat Organic Expo",
+    title: "Meet Leading Exhibitors at Arogya Expo",
     subtitle: "Explore 200+ Verified Organic, Ayurveda, AgriTech & Sustainable Brands",
     description: "Browse our exhibitors across Organic Food, AYUSH, Natural Care, AgriTech, Bio-Inputs, and Sustainable Solutions.",
     items: HERO_STATS.map((s) => ({ value: s.value, label: s.label })),

@@ -2956,7 +2956,7 @@ export default function EnquiriesPage() {
                   text-[#283C74]
                 "
               >
-                support@mokshasewa.org
+                support@arogyabharat.org
               </span>
             </div>
           </div>

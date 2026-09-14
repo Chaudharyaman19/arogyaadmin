@@ -38,8 +38,8 @@ type Category = {
 const categories: Category[] = [
   {
     id: 1,
-    name: "Moksha Sewa Stories",
-    slug: "moksha-sewa-stories",
+    name: "Arogya Sewa Stories",
+    slug: "arogya-sewa-stories",
     description: "Real stories of dignity, compassion and humanity from our sewa journey.",
     totalPosts: 18,
     status: "Published",

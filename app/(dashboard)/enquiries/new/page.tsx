@@ -626,7 +626,7 @@ function AddNewEnquiryContent() {
   function saveDraft() {
     try {
       localStorage.setItem(
-        "moksha-new-enquiry-draft",
+        "arogya-new-enquiry-draft",
         JSON.stringify(form)
       );
 
@@ -1500,7 +1500,7 @@ function AddNewEnquiryContent() {
             >
               {/* HEARD ABOUT */}
 
-              <FormField label="How did you hear about Moksha Sewa?">
+              <FormField label="How did you hear about Arogya Sewa?">
                 <SelectBox
                   value={
                     form.heardAbout

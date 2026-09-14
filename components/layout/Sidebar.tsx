@@ -298,7 +298,7 @@ export default function Sidebar({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/admin.png"
-            alt="Bharat Organic Expo Admin"
+            alt="Arogya Expo Admin"
             className="
               h-full
               max-h-[70px]
@@ -399,7 +399,7 @@ export default function Sidebar({
         "
       >
         <a
-          href="mailto:info@mokshasewa.org"
+          href="mailto:info@arogyabharat.org"
           className="
             relative
             flex

@@ -85,7 +85,7 @@ const CAT_ICON_TONE: Record<ExternalServiceCategory, string> = {
 type DetailField = { key: string; label: string; placeholder: string; type?: "text" | "number" | "url" };
 const CATEGORY_FIELDS: Record<ExternalServiceCategory, DetailField[]> = {
   DOMAIN: [
-    { key: "domainName", label: "Domain Name", placeholder: "mokshasewa.org" },
+    { key: "domainName", label: "Domain Name", placeholder: "arogyabharat.org" },
     { key: "registrar", label: "Registrar", placeholder: "GoDaddy / Namecheap" },
     { key: "dnsProvider", label: "DNS Provider", placeholder: "Cloudflare" },
     { key: "nameservers", label: "Nameservers", placeholder: "ns1.example.com, ns2.example.com" },
@@ -100,7 +100,7 @@ const CATEGORY_FIELDS: Record<ExternalServiceCategory, DetailField[]> = {
     { key: "backupFrequency", label: "Backup Frequency", placeholder: "Daily / Weekly" },
   ],
   SSL_CERTIFICATE: [
-    { key: "coveredDomains", label: "Covered Domains", placeholder: "mokshasewa.org, *.mokshasewa.org" },
+    { key: "coveredDomains", label: "Covered Domains", placeholder: "arogyabharat.org, *.arogyabharat.org" },
     { key: "issuer", label: "Certificate Issuer", placeholder: "Let's Encrypt" },
     { key: "certificateType", label: "Certificate Type", placeholder: "DV / OV / EV / Wildcard" },
   ],
@@ -126,7 +126,7 @@ const CATEGORY_FIELDS: Record<ExternalServiceCategory, DetailField[]> = {
     { key: "messageLimit", label: "Monthly Message Limit", placeholder: "10000", type: "number" },
   ],
   MEDIA_STORAGE: [
-    { key: "bucketName", label: "Bucket / Cloud Name", placeholder: "moksha-media" },
+    { key: "bucketName", label: "Bucket / Cloud Name", placeholder: "arogya-media" },
     { key: "region", label: "Region", placeholder: "Asia / ap-south-1" },
     { key: "storageLimit", label: "Storage Limit", placeholder: "25 GB" },
     { key: "deliveryUrl", label: "Delivery URL", placeholder: "https://cdn.example.org", type: "url" },
@@ -140,12 +140,12 @@ const CATEGORY_FIELDS: Record<ExternalServiceCategory, DetailField[]> = {
   ANALYTICS: [
     { key: "propertyId", label: "Property ID", placeholder: "123456789" },
     { key: "measurementId", label: "Measurement ID", placeholder: "G-XXXXXXXXXX" },
-    { key: "streamUrl", label: "Website / Stream URL", placeholder: "https://mokshasewa.org", type: "url" },
+    { key: "streamUrl", label: "Website / Stream URL", placeholder: "https://arogyabharat.org", type: "url" },
   ],
   DATABASE: [
     { key: "engine", label: "Database Engine", placeholder: "MongoDB / PostgreSQL / MySQL" },
     { key: "clusterHost", label: "Cluster / Host", placeholder: "Production cluster" },
-    { key: "databaseName", label: "Database Name", placeholder: "moksha-production" },
+    { key: "databaseName", label: "Database Name", placeholder: "arogya-production" },
     { key: "region", label: "Region", placeholder: "Mumbai" },
     { key: "backupPolicy", label: "Backup Policy", placeholder: "Daily · 30-day retention" },
   ],
@@ -162,7 +162,7 @@ const CATEGORY_FIELDS: Record<ExternalServiceCategory, DetailField[]> = {
   ],
   SOCIAL_MEDIA: [
     { key: "platform", label: "Platform", placeholder: "Meta / Google Ads / LinkedIn" },
-    { key: "accountHandle", label: "Account Handle", placeholder: "@mokshasewa" },
+    { key: "accountHandle", label: "Account Handle", placeholder: "@arogyasewa" },
     { key: "adAccountId", label: "Ad Account ID", placeholder: "Advertising account ID" },
     { key: "businessManagerId", label: "Business Manager ID", placeholder: "Meta business ID" },
   ],
@@ -468,8 +468,8 @@ export default function SystemServicesPage() {
     const expiry = new Date(accessExpiresAt).getTime();
     const lock = () => {
       if (Date.now() < expiry) return;
-      window.sessionStorage.removeItem("moksha_system_services_grant");
-      window.sessionStorage.removeItem("moksha_system_services_expires_at");
+      window.sessionStorage.removeItem("arogya_system_services_grant");
+      window.sessionStorage.removeItem("arogya_system_services_expires_at");
       setServices([]);
       setSettings(null);
       setViewing(null);
@@ -623,7 +623,7 @@ export default function SystemServicesPage() {
 
     setUploading(true);
     try {
-      const result = await uploadApi.file(file, "moksha-sewa/system-services");
+      const result = await uploadApi.file(file, "arogya-sewa/system-services");
       const receipt: ExternalServiceReceipt = { url: result.url, label: file.name, uploadedAt: new Date().toISOString() };
       setForm((p) => ({ ...p, receipts: [...p.receipts, receipt] }));
       toast("Bill attached.");
@@ -847,7 +847,7 @@ export default function SystemServicesPage() {
               </select>
             </Field>
             <Field label="Name" required hint="A short name your team will recognize.">
-              <input className="w-full rounded-lg border border-[#D8D0C7] bg-white px-2.5 py-2 text-[13px] text-[#261B15] placeholder:text-[#81766E] focus:border-[#8B6A3E] focus:outline-none focus:ring-4 focus:ring-[#F5ECDD]" value={form.name} placeholder="Domain — mokshasewa.org"
+              <input className="w-full rounded-lg border border-[#D8D0C7] bg-white px-2.5 py-2 text-[13px] text-[#261B15] placeholder:text-[#81766E] focus:border-[#8B6A3E] focus:outline-none focus:ring-4 focus:ring-[#F5ECDD]" value={form.name} placeholder="Domain — arogyabharat.org"
                 onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </Field>
             <Field label="Provider" required hint="The company supplying it, for example Hostinger, Meta or Razorpay.">
@@ -1109,7 +1109,7 @@ export default function SystemServicesPage() {
               onChange={(e) => setAlertDraft({ ...alertDraft, emailReminderDays: e.target.value })} />
           </Field>
           <Field label="Send it to" hint="Separate addresses with a comma">
-            <input className="w-full rounded-lg border border-[#D8D0C7] bg-white px-2.5 py-2 text-[13px] text-[#261B15] placeholder:text-[#81766E] focus:border-[#8B6A3E] focus:outline-none focus:ring-4 focus:ring-[#F5ECDD]" placeholder="ops@mokshasewa.org, admin@mokshasewa.org"
+            <input className="w-full rounded-lg border border-[#D8D0C7] bg-white px-2.5 py-2 text-[13px] text-[#261B15] placeholder:text-[#81766E] focus:border-[#8B6A3E] focus:outline-none focus:ring-4 focus:ring-[#F5ECDD]" placeholder="ops@arogyabharat.org, admin@arogyabharat.org"
               value={alertDraft.notifyEmails}
               onChange={(e) => setAlertDraft({ ...alertDraft, notifyEmails: e.target.value })} />
           </Field>
