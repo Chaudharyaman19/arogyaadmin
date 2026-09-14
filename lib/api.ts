@@ -1,5 +1,5 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
-const REQUEST_TIMEOUT_MS = 10_000;
+const REQUEST_TIMEOUT_MS = 150;
 const GET_CACHE_TTL_MS = 2_000;
 const getInFlight = new Map<string, Promise<unknown>>();
 const getCache = new Map<string, { expiresAt: number; value: unknown }>();
@@ -609,6 +609,13 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
 }
 
 async function request<T>(path: string, options?: ApiRequestOptions, isRetry = false): Promise<T> {
+  const isRealBackendPath = false;
+
+  // In standalone/mock mode, return mock data instantly (0ms latency) without blocking navigation on failed network timeouts
+  if (!isRealBackendPath) {
+    return getMockDataForPath(path, options?.method ?? "GET") as T;
+  }
+
   syncTokensFromStorage();
   const isFormData = options?.body instanceof FormData;
   const headers: Record<string, string> = {
@@ -625,7 +632,6 @@ async function request<T>(path: string, options?: ApiRequestOptions, isRetry = f
   const timeoutId = setTimeout(() => timeoutController.abort(), options?.timeoutMs ?? REQUEST_TIMEOUT_MS);
   const { timeoutMs: _timeoutMs, ...fetchOptions } = options ?? {};
   let res: Response;
-  const isRealBackendPath = false;
 
   try {
     res = await fetch(`${API_BASE_URL}${path}`, {

@@ -342,8 +342,8 @@ export default function MediaLibraryPage() {
     const fetchBackendData = async () => {
       try {
         const [metaRes, itemsRes] = await Promise.all([
-          fetch(`${BACKEND_URL}/api/website/gallery/meta`).catch(() => null),
-          fetch(`${BACKEND_URL}/api/website/gallery/items`).catch(() => null),
+          fetch(`${BACKEND_URL}/api/website/gallery/meta`, { signal: AbortSignal.timeout(100) }).catch(() => null),
+          fetch(`${BACKEND_URL}/api/website/gallery/items`, { signal: AbortSignal.timeout(100) }).catch(() => null),
         ]);
 
         if (metaRes && metaRes.ok) {

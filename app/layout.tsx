@@ -11,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Organic Admin",
-  description: "Admin dashboard for Organic Bharat — bookings, donations, and content management.",
+  title: "arogya Admin",
+  description: "Admin dashboard for arogya Bharat — bookings, donations, and content management.",
 };
 
 export default function RootLayout({

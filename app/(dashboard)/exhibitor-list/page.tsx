@@ -500,14 +500,14 @@ export default function ExhibitorListPage() {
     // Fetch live exhibitors and header from backend API with robust fallback
     const fetchBackendData = async () => {
       try {
-        let itemsRes = await fetch(`${BACKEND_URL}/api/website/participate/exhibitor-list/items`).catch(() => null);
+        let itemsRes = await fetch(`${BACKEND_URL}/api/website/participate/exhibitor-list/items`, { signal: AbortSignal.timeout(150) }).catch(() => null);
         if (!itemsRes || !itemsRes.ok) {
-          itemsRes = await fetch(`/api/website/participate/exhibitor-list/items`).catch(() => null);
+          itemsRes = await fetch(`/api/website/participate/exhibitor-list/items`, { signal: AbortSignal.timeout(150) }).catch(() => null);
         }
 
-        let headerRes = await fetch(`${BACKEND_URL}/api/website/participate/exhibitor-list/header`).catch(() => null);
+        let headerRes = await fetch(`${BACKEND_URL}/api/website/participate/exhibitor-list/header`, { signal: AbortSignal.timeout(150) }).catch(() => null);
         if (!headerRes || !headerRes.ok) {
-          headerRes = await fetch(`/api/website/participate/exhibitor-list/header`).catch(() => null);
+          headerRes = await fetch(`/api/website/participate/exhibitor-list/header`, { signal: AbortSignal.timeout(150) }).catch(() => null);
         }
 
         if (itemsRes && itemsRes.ok) {

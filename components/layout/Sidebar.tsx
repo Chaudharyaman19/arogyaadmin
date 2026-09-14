@@ -163,6 +163,7 @@ export default function Sidebar({
       <Link
         key={item.label}
         href={item.href}
+        prefetch={false}
         onClick={onNavigate}
         className={`
           relative
