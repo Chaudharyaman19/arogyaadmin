@@ -186,8 +186,8 @@ export default function LoginPage() {
     try {
       if (step === "credentials") {
         const dispatchRes = dispatch(loginAdmin({ email, password }));
-        const result = (dispatchRes && typeof (dispatchRes as any).unwrap === "function") 
-          ? await (dispatchRes as any).unwrap() 
+        const result = (dispatchRes && typeof (dispatchRes as any).unwrap === "function")
+          ? await (dispatchRes as any).unwrap()
           : await dispatchRes;
 
         if (result && result.requiresTwoFactor) {
@@ -198,7 +198,7 @@ export default function LoginPage() {
         }
 
         if (result && result.user && result.user.userType !== "INTERNAL") {
-          const msg = "This portal is for Bharat Organic Expo staff accounts only.";
+          const msg = "This portal is for Arogya Sangoshthi Expo staff accounts only.";
           setError(msg);
           showToast("error", msg);
           return;
@@ -460,17 +460,18 @@ export default function LoginPage() {
         <div
           className="
             brand-emblem
-            !h-[170px]
-            !w-[170px]
-            xl:!h-[195px]
-            xl:!w-[195px]
+            !w-[190px]
+            !h-[85px]
+           
+            xl:!w-[270px]
+            xl:!h-[90px]
           "
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
 
           <img
-            src="/bharat-organic-logo.png"
-            alt="Bharat Organic"
+            src="/logo1.webp"
+            alt="Logo"
           />
         </div>
 
@@ -504,8 +505,8 @@ export default function LoginPage() {
         {/* TITLE */}
 
         <h1 style={{ WebkitTextStroke: "none", textShadow: "none", border: "none" }}>
-          <span style={{ color: "#14532d", fontWeight: 600 }}>Bharat</span>{" "}
-          <span style={{ color: "#3A6806", fontWeight: 600 }}>Organic</span>{" "}
+          <span style={{ color: "#14532d", fontWeight: 600 }}>Arogya</span>{" "}
+          <span style={{ color: "#3A6806", fontWeight: 600 }}>Sangoshthi</span>{" "}
           <span style={{ color: "#4B1426", fontWeight: 600 }}>Expo</span>
           <br />
 
@@ -549,8 +550,8 @@ export default function LoginPage() {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/admin.png"
-                alt="Bharat Organic"
+                src="/logo1.webp"
+                alt="Logo"
                 style={{ width: "100%", height: "100%", objectFit: "contain", transform: "scale(2.2)" }}
               />
             </div>

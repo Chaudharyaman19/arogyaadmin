@@ -11,7 +11,7 @@ export const hi: TranslationDictionary = {
       service: "बाजार संपर्क", serviceCopy: "उत्पादकों को सीधे खरीदारों से जोड़ना",
       trust: "विश्वास एवं गुणवत्ता", trustCopy: "सत्यापित मानक और प्रीमियम एक्सपो"
     },
-    secureTitle: "सुरक्षित। गोपनीय। जवाबदेह।", secureCopy: "आपका विश्वास हमारी जिम्मेदारी है।", welcome: "वापसी पर स्वागत है!", continue: "आगे बढ़ने के लिए लॉगिन करें", portalName: "भारत ऑर्गेनिक एक्सपो एडमिन पोर्टल",
+    secureTitle: "सुरक्षित। गोपनीय। जवाबदेह।", secureCopy: "आपका विश्वास हमारी जिम्मेदारी है।", welcome: "वापसी पर स्वागत है!", continue: "आगे बढ़ने के लिए लॉगिन करें", portalName: "आरोग्य संगोष्ठी एक्सपो एडमिन पोर्टल",
     identifier: "ईमेल / मोबाइल / स्टाफ आईडी", identifierPlaceholder: "ईमेल, मोबाइल नंबर या स्टाफ आईडी दर्ज करें", password: "पासवर्ड", passwordPlaceholder: "अपना पासवर्ड दर्ज करें", remember: "मुझे याद रखें", forgot: "पासवर्ड भूल गए?",
     loginSecurely: "सुरक्षित लॉगिन", signingIn: "लॉगिन हो रहा है...", or: "या", otpLogin: "ओटीपी (2FA) से लॉगिन", twoFactorProtected: "दो-चरणीय प्रमाणीकरण (2FA) द्वारा सुरक्षित", authorizedTitle: "केवल अधिकृत प्रवेश।", authorizedCopy: "केवल अधिकृत कर्मचारियों के लिए। सभी गतिविधियां मॉनिटर की जाती हैं।",
     needHelp: "सहायता चाहिए?", contact: "संपर्क करें", itSupport: "आईटी सहायता",
