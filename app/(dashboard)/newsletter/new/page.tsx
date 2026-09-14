@@ -1550,7 +1550,7 @@ export default function AddNewsletterSubscriberPage() {
                 consent to receive
                 newsletters and
                 communications from
-                Moksha Sewa.
+                Arogya Sewa.
               </span>
             </label>
           </section>
@@ -1916,7 +1916,7 @@ export default function AddNewsletterSubscriberPage() {
                       text-[#263B74]
                     "
                   >
-                    support@mokshasewa.org
+                    support@arogyabharat.org
                   </span>
                 </div>
               </div>

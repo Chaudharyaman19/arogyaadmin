@@ -51,12 +51,12 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: "Expo Registrations & Leads",
+    title: "Healthcare & Patient Registrations",
     items: [
-      { label: "Exhibitors & Stand Bookings", href: "/engagement-leads", icon: Building2, badge: "48" },
-      { label: "Buyer Registrations", href: "/forms-submissions", icon: BriefcaseBusiness, badge: "125" },
-      { label: "Visitor Registrations", href: "/requests", icon: Users, badge: "210" },
-      { label: "Sponsorships & Partners", href: "/enquiries?category=csr", icon: Handshake, badge: "36" },
+      { label: "Health Consultations & Bookings", href: "/engagement-leads", icon: Building2, badge: "48" },
+      { label: "Patient Registrations", href: "/forms-submissions", icon: BriefcaseBusiness, badge: "125" },
+      { label: "Visitor & Appointment Leads", href: "/requests", icon: Users, badge: "210" },
+      { label: "Healthcare Partners & Sponsors", href: "/enquiries?category=csr", icon: Handshake, badge: "36" },
       { label: "Newsletter Subscribers", href: "/newsletter", icon: Mail, badge: "342" },
     ],
   },

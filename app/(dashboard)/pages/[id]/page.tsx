@@ -259,7 +259,7 @@ function WebsitePreview() {
       >
         <div className="flex w-[205px] shrink-0 items-center">
           <span className="text-[14px] font-bold tracking-tight text-[#164e2a]">
-            BHARAT ORGANIC EXPO
+            AROGYA EXPO
           </span>
         </div>
 
@@ -359,7 +359,7 @@ function WebsitePreview() {
           >
             <Globe2 className="h-[9px] w-[9px]" />
 
-            India's Premier Organic &amp; Natural Trade Expo
+            India's Premier Arogya Healthcare &amp; Wellness Expo
           </div>
 
           <h2
@@ -374,13 +374,13 @@ function WebsitePreview() {
               text-[#243d2f]
             "
           >
-            Empowering Organic
+            Empowering Healthcare,
             <br />
-            Agriculture &amp; Sustainable
+            AYUSH &amp; Sustainable
             <br />
 
             <span className="text-[#176d44]">
-              Living
+              Wellness
             </span>
           </h2>
 
@@ -394,7 +394,7 @@ function WebsitePreview() {
               text-[#58625f]
             "
           >
-            Bharat Organic Expo brings together organic producers, farmers, global B2B buyers, retailers, and sustainable brands under one roof at Yashobhoomi, New Delhi.
+            Arogya Expo brings together healthcare professionals, AYUSH producers, global B2B buyers, and wellness brands under one roof at Yashobhoomi, New Delhi.
           </p>
 
           <div className="mt-[13px] flex items-center gap-[8px]">
@@ -735,6 +735,7 @@ export default function CmsPageDetailPage() {
 
   const [pages, setPages] = useState(cmsPages);
   const [performance, setPerformance] = useState({ views: 0, visitors: 0, averageSessionSeconds: 0, bounceRate: 0 });
+  const [iframeError, setIframeError] = useState(false);
 
   const page = findCmsPageByRouteKey(pages, params.id) ?? pages[0] ?? cmsPages[0];
 
@@ -931,7 +932,7 @@ export default function CmsPageDetailPage() {
                     )}
                 </div>
 
-                <p className="mt-[7px] text-[10.5px] font-medium text-[#657186]">
+                <p className="mt-[7px] text-[10.5px] font-medium text-[#657186]" suppressHydrationWarning>
                   {PUBLIC_SITE_URL}
                   {page.slug === "/"
                     ? "/"
@@ -950,7 +951,7 @@ export default function CmsPageDetailPage() {
                     Last Updated
                   </p>
 
-                  <p className="mt-[2px] text-[10.5px] font-semibold text-[#5c6575]">
+                  <p className="mt-[2px] text-[10.5px] font-semibold text-[#5c6575]" suppressHydrationWarning>
                     {page.updated}
                   </p>
 
@@ -983,13 +984,18 @@ export default function CmsPageDetailPage() {
                     transformOrigin: "top left",
                   }}
                 >
-                  <iframe
-                    title={`${page.title} live website preview`}
-                    src={`${PUBLIC_SITE_URL}${page.slug === "/" ? "" : page.slug}`}
-                    width={deviceWidthPx}
-                    height="100%"
-                    className="min-h-full border-0 bg-white"
-                  />
+                  {!iframeError ? (
+                    <iframe
+                      title={`${page.title} live website preview`}
+                      src={`${PUBLIC_SITE_URL}${page.slug === "/" ? "" : page.slug}`}
+                      width={deviceWidthPx}
+                      height="100%"
+                      className="min-h-full border-0 bg-white"
+                      onError={() => setIframeError(true)}
+                    />
+                  ) : (
+                    <WebsitePreview />
+                  )}
                 </div>
               </div>
             </div>

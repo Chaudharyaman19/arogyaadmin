@@ -195,8 +195,8 @@ export const dashboardApi = {
           total: 42,
           notIndexed: 0,
           urls: [
-            { url: "https://bharatorganicexpo.com/", indexed: true, coverageState: "Submitted and indexed" },
-            { url: "https://bharatorganicexpo.com/registration/book-a-stand", indexed: true, coverageState: "Submitted and indexed" }
+            { url: "https://arogyabharat.org/", indexed: true, coverageState: "Submitted and indexed" },
+            { url: "https://arogyabharat.org/registration/book-a-stand", indexed: true, coverageState: "Submitted and indexed" }
           ]
         }
       },
@@ -211,7 +211,7 @@ export const dashboardApi = {
           sslExpiresAt: "2027-03-31T00:00:00Z",
           sslIssuer: "Let's Encrypt Authority X3",
           certificateDaysRemaining: 204,
-          finalUrl: "https://bharatorganicexpo.com",
+          finalUrl: "https://arogyabharat.org",
           redirected: false,
           ipAddress: "76.76.21.21",
           securityHeaders: { present: 6, total: 6 },
@@ -250,7 +250,7 @@ export const dashboardApi = {
       indexed: 42,
       total: 42,
       notIndexed: 0,
-      urls: [{ url: "https://bharatorganicexpo.com/", indexed: true }]
+      urls: [{ url: "https://arogyabharat.org/", indexed: true }]
     }
   }),
   siteStatus: async () => ({
@@ -264,7 +264,7 @@ export const dashboardApi = {
       sslExpiresAt: "2027-03-31T00:00:00Z",
       sslIssuer: "Let's Encrypt Authority X3",
       certificateDaysRemaining: 204,
-      finalUrl: "https://bharatorganicexpo.com",
+      finalUrl: "https://arogyabharat.org",
       redirected: false,
       ipAddress: "76.76.21.21",
       securityHeaders: { present: 6, total: 6 },

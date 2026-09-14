@@ -152,7 +152,7 @@ export default function AddNewTestimonialPage() {
   const previewMessage = useMemo(
     () =>
       message.trim() ||
-      "Moksha Sewa stands as a beacon of compassion and dignity. Their support during difficult times is truly commendable. Thank you for bringing humanity back to life.",
+      "Arogya Sewa stands as a beacon of compassion and dignity. Their support during difficult times is truly commendable. Thank you for bringing humanity back to life.",
     [message],
   );
 

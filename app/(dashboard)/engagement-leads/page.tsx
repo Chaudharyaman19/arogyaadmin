@@ -245,7 +245,7 @@ export default function EngagementLeadsOverviewPage() {
               text-[#354675]
             "
           >
-            Track enquiries, stall bookings, B2B buyers and all leads for Bharat Organic Expo.
+            Track enquiries, stall bookings, B2B buyers and all leads for Arogya Expo.
           </p>
         </div>
 

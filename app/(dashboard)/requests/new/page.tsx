@@ -584,7 +584,7 @@ export default function AddNewRequestPage() {
   function saveDraft() {
     try {
       localStorage.setItem(
-        "moksha-add-request-draft",
+        "arogya-add-request-draft",
         JSON.stringify(form)
       );
 

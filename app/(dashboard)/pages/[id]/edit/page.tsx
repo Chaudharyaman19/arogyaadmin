@@ -111,7 +111,7 @@ import Swal from "sweetalert2";
 ========================================================= */
 
 const FEATURED_IMAGE =
-  "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg";
+  "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg";
 
 /* =========================================================
    TYPES
@@ -1035,7 +1035,7 @@ function SectionFieldsEditor({
   if (section.key === "footer" || section.name === "Footer & Social Links") {
     return (
       <div className="flex flex-col gap-4">
-        {/* Description (About Bharat Organic Expo in Footer Left Column) */}
+        {/* Description (About Arogya Expo in Footer Left Column) */}
         <div className="flex flex-col gap-1.5 bg-white p-3 border border-[#e2e8f0] rounded-[6px]">
           <FieldLabel required>Footer Description</FieldLabel>
           <Textarea
@@ -1129,7 +1129,7 @@ function SectionFieldsEditor({
               <TextInput
                 value={String(section.websiteUrl || "")}
                 onChange={(next) => onFieldChange("websiteUrl", next)}
-                placeholder="www.bharatorganicexpo.com"
+                placeholder="www.arogyabharat.org"
                 hideLimit={true}
               />
             </div>
@@ -1168,7 +1168,7 @@ function SectionFieldsEditor({
               <TextInput
                 value={String(section.facebookUrl || "")}
                 onChange={(next) => onFieldChange("facebookUrl", next)}
-                placeholder="https://facebook.com/bharatorganicexpo"
+                placeholder="https://facebook.com/arogyabharat"
                 hideLimit={true}
               />
             </div>
@@ -1177,7 +1177,7 @@ function SectionFieldsEditor({
               <TextInput
                 value={String(section.instagramUrl || "")}
                 onChange={(next) => onFieldChange("instagramUrl", next)}
-                placeholder="https://instagram.com/bharatorganicexpo"
+                placeholder="https://instagram.com/arogyabharat"
                 hideLimit={true}
               />
             </div>
@@ -1195,7 +1195,7 @@ function SectionFieldsEditor({
               <TextInput
                 value={String(section.youtubeUrl || "")}
                 onChange={(next) => onFieldChange("youtubeUrl", next)}
-                placeholder="https://youtube.com/@bharatorganicexpo"
+                placeholder="https://youtube.com/@arogyabharat"
                 hideLimit={true}
               />
             </div>
@@ -1204,7 +1204,7 @@ function SectionFieldsEditor({
               <TextInput
                 value={String(section.linkedinUrl || "")}
                 onChange={(next) => onFieldChange("linkedinUrl", next)}
-                placeholder="https://linkedin.com/company/bharatorganicexpo"
+                placeholder="https://linkedin.com/company/arogyabharat"
                 hideLimit={true}
               />
             </div>
@@ -1952,8 +1952,8 @@ export default function CmsEditPage() {
 
         metaTitle:
           page.type === "home"
-            ? "Bharat Organic Expo – International Trade Fair on Organic Products"
-            : `${page.title} – Bharat Organic Expo`,
+            ? "Arogya Expo – International Trade Fair on Organic Products"
+            : `${page.title} – Arogya Expo`,
 
         metaDescription: page.seo?.metaDescription ?? "",
         metaKeywords: page.seo?.metaKeywords ?? "",
@@ -1961,14 +1961,14 @@ export default function CmsEditPage() {
           page.seo?.canonicalUrl ||
           (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
             ? `http://localhost:3002${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
-            : `https://bharatorganicexpo.com${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`),
+            : `https://arogyabharat.org${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`),
         canonicalTag:
           page.seo?.canonicalTag ||
           `<link rel="canonical" href="${
             page.seo?.canonicalUrl ||
             (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
               ? `http://localhost:3002${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
-              : `https://bharatorganicexpo.com${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`)
+              : `https://arogyabharat.org${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`)
           }" />`,
         openGraphTags: page.seo?.openGraphTags ?? "",
         ogTitle: page.seo?.ogTitle ?? "",
@@ -2055,14 +2055,14 @@ export default function CmsEditPage() {
         page.seo?.canonicalUrl ||
         (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
           ? `http://localhost:3002${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
-          : `https://bharatorganicexpo.com${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`),
+          : `https://arogyabharat.org${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`),
       canonicalTag:
         page.seo?.canonicalTag ||
         `<link rel="canonical" href="${
           page.seo?.canonicalUrl ||
           (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
             ? `http://localhost:3002${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
-            : `https://bharatorganicexpo.com${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`)
+            : `https://arogyabharat.org${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`)
         }" />`,
       openGraphTags: page.seo?.openGraphTags ?? "",
       ogTitle: page.seo?.ogTitle ?? "",
@@ -2092,7 +2092,7 @@ export default function CmsEditPage() {
   useEffect(() => {
     if (canonicalEditorRef.current) {
       const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-      const defaultSiteUrl = isLocal ? "http://localhost:3002" : "https://bharatorganicexpo.com";
+      const defaultSiteUrl = isLocal ? "http://localhost:3002" : "https://arogyabharat.org";
       const pagePath = page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "");
       const defaultTag = `<link rel="canonical" href="${defaultSiteUrl}${pagePath}" />`;
 
@@ -2189,7 +2189,7 @@ export default function CmsEditPage() {
         Swal.fire({
           title: `Auto-Generated for ${envType.toUpperCase()}`,
           text: `Canonical, OG Tags & Schema markup generated for ${
-            envType === "local" ? "http://localhost:3002" : "https://bharatorganicexpo.com"
+            envType === "local" ? "http://localhost:3002" : "https://arogyabharat.org"
           }. You can edit any field manually anytime!`,
           icon: "success",
           timer: 2500,
@@ -2272,7 +2272,7 @@ export default function CmsEditPage() {
         delete merged.items;
         if (!merged.description2) {
           merged.description2 =
-            "Designed to foster business growth, knowledge sharing, innovation, and international collaboration, Bharat Organic Expo serves as the perfect destination for discovering new products, building strategic partnerships, expanding global markets, and promoting a sustainable future.";
+            "Designed to foster business growth, knowledge sharing, innovation, and international collaboration, Arogya Expo serves as the perfect destination for discovering new products, building strategic partnerships, expanding global markets, and promoting a sustainable future.";
         }
         if (!merged.timerTitle) merged.timerTitle = "EVENT BEGINS IN";
         if (!merged.eventDate) merged.eventDate = "2027-02-19T00:00:00";
@@ -2344,7 +2344,7 @@ export default function CmsEditPage() {
         if (!merged.titleMain) merged.titleMain = "Explore Diverse";
         if (!merged.titleHighlight) merged.titleHighlight = "Exhibition Sectors";
         if (!merged.descriptionPrefix) merged.descriptionPrefix = "One Platform. Every Opportunity.";
-        if (!merged.description) merged.description = "Bharat Organic Expo brings together the entire organic ecosystem under one roof. Explore a wide range of sectors driving sustainable living, natural wellness, ethical production and global trade.";
+        if (!merged.description) merged.description = "Arogya Expo brings together the entire organic ecosystem under one roof. Explore a wide range of sectors driving sustainable living, natural wellness, ethical production and global trade.";
         if (!merged.buttonText) merged.buttonText = "VIEW ALL CATEGORIES";
         if (!merged.buttonHref) merged.buttonHref = "/exhibition-categories";
         if (!merged.exploreText) merged.exploreText = "Explore";
@@ -2370,7 +2370,7 @@ export default function CmsEditPage() {
         if (!merged.titleMain) merged.titleMain = "Beyond An";
         if (!merged.titleHighlight) merged.titleHighlight = "Exhibition";
         if (!merged.description) merged.description = "Join India's most powerful ecosystem for the organic industry. From high-impact B2B matchmaking and leadership summits to global networking, we provide everything you need to scale your business.";
-        if (!merged.image) merged.image = "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg";
+        if (!merged.image) merged.image = "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg";
         if (!merged.imageAlt) merged.imageAlt = "Conferences & Seminars";
         if (Array.isArray(merged.items)) {
           merged.items = merged.items.map((it: any) => ({
@@ -2392,7 +2392,7 @@ export default function CmsEditPage() {
         if (!merged.titlePrefix) merged.titlePrefix = "WHY";
         if (!merged.titleHighlight) merged.titleHighlight = "ATTEND?";
         if (!merged.description) merged.description = "Explore innovations, build connections and gain insights that drive better health and stronger businesses.";
-        if (!merged.image) merged.image = "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg";
+        if (!merged.image) merged.image = "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg";
         if (!merged.imageAlt) merged.imageAlt = "Why Attend Expo";
         if (!merged.buttonLabel) merged.buttonLabel = "REGISTER AS VISITOR!";
         if (!merged.buttonHref) merged.buttonHref = "/registration/visitor-registration";
@@ -2426,7 +2426,7 @@ export default function CmsEditPage() {
         delete merged.secondaryImage;
         delete merged.tertiaryImage;
         delete merged.altPhoneNumber;
-        if (!merged.websiteUrl) merged.websiteUrl = "www.bharatorganicexpo.com";
+        if (!merged.websiteUrl) merged.websiteUrl = "www.arogyabharat.org";
         if (merged.description === undefined || merged.description.startsWith("Showcasing certified products")) {
           merged.description =
             "A global platform uniting over 500+ exhibitors from across the organic value chain, showcasing certified products, advanced agritech, sustainable practices, and the rich heritage of traditional wellness. Discover organic living with conferences and B2B opportunities.";
@@ -2450,11 +2450,11 @@ export default function CmsEditPage() {
         if (merged.phoneNumber === undefined) merged.phoneNumber = "+91 96549 00525";
         if (merged.conferenceHelpline === undefined) merged.conferenceHelpline = "+91 98183 53841";
         if (merged.contactEmail === undefined) merged.contactEmail = "info@namogangewellness.com";
-        if (merged.facebookUrl === undefined) merged.facebookUrl = "https://facebook.com/bharatorganicexpo";
+        if (merged.facebookUrl === undefined) merged.facebookUrl = "https://facebook.com/arogyabharat";
         if (merged.twitterUrl === undefined) merged.twitterUrl = "https://twitter.com/bharatorganic";
-        if (merged.linkedinUrl === undefined) merged.linkedinUrl = "https://linkedin.com/company/bharatorganicexpo";
-        if (merged.instagramUrl === undefined) merged.instagramUrl = "https://instagram.com/bharatorganicexpo";
-        if (merged.youtubeUrl === undefined) merged.youtubeUrl = "https://youtube.com/@bharatorganicexpo";
+        if (merged.linkedinUrl === undefined) merged.linkedinUrl = "https://linkedin.com/company/arogyabharat";
+        if (merged.instagramUrl === undefined) merged.instagramUrl = "https://instagram.com/arogyabharat";
+        if (merged.youtubeUrl === undefined) merged.youtubeUrl = "https://youtube.com/@arogyabharat";
         if (!merged.items || merged.items.length === 0) {
           merged.items = [
             { label: "Home", href: "/" },
@@ -2807,7 +2807,7 @@ export default function CmsEditPage() {
       .then((res: any) => {
         const seoData = res?.data?.data || res?.data || res;
         if (seoData) {
-          const defaultSiteUrl = isLocalEnv ? "http://localhost:3002" : "https://bharatorganicexpo.com";
+          const defaultSiteUrl = isLocalEnv ? "http://localhost:3002" : "https://arogyabharat.org";
           const pagePath = page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "");
           const defaultTag = `<link rel="canonical" href="${defaultSiteUrl}${pagePath}" />`;
 
@@ -3316,7 +3316,7 @@ export default function CmsEditPage() {
       // Sync SEO data directly to backend database
       const pageKey = page.slug === "/" ? "home" : (page.slug ? page.slug.replace(/^\//, "") : "home");
       const isLocalHost = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-      const defaultSite = isLocalHost ? "http://localhost:3002" : "https://bharatorganicexpo.com";
+      const defaultSite = isLocalHost ? "http://localhost:3002" : "https://arogyabharat.org";
       const pPath = page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "");
       const defTag = `<link rel="canonical" href="${defaultSite}${pPath}" />`;
 
@@ -4110,7 +4110,7 @@ export default function CmsEditPage() {
                                       const blank = {
                                         title: "NEW HERO SLIDE",
                                         description: "Enter slide description...",
-                                        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg",
+                                        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg",
                                         alt: "Hero Banner Slide",
                                         buttonLabel: "Book Your Stall",
                                         buttonHref: "/registration/book-a-stand",
@@ -4186,7 +4186,7 @@ export default function CmsEditPage() {
                     type="button"
                     onClick={() => autoGenerateSeo("live")}
                     className="px-2.5 py-1.5 bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
-                    title="Auto-generate tags for Live environment (https://bharatorganicexpo.com)"
+                    title="Auto-generate tags for Live environment (https://arogyabharat.org)"
                   >
                     <Globe className="w-3.5 h-3.5 text-green-600" />
                     Auto Generate (Live)
@@ -4339,9 +4339,9 @@ export default function CmsEditPage() {
                         type="button"
                         onClick={() => {
                           const p = page.slug === "/" ? "" : (page.slug?.startsWith("/") ? page.slug : `/${page.slug || ""}`);
-                          const tag = `<link rel="canonical" href="https://bharatorganicexpo.com${p}" />`;
+                          const tag = `<link rel="canonical" href="https://arogyabharat.org${p}" />`;
                           updateField("canonicalTag", tag);
-                          updateField("canonicalUrl", `https://bharatorganicexpo.com${p}`);
+                          updateField("canonicalUrl", `https://arogyabharat.org${p}`);
                           if (canonicalEditorRef.current) canonicalEditorRef.current.innerText = tag;
                         }}
                         className="text-[11px] px-2 py-0.5 bg-green-50 text-green-700 border border-green-200 rounded hover:bg-green-100 cursor-pointer font-medium"

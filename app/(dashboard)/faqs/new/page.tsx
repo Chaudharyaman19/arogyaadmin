@@ -419,7 +419,7 @@ export default function AddNewFAQPage() {
                   <input
                     value={slug}
                     onChange={(event) => setSlug(event.target.value)}
-                    placeholder="Enter URL slug (e.g., what-is-moksha-sewa)"
+                    placeholder="Enter URL slug (e.g., what-is-arogya-sewa)"
                     className="h-[42px] w-full rounded-[6px] border border-[#dfe4e8] bg-white px-[12px] text-[10.5px] font-semibold text-[#2f3d58] outline-none placeholder:text-[#8d97aa]"
                   />
 

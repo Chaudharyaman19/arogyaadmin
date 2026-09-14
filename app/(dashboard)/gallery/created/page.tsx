@@ -342,7 +342,7 @@ export default function UploadNewMediaPage() {
                     className="h-[38px] w-[420px] max-w-full rounded-[7px] border border-[#dfe4ea] bg-white px-[13px] text-[11.5px] font-semibold text-[#24345e] outline-none placeholder:text-[#8b95a9]"
                   />
                   <p className="mt-[6px] text-[10px] font-semibold text-[#75829a]">
-                    Example: moksha-sewa, compassion, seva, support
+                    Example: arogya-sewa, compassion, seva, support
                   </p>
                 </div>
               </div>

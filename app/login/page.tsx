@@ -453,7 +453,7 @@ export default function LoginPage() {
           md:translate-y-10
           xl:translate-y-14
         "
-        aria-label="Moksha Sewa values"
+        aria-label="Arogya Sewa values"
       >
         {/* LOGO */}
 
@@ -470,8 +470,8 @@ export default function LoginPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
 
           <img
-            src="/logo1.webp"
-            alt="Logo"
+            src="/bharat-organic-logo.png"
+            alt="Bharat Organic"
           />
         </div>
 
@@ -550,8 +550,8 @@ export default function LoginPage() {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/logo1.webp"
-                alt="Logo"
+                src="/admin.png"
+                alt="Bharat Organic"
                 style={{ width: "100%", height: "100%", objectFit: "contain", transform: "scale(2.2)" }}
               />
             </div>

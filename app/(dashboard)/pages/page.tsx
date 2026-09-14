@@ -1312,7 +1312,7 @@ export default function PagesCmsPage() {
                   <div className="mt-[8px] rounded-[7px] border border-[#edf0ec] bg-[#fbfcfa] p-[9px]">
                     <p className="truncate text-[10px] font-medium text-[#188038]">{selectedPagePublicUrl}</p>
                     <p className="mt-[3px] line-clamp-2 text-[10px] font-semibold leading-[1.35] text-[#1a0dab]">
-                      {selectedPage.seo?.metaTitle || `${selectedPage.title} | Moksha Sewa`}
+                      {selectedPage.seo?.metaTitle || `${selectedPage.title} | Arogya Sewa`}
                     </p>
                     <p className="mt-[3px] line-clamp-3 text-[10px] font-normal leading-[1.45] text-[#4d5156]">
                       {selectedPage.seo?.metaDescription || "Meta description has not been added for this page yet."}

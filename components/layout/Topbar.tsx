@@ -156,7 +156,7 @@ function currentPageTitle(pathname: string): string {
     }
   }
 
-  return "Bharat Organic Expo Admin";
+  return "Arogya Expo Admin";
 }
 
 /** The nav's own label is one word per module ("Pages & CMS") — too coarse once you're two levels

@@ -5,13 +5,13 @@ export const defaultBlogSections: LandingSectionContent[] = [
     key: "blog-hero",
     name: "BlogHero",
     enabled: true,
-    eyebrow: "BHARAT ORGANIC EXPO",
+    eyebrow: "AROGYA EXPO",
     titlePrimary: "BLOGS &",
     titleSecondary: "NEWS",
     subtitle: "Insights. Innovation. Impact.",
     description: "Stay updated with the latest trends, expert perspectives, innovations and success stories shaping India's organic food, agriculture and sustainable products industry.",
-    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg",
-    imageAlt: "Bharat Organic Expo Blog Banner",
+    image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg",
+    imageAlt: "Arogya Expo Blog Banner",
   },
   {
     key: "blog-featured",
@@ -23,11 +23,11 @@ export const defaultBlogSections: LandingSectionContent[] = [
     items: [
       {
         tag: "Expo News",
-        title: "Bharat Organic Expo 2026: India's Organic Industry Comes Together",
-        description: "Discover the brands, farmers, buyers and innovators bringing India's organic ecosystem together at Bharat Organic Expo 2026.",
+        title: "Arogya Expo 2026: India's Organic Industry Comes Together",
+        description: "Discover the brands, farmers, buyers and innovators bringing India's organic ecosystem together at Arogya Expo 2026.",
         date: "May 8, 2026",
         readTime: "5 min read",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       },
       {
         tag: "Industry Insight",
@@ -35,7 +35,7 @@ export const defaultBlogSections: LandingSectionContent[] = [
         description: "Explore the market trends, consumer demand and business opportunities shaping India's organic food and natural products sector.",
         date: "May 6, 2026",
         readTime: "6 min read",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       },
       {
         tag: "Sustainable Future",
@@ -43,7 +43,7 @@ export const defaultBlogSections: LandingSectionContent[] = [
         description: "Discover regenerative agriculture, natural farming and sustainable practices helping create a healthier agricultural ecosystem.",
         date: "April 30, 2026",
         readTime: "4 min read",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       }
     ],
   },
@@ -55,11 +55,11 @@ export const defaultBlogSections: LandingSectionContent[] = [
     title: "Voices of Experts",
     buttonLabel: "View all experts",
     items: [
-      { name: "Dr. Ramesh Patel", role: "Organic Farming Expert", quote: "Organic agriculture is not just a choice, it's the need of the hour for a sustainable future.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg" },
-      { name: "Ms. Anita Verma", role: "CEO, Organic India", quote: "Consumer awareness and trust are the strongest pillars of the organic movement.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg" },
-      { name: "Mr. Suresh Kumar", role: "Founder, 24 Mantra Organic", quote: "From our farms to your table, organic is our promise for a healthier India.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg" },
-      { name: "Dr. Neha Sharma", role: "Sustainability Expert", quote: "Sustainable living begins with conscious choices we make every day.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg" },
-      { name: "Mr. Arjun Singh", role: "Agri Entrepreneur", quote: "Innovation and collaboration are driving India's organic future forward.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg" },
+      { name: "Dr. Ramesh Patel", role: "Organic Farming Expert", quote: "Organic agriculture is not just a choice, it's the need of the hour for a sustainable future.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg" },
+      { name: "Ms. Anita Verma", role: "CEO, Organic India", quote: "Consumer awareness and trust are the strongest pillars of the organic movement.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg" },
+      { name: "Mr. Suresh Kumar", role: "Founder, 24 Mantra Organic", quote: "From our farms to your table, organic is our promise for a healthier India.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg" },
+      { name: "Dr. Neha Sharma", role: "Sustainability Expert", quote: "Sustainable living begins with conscious choices we make every day.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg" },
+      { name: "Mr. Arjun Singh", role: "Agri Entrepreneur", quote: "Innovation and collaboration are driving India's organic future forward.", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg" },
     ],
   },
   {
@@ -83,17 +83,17 @@ export const defaultBlogSections: LandingSectionContent[] = [
     key: "blog-latest",
     name: "BlogLatest",
     enabled: true,
-    eyebrow: "LATEST FROM BHARAT ORGANIC EXPO",
-    title: "Latest from Bharat Organic Expo",
+    eyebrow: "LATEST FROM AROGYA EXPO",
+    title: "Latest from Arogya Expo",
     buttonLabel: "View all",
     items: [
       {
         tag: "Expo Update",
-        title: "Inside Bharat Organic Expo 2026",
+        title: "Inside Arogya Expo 2026",
         description: "A glimpse into grand launches, leading brands, knowledge sessions and business networking at India's biggest organic expo.",
         date: "May 7, 2026",
         readTime: "3 min read",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       },
       {
         tag: "Business Update",
@@ -101,7 +101,7 @@ export const defaultBlogSections: LandingSectionContent[] = [
         description: "How exhibitors, buyers and partners are creating new markets and long-term growth opportunities.",
         date: "May 5, 2026",
         readTime: "4 min read",
-        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg"
+        image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg"
       }
     ],
   },
@@ -113,9 +113,9 @@ export const defaultBlogSections: LandingSectionContent[] = [
     title: "Video Insights",
     buttonLabel: "View all",
     items: [
-      { title: "The Future of Organic Farming in India", duration: "6:24", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg" },
-      { title: "Inside Bharat Organic Expo", duration: "4:18", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg" },
-      { title: "Organic Brands & Sustainable Innovation", duration: "5:10", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/moksha-sewa/assets/km.jpg" },
+      { title: "The Future of Organic Farming in India", duration: "6:24", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg" },
+      { title: "Inside Arogya Expo", duration: "4:18", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg" },
+      { title: "Organic Brands & Sustainable Innovation", duration: "5:10", image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg" },
     ],
   },
   {

@@ -34,14 +34,14 @@ export default function SystemServiceAccessGate({ onGranted }: Props) {
         setRequirements(next);
         setSelectedUsers({ self: next.requester?.id ?? "" });
         setCodes({ self: "123456" });
-        if (sessionStorage.getItem("moksha_system_services_grant")) {
+        if (sessionStorage.getItem("arogya_system_services_grant")) {
           try {
             const status = await externalServiceApi.accessStatus();
-            sessionStorage.setItem("moksha_system_services_expires_at", status.expiresAt);
+            sessionStorage.setItem("arogya_system_services_expires_at", status.expiresAt);
             if (active) await onGranted(status.expiresAt);
             return;
           } catch {
-            sessionStorage.removeItem("moksha_system_services_grant");
+            sessionStorage.removeItem("arogya_system_services_grant");
           }
         }
       } catch (reason) {
@@ -88,8 +88,8 @@ export default function SystemServiceAccessGate({ onGranted }: Props) {
     setError("");
     try {
       const grant = await externalServiceApi.verifyAccess(approvals);
-      sessionStorage.setItem("moksha_system_services_grant", grant.token);
-      sessionStorage.setItem("moksha_system_services_expires_at", grant.expiresAt);
+      sessionStorage.setItem("arogya_system_services_grant", grant.token);
+      sessionStorage.setItem("arogya_system_services_expires_at", grant.expiresAt);
       await onGranted(grant.expiresAt);
     } catch (reason) {
       setError(errorText(reason));
@@ -110,7 +110,7 @@ export default function SystemServiceAccessGate({ onGranted }: Props) {
         {/* LEFT ASIDE */}
         <aside className="hidden w-full max-w-[300px] justify-self-center self-center rounded-2xl border border-white/60 bg-white/75 p-6 text-center shadow-xl backdrop-blur-md lg:block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/bharat-organic-logo.png" alt="Bharat Organic" className="mx-auto h-[100px] w-[100px] object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]" />
+          <img src="/admin.png" alt="Arogya Bharat" className="mx-auto h-[100px] w-[100px] object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]" />
           <div className="mx-auto mt-4 h-0.5 w-24 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
           <h2 className="mt-3 font-serif text-[22px] font-bold leading-tight tracking-tight text-[#075D3D]">Protected System Records</h2>
           <p className="mx-auto mt-2 max-w-[240px] text-[12px] font-medium leading-relaxed text-[#554331]">Only verified team members can access domain, hosting &amp; infrastructure renewal data.</p>

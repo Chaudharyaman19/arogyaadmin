@@ -875,7 +875,7 @@ export default function DashboardPage() {
     selectedWebsite,
     setSelectedWebsite,
   ] = useState(
-    "mokshasewa.org",
+    "arogyabharat.org",
   );
 
   const [
@@ -903,7 +903,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     try {
-      const stored = window.localStorage.getItem("moksha-dashboard-pagespeed");
+      const stored = window.localStorage.getItem("arogya-dashboard-pagespeed");
       if (stored) setCachedPageSpeed(JSON.parse(stored));
     } catch {
       // Ignore an invalid or unavailable browser cache.
@@ -914,7 +914,7 @@ export default function DashboardPage() {
     const current = liveDashboard?.sources.pageSpeed;
     if (current?.status === "connected" && current.data) {
       setCachedPageSpeed(current.data);
-      window.localStorage.setItem("moksha-dashboard-pagespeed", JSON.stringify(current.data));
+      window.localStorage.setItem("arogya-dashboard-pagespeed", JSON.stringify(current.data));
     }
   }, [liveDashboard?.sources.pageSpeed]);
 
@@ -1864,7 +1864,7 @@ export default function DashboardPage() {
                   website today{" "}
 
                   <b className="font-semibold">
-                    mokshasewa.org
+                    arogyabharat.org
                   </b>
                 </p>
               </div>
@@ -3971,7 +3971,7 @@ export default function DashboardPage() {
             className="pointer-events-none absolute bottom-0 right-0 z-0 h-full w-[370px] bg-no-repeat"
             style={{
               backgroundImage:
-                'url("/assets/footer-moksha-scene.png")',
+                'url("/assets/footer-arogya-scene.png")',
 
               backgroundSize:
                 "370px 64px",

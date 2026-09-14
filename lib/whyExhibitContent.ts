@@ -8,7 +8,7 @@ export const defaultWhyExhibitSections: LandingSectionContent[] = [
     eyebrow: "INDIA'S PREMIER ORGANIC & WELLNESS EVENT",
     titlePrimary: "CONNECT. COLLABORATE.",
     titleSecondary: "CULTIVATE A HEALTHIER TOMORROW.",
-    description: "Bharat Organic Expo brings together global innovators, brands, buyers & experts to promote sustainable living and natural well-being.",
+    description: "Arogya Expo brings together global innovators, brands, buyers & experts to promote sustainable living and natural well-being.",
     buttonLabel: "Book Your Stall",
     buttonHref: "/registration/book-a-stand",
     secondaryButtonLabel: "Download Brochure",
@@ -39,7 +39,7 @@ export const defaultWhyExhibitSections: LandingSectionContent[] = [
     key: "reasons-to-exhibit",
     name: "ReasonsSection",
     enabled: true,
-    title: "Top Reasons to Exhibit at Bharat Organic Expo 2027",
+    title: "Top Reasons to Exhibit at Arogya Expo 2027",
     items: [
       {
         title1: "GLOBAL",
@@ -85,7 +85,7 @@ export const defaultWhyExhibitSections: LandingSectionContent[] = [
     enabled: true,
     title: "Industries We Serve",
     subtitle: "Explore Diverse Exhibition Sectors",
-    description: "One Platform. Every Opportunity. Bharat Organic Expo brings together the entire organic ecosystem under one roof. Explore a wide range of sectors driving sustainable living, natural wellness, ethical production and global trade.",
+    description: "One Platform. Every Opportunity. Arogya Expo brings together the entire organic ecosystem under one roof. Explore a wide range of sectors driving sustainable living, natural wellness, ethical production and global trade.",
     items: [
       {
         title: "Organic Food & Beverages",
@@ -170,7 +170,7 @@ export const defaultWhyExhibitSections: LandingSectionContent[] = [
         companyName1: "Green Earth Organics Pvt. Ltd.",
         companyName2: "Organic Food & Agri",
         location: "Mumbai, India",
-        quote: "Bharat Organic Expo gave us direct access to 500+ qualified buyers in just 3 days. We signed 12 new distribution agreements and expanded our reach to Southeast Asia. A must-attend event for any organic food brand!",
+        quote: "Arogya Expo gave us direct access to 500+ qualified buyers in just 3 days. We signed 12 new distribution agreements and expanded our reach to Southeast Asia. A must-attend event for any organic food brand!",
         initials: "GE",
       },
       {

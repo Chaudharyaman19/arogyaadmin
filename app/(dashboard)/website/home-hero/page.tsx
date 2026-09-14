@@ -163,7 +163,7 @@ export default function HomeHeroPage() {
             name="titlePrimary"
             value={formData.titlePrimary || ""}
             onChange={handleInputChange}
-            placeholder="e.g. Bharat Organic"
+            placeholder="e.g. Arogya Bharat"
           />
           <Input
             label="Secondary Title"
