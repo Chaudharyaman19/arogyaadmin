@@ -452,6 +452,7 @@ export default function LoginPage() {
           login-brand
           md:translate-y-10
           xl:translate-y-14
+          mt-[100px] ml-[30px]
         "
         aria-label="Arogya Sewa values"
       >
@@ -463,8 +464,8 @@ export default function LoginPage() {
             !w-[190px]
             !h-[85px]
            
-            xl:!w-[270px]
-            xl:!h-[90px]
+            xl:!w-[300px]
+            xl:!h-[110px]
           "
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}

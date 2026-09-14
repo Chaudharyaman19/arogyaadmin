@@ -297,8 +297,8 @@ export default function Sidebar({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/admin.png"
-            alt="Arogya Expo Admin"
+            src="/logo1.webp"
+            alt="Logo"
             className="
               h-full
               max-h-[70px]
