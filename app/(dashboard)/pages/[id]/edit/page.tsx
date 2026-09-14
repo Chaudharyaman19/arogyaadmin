@@ -1960,14 +1960,14 @@ export default function CmsEditPage() {
         canonicalUrl:
           page.seo?.canonicalUrl ||
           (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-            ? `http://localhost:3002${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
+            ? `http://localhost:3001${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
             : `https://arogyabharat.org${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`),
         canonicalTag:
           page.seo?.canonicalTag ||
           `<link rel="canonical" href="${
             page.seo?.canonicalUrl ||
             (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-              ? `http://localhost:3002${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
+              ? `http://localhost:3001${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
               : `https://arogyabharat.org${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`)
           }" />`,
         openGraphTags: page.seo?.openGraphTags ?? "",
@@ -2054,14 +2054,14 @@ export default function CmsEditPage() {
       canonicalUrl:
         page.seo?.canonicalUrl ||
         (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-          ? `http://localhost:3002${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
+          ? `http://localhost:3001${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
           : `https://arogyabharat.org${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`),
       canonicalTag:
         page.seo?.canonicalTag ||
         `<link rel="canonical" href="${
           page.seo?.canonicalUrl ||
           (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-            ? `http://localhost:3002${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
+            ? `http://localhost:3001${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
             : `https://arogyabharat.org${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`)
         }" />`,
       openGraphTags: page.seo?.openGraphTags ?? "",
@@ -2092,7 +2092,7 @@ export default function CmsEditPage() {
   useEffect(() => {
     if (canonicalEditorRef.current) {
       const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-      const defaultSiteUrl = isLocal ? "http://localhost:3002" : "https://arogyabharat.org";
+      const defaultSiteUrl = isLocal ? "http://localhost:3001" : "https://arogyabharat.org";
       const pagePath = page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "");
       const defaultTag = `<link rel="canonical" href="${defaultSiteUrl}${pagePath}" />`;
 
@@ -2189,7 +2189,7 @@ export default function CmsEditPage() {
         Swal.fire({
           title: `Auto-Generated for ${envType.toUpperCase()}`,
           text: `Canonical, OG Tags & Schema markup generated for ${
-            envType === "local" ? "http://localhost:3002" : "https://arogyabharat.org"
+            envType === "local" ? "http://localhost:3001" : "https://arogyabharat.org"
           }. You can edit any field manually anytime!`,
           icon: "success",
           timer: 2500,
@@ -2807,7 +2807,7 @@ export default function CmsEditPage() {
       .then((res: any) => {
         const seoData = res?.data?.data || res?.data || res;
         if (seoData) {
-          const defaultSiteUrl = isLocalEnv ? "http://localhost:3002" : "https://arogyabharat.org";
+          const defaultSiteUrl = isLocalEnv ? "http://localhost:3001" : "https://arogyabharat.org";
           const pagePath = page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "");
           const defaultTag = `<link rel="canonical" href="${defaultSiteUrl}${pagePath}" />`;
 
@@ -3316,7 +3316,7 @@ export default function CmsEditPage() {
       // Sync SEO data directly to backend database
       const pageKey = page.slug === "/" ? "home" : (page.slug ? page.slug.replace(/^\//, "") : "home");
       const isLocalHost = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-      const defaultSite = isLocalHost ? "http://localhost:3002" : "https://arogyabharat.org";
+      const defaultSite = isLocalHost ? "http://localhost:3001" : "https://arogyabharat.org";
       const pPath = page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "");
       const defTag = `<link rel="canonical" href="${defaultSite}${pPath}" />`;
 
@@ -4177,7 +4177,7 @@ export default function CmsEditPage() {
                     type="button"
                     onClick={() => autoGenerateSeo("local")}
                     className="px-2.5 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
-                    title="Auto-generate tags for Local environment (http://localhost:3002)"
+                    title="Auto-generate tags for Local environment (http://localhost:3001)"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                     Auto Generate (Local)
@@ -4326,14 +4326,14 @@ export default function CmsEditPage() {
                         type="button"
                         onClick={() => {
                           const p = page.slug === "/" ? "" : (page.slug?.startsWith("/") ? page.slug : `/${page.slug || ""}`);
-                          const tag = `<link rel="canonical" href="http://localhost:3002${p}" />`;
+                          const tag = `<link rel="canonical" href="http://localhost:3001${p}" />`;
                           updateField("canonicalTag", tag);
-                          updateField("canonicalUrl", `http://localhost:3002${p}`);
+                          updateField("canonicalUrl", `http://localhost:3001${p}`);
                           if (canonicalEditorRef.current) canonicalEditorRef.current.innerText = tag;
                         }}
                         className="text-[11px] px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded hover:bg-blue-100 cursor-pointer font-medium"
                       >
-                        Set Local (3002)
+                        Set Local (3001)
                       </button>
                       <button
                         type="button"
