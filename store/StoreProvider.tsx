@@ -20,10 +20,10 @@ export interface RootState {
 
 const initialRootState: RootState = {
   auth: {
-    admin: defaultAdminUser,
-    accessToken: "mock-access-token",
-    refreshToken: "mock-refresh-token",
-    hydrated: true,
+    admin: null,
+    accessToken: null,
+    refreshToken: null,
+    hydrated: false,
   },
   homeHero: {
     data: [],
@@ -43,6 +43,33 @@ const StoreContext = createContext<{
 export default function StoreProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<RootState>(initialRootState);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("ms_admin_auth");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed?.admin && parsed?.accessToken) {
+            setState((prev) => ({
+              ...prev,
+              auth: {
+                admin: parsed.admin,
+                accessToken: parsed.accessToken,
+                refreshToken: parsed.refreshToken || "mock-refresh-token",
+                hydrated: true,
+              },
+            }));
+            return;
+          }
+        }
+      } catch {}
+    }
+    setState((prev) => ({
+      ...prev,
+      auth: { ...prev.auth, hydrated: true },
+    }));
+  }, []);
+
   const dispatch = (action: any) => {
     if (typeof action === "function") {
       const res = action(dispatch, () => state);
@@ -59,19 +86,35 @@ export default function StoreProvider({ children }: { children: React.ReactNode 
       return res;
     }
     if (action?.type === "auth/logout") {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("ms_admin_auth");
+      }
       setState((prev) => ({
         ...prev,
         auth: { ...prev.auth, admin: null, accessToken: null, refreshToken: null },
       }));
     } else if (action?.type === "auth/setCredentials" || action?.type === "auth/updateAdmin") {
       if (action.payload) {
+        const newAdmin = action.payload.admin || action.payload.user || state.auth.admin;
+        const newAccessToken = action.payload.accessToken || state.auth.accessToken || "mock-access-token";
+        const newRefreshToken = action.payload.refreshToken || state.auth.refreshToken || "mock-refresh-token";
+        
+        if (typeof window !== "undefined" && newAdmin && newAccessToken) {
+          localStorage.setItem("ms_admin_auth", JSON.stringify({
+            admin: newAdmin,
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+          }));
+        }
+        
         setState((prev) => ({
           ...prev,
           auth: {
             ...prev.auth,
-            ...(action.payload.admin || action.payload.user ? { admin: action.payload.admin || action.payload.user } : {}),
-            ...(action.payload.accessToken ? { accessToken: action.payload.accessToken } : {}),
-            ...(action.payload.refreshToken ? { refreshToken: action.payload.refreshToken } : {}),
+            admin: newAdmin,
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+            hydrated: true,
           },
         }));
       }

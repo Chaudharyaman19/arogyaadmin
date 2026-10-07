@@ -498,27 +498,27 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
     });
 
     if (result.isConfirmed) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("ms_admin_auth");
+        sessionStorage.clear();
+      }
+      dispatch(logout());
+
       await Swal.fire({
         title: "Logged Out!",
         text: "You have been successfully logged out",
         icon: "success",
-        timer: 1500,
+        timer: 1000,
         showConfirmButton: false,
         background: "#1e2433",
         color: "#e2e8f0",
       });
 
-      if (refreshToken) {
-        await authApi.logout(refreshToken).catch(() => {});
-      }
-
-      dispatch(logout());
-
       if (typeof window !== "undefined") {
-        localStorage.removeItem("ms_admin_auth");
+        window.location.href = "/login";
+      } else {
+        router.replace("/login");
       }
-
-      router.push("/login");
     }
   };
 

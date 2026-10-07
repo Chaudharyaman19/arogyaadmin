@@ -1,49 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import {
-  usePathname,
-  useSearchParams,
-} from "next/navigation";
-
+import { usePathname } from "next/navigation";
 import { Headphones } from "lucide-react";
-
 import {
   NAV_SECTIONS,
   type NavItem,
 } from "./navigation";
 
-function isActive(
-  pathname: string,
-  href?: string,
-  searchParams?: URLSearchParams,
-) {
+function isActive(pathname: string, href?: string) {
   if (!href) return false;
-
-  if (href === "/") {
-    return pathname === "/";
-  }
-
-  const [basePath, query = ""] = href.split("?");
-
-  if (
-    pathname !== basePath &&
-    !pathname.startsWith(`${basePath}/`)
-  ) {
-    return false;
-  }
-
-  if (!query) return true;
-
-  const expected = new URLSearchParams(query);
-
-  for (const [key, value] of expected.entries()) {
-    if (searchParams?.get(key) !== value) {
-      return false;
-    }
-  }
-
-  return true;
+  if (href === "/") return pathname === "/";
+  const [basePath] = href.split("?");
+  return pathname === basePath || pathname.startsWith(`${basePath}/`);
 }
 
 export default function Sidebar({
@@ -52,16 +21,10 @@ export default function Sidebar({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const renderItem = (item: NavItem) => {
     const Icon = item.icon;
-
-    const active = isActive(
-      pathname,
-      item.href,
-      searchParams,
-    );
+    const active = isActive(pathname, item.href);
 
     const content = (
       <>
@@ -163,7 +126,6 @@ export default function Sidebar({
       <Link
         key={item.label}
         href={item.href}
-        prefetch={false}
         onClick={onNavigate}
         className={`
           relative

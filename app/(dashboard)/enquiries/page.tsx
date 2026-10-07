@@ -4,6 +4,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  Suspense,
   type ComponentType,
   type CSSProperties,
   type ReactNode,
@@ -704,7 +705,7 @@ function FilterSelect({
    MAIN PAGE
 ============================================================ */
 
-export default function EnquiriesPage() {
+function EnquiriesContent() {
   const [enquiries, setEnquiries] =
     useState<Enquiry[]>([]);
 
@@ -3281,5 +3282,13 @@ export default function EnquiriesPage() {
         )}
       </Modal>
     </section>
+  );
+}
+
+export default function EnquiriesPage() {
+  return (
+    <Suspense fallback={null}>
+      <EnquiriesContent />
+    </Suspense>
   );
 }
