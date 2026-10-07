@@ -66,36 +66,4 @@ export const BOTTOM_STATS = [
     { value: "B2B + B2C", label: "Business Opportunity" },
 ];
 
-export const defaultExhibitorsSections: LandingSectionContent[] = [
-  {
-    key: "exhibitors-hero",
-    name: "HeroSection",
-    enabled: true,
-    title: "Meet Leading Exhibitors at Arogya Expo",
-    subtitle: "Explore 200+ Verified Organic, Ayurveda, AgriTech & Sustainable Brands",
-    description: "Browse our exhibitors across Organic Food, AYUSH, Natural Care, AgriTech, Bio-Inputs, and Sustainable Solutions.",
-    items: HERO_STATS.map((s) => ({ value: s.value, label: s.label })),
-  },
-  {
-    key: "exhibitors-list",
-    name: "ExhibitorsListSection",
-    enabled: true,
-    title: "Exhibitors Directory",
-    subtitle: "Browse All Participating Brands",
-    items: fallbackExhibitors.map((ex) => ({
-      _id: ex._id,
-      title: ex.title,
-      location: ex.location,
-      category: ex.category,
-      order: ex.order,
-      websiteUrl: ex.websiteUrl || "",
-    })),
-  },
-  {
-    key: "exhibitors-bottom-stats",
-    name: "BottomStatsSection",
-    enabled: true,
-    title: "EXPO HIGHLIGHTS",
-    items: BOTTOM_STATS.map((s) => ({ value: s.value, label: s.label })),
-  },
-];
+export const defaultExhibitorsSections: LandingSectionContent[] = [];

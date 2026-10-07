@@ -30,7 +30,7 @@ import {
   UserRoundPlus,
 } from "lucide-react";
 
-import { FaWhatsapp } from "react-icons/fa";
+import { WhatsAppIcon } from "@/components/icons/BrandIcons";
 
 /* ============================================================
    STATS DATA
@@ -63,7 +63,7 @@ const stats = [
     change: "20.5%",
     compare: "vs Apr 2026",
     direction: "up",
-    icon: FaWhatsapp,
+    icon: WhatsAppIcon,
     iconBg: "#E6F7EB",
     iconColor: "#15994D",
   },
@@ -244,7 +244,7 @@ const channelStats = [
     label: "WhatsApp",
     value: "188 (33.5%)",
     width: 33.5,
-    icon: FaWhatsapp,
+    icon: WhatsAppIcon,
     bg: "#E8F7EA",
     iconColor: "#21964D",
     barColor: "#47A469",
@@ -1250,7 +1250,7 @@ export default function CommunicationsFollowUps() {
                                   hover:bg-[#D2EED8]
                                 "
                               >
-                                <FaWhatsapp size={8} />
+                                <WhatsAppIcon size={8} />
                               </a>
 
                               <span
@@ -1294,7 +1294,7 @@ export default function CommunicationsFollowUps() {
                             )}
 
                             {row.channel === "WhatsApp" && (
-                              <FaWhatsapp size={10} />
+                              <WhatsAppIcon size={10} />
                             )}
 
                             {row.channel === "Call" && (

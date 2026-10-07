@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Plus, Copy, Check, Pencil, Camera, Loader2, PowerOff, Power, Trash2, ExternalLink, User, ChevronLeft, ChevronRight } from "lucide-react";
-import Swal from "sweetalert2";
+import { showSuccess, showError, showInfo, lazySwal } from "@/lib/toast";
 import typography from "../pages/PagesTypography.module.css";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
@@ -23,34 +23,6 @@ const STATUS_TONE: Record<StaffStatus, "success" | "neutral" | "danger"> = {
   INACTIVE: "neutral",
   LOCKED: "danger",
 };
-
-// SweetAlert2 theme matching admin portal dark style
-const Toast = Swal.mixin({
-  toast: true,
-  position: "top-end",
-  showConfirmButton: false,
-  timer: 3500,
-  timerProgressBar: true,
-  background: "#1e2433",
-  color: "#e2e8f0",
-  iconColor: "#4ade80",
-  customClass: {
-    popup: "swal-toast-popup",
-    title: "swal-toast-title",
-  },
-});
-
-function showSuccess(message: string) {
-  Toast.fire({ icon: "success", title: message });
-}
-
-function showError(message: string) {
-  Toast.fire({ icon: "error", title: message, iconColor: "#f87171" });
-}
-
-function showInfo(message: string) {
-  Toast.fire({ icon: "info", title: message, iconColor: "#60a5fa" });
-}
 
 export default function StaffPage() {
   const dispatch = useAppDispatch();
@@ -188,7 +160,7 @@ export default function StaffPage() {
     const label = newStatus === "LOCKED" ? "DEACTIVATED" : newStatus;
     const action = newStatus === "ACTIVE" ? "Activate" : newStatus === "LOCKED" ? "Deactivate" : "Mark as Inactive";
 
-    const confirm = await Swal.fire({
+    const confirm = await lazySwal.fire({
       title: `${action} Account?`,
       html: `<p style="color:#e2e8f0;font-size:0.9rem;">Are you sure you want to <strong>${action.toLowerCase()}</strong> <strong>${member.name}</strong>'s account?</p>`,
       icon: "warning",
@@ -223,7 +195,7 @@ export default function StaffPage() {
   };
 
   const handleDelete = async (member: StaffMember) => {
-    const result = await Swal.fire({
+    const result = await lazySwal.fire({
       title: "Delete Account?",
       html: `<p style="color:#e2e8f0;font-size:0.9rem;">This will permanently delete <strong>${member.name}</strong>'s account.<br/>This action cannot be undone.</p>`,
       icon: "error",

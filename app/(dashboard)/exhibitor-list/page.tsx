@@ -36,22 +36,10 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import Swal from "sweetalert2";
+import { createToast, lazySwal } from "@/lib/toast";
 
 // SweetAlert2 theme matching admin portal dark style
-const Toast = Swal.mixin({
-  toast: true,
-  position: "top-end",
-  showConfirmButton: false,
-  timer: 3500,
-  timerProgressBar: true,
-  background: "#1e2433",
-  color: "#e2e8f0",
-  iconColor: "#4ade80",
-  customClass: {
-    popup: "swal-toast-popup",
-    title: "swal-toast-title",
-  },
+const Toast = createToast({
   didOpen: (toast) => {
     toast.style.boxShadow = "none";
     (toast.style as any).webkitBoxShadow = "none";
@@ -911,7 +899,7 @@ export default function ExhibitorListPage() {
 
   // Delete Exhibitor (SweetAlert2 Yes / No Confirmation)
   const handleDelete = async (item: ExhibitorItem) => {
-    const result = await Swal.fire({
+    const result = await lazySwal.fire({
       title: "Delete Exhibitor?",
       html: `<p style="color:#e2e8f0;font-size:0.9rem;">Are you sure you want to remove <strong>${item.name || "this exhibitor"}</strong> from the directory?<br/>This action cannot be undone.</p>`,
       icon: "warning",

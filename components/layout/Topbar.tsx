@@ -3,8 +3,7 @@
 import { useCallback, useEffect, useState, type ComponentType } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
-import { FaUserAstronaut } from "react-icons/fa";
+import { AstronautIcon } from "@/components/icons/BrandIcons";
 import {
   Menu,
   X,
@@ -47,9 +46,8 @@ import {
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { authApi } from "@/lib/authApi";
-import Swal from "sweetalert2";
+import { getSwal } from "@/lib/swal";
 import { casesApi, SlaBreach } from "@/lib/casesApi";
 import {
   adminNotificationsApi,
@@ -72,6 +70,13 @@ import Button from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
 const EXPIRY_POPUP_DISMISS_KEY = "ms_admin_expiry_popup_dismissed_on";
+
+// 3.5MB lottie runtime — defer until the avatar actually needs it so the
+// dashboard shell never waits on it during navigation.
+const AvatarLottie = dynamic(
+  () => import("@lottiefiles/dotlottie-react").then((mod) => mod.DotLottieReact),
+  { ssr: false, loading: () => null }
+);
 
 /** A service is "urgent" once it is expired or inside its last two weeks. */
 const URGENT_DAYS = 14;
@@ -481,6 +486,8 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
   const handleLogout = async () => {
     setMenuOpen(false);
 
+    const Swal = await getSwal();
+
     const result = await Swal.fire({
       title: "Logout?",
       text: "You will be logged out from admin panel",
@@ -581,11 +588,8 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
 
           {/* GREETING BADGE (DASHBOARD ONLY) */}
           {isDashboard && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="flex items-center gap-2.5 bg-slate-50/80 px-3 py-1 rounded-xl border border-[#23471d]/25 group transition-all duration-300 hover:bg-white hover:border-[#23471d]/50 shadow-xs"
+            <div
+              className="topbar-enter flex items-center gap-2.5 bg-slate-50/80 px-3 py-1 rounded-xl border border-[#23471d]/25 group transition-all duration-300 hover:bg-white hover:border-[#23471d]/50 shadow-xs"
             >
               {/* Icon Circle */}
               <div className="flex items-center justify-center w-7 h-7 rounded-full bg-white border border-slate-100 shadow-xs">
@@ -613,7 +617,7 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                   </span>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
 
           {/* SEARCH BOX */}
@@ -640,14 +644,12 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
               <HelpCircle size={18} className="text-[#23471d]" />
             </button>
             {activeTitle === "help" && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="whitespace-nowrap absolute top-12 right-0 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg z-50"
+              <div
+                className="topbar-fade whitespace-nowrap absolute top-12 right-0 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg z-50"
               >
                 Help &amp; Support
                 <div className="absolute -top-1 right-2 w-2 h-2 bg-slate-900 rotate-45" />
-              </motion.div>
+              </div>
             )}
           </div>
 
@@ -665,14 +667,12 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
               <BellRing size={18} className="text-[#23471d]" />
             </button>
             {activeTitle === "reminder" && !expiringOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="whitespace-nowrap absolute top-12 right-0 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg z-50"
+              <div
+                className="topbar-fade whitespace-nowrap absolute top-12 right-0 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg z-50"
               >
                 Reminder List
                 <div className="absolute -top-1 right-2 w-2 h-2 bg-slate-900 rotate-45" />
-              </motion.div>
+              </div>
             )}
           </div>
 
@@ -688,13 +688,11 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
               title="Notifications"
             >
               <Bell size={18} className="text-[#23471d]" />
-              <motion.span
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-rose-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-semibold shadow-lg"
+              <span
+                className="topbar-badge-throb absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-rose-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-semibold shadow-lg"
               >
                 {bellBadgeCount > 9 ? "9+" : bellBadgeCount || 3}
-              </motion.span>
+              </span>
             </button>
 
             {notifOpen && (
@@ -817,7 +815,7 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <DotLottieReact
+                    <AvatarLottie
                       src="/avatar-lottie.lottie"
                       loop
                       autoplay
@@ -859,11 +857,8 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                   onClick={() => setMenuOpen(false)}
                 />
 
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="whitespace-nowrap absolute right-0 top-full mt-2 w-52 bg-white border border-slate-200 shadow-2xl rounded-xl overflow-hidden z-50"
+                <div
+                  className="topbar-pop whitespace-nowrap absolute right-0 top-full mt-2 w-52 bg-white border border-slate-200 shadow-2xl rounded-xl overflow-hidden z-50"
                 >
                   {/* Header */}
                   <div className="px-4 py-3 bg-gradient-to-r from-slate-50 to-white border-b border-slate-200">
@@ -880,7 +875,7 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                     }}
                     className="flex items-center gap-3 w-full px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 transition-colors duration-150"
                   >
-                    <FaUserAstronaut size={14} className="text-blue-600" />
+                    <AstronautIcon size={14} className="text-blue-600" />
                     <span className="font-medium">Manage Admin Users</span>
                   </button>
 
@@ -911,7 +906,7 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                     <LogOut size={14} />
                     <span className="font-semibold">Logout</span>
                   </button>
-                </motion.div>
+                </div>
               </>
             )}
           </div>

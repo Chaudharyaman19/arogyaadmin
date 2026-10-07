@@ -255,29 +255,51 @@ export default function PagesCmsPage() {
   const [pageSpeedError, setPageSpeedError] = useState<string | null>(null);
 
   const [selectedPageValue, setSelectedPage] = useState<CmsPage | null>(null);
-  const selectedPage = selectedPageValue ?? pages[0] ?? cmsPages[0];
+  const selectedPage = selectedPageValue ?? pages[0] ?? cmsPages[0] ?? null;
   const loggedInAdminName = admin?.name?.trim() || "Admin User";
 
   const [rawSettings, setRawSettings] = useState<Record<string, any> | null>(null);
 
   const [toastMessage, setToastMessage] = useState<{ title: string; type: "success" | "error" } | null>(null);
 
-  const handleToggleStatus = (isActive: boolean) => {
+  const handleToggleStatus = async (isActive: boolean) => {
+    if (!selectedPage || !selectedPage.configKey || !rawSettings) return;
     const newStatus = isActive ? "Published" : "Draft";
+    
+    // Update local state for immediate feedback
     setPages((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, status: newStatus } : p)));
-    setSelectedPage((prev: CmsPage | null) => prev ? { ...prev, status: newStatus } : { ...selectedPage, status: newStatus });
+    setSelectedPage((prev: CmsPage | null) => (prev ? { ...prev, status: newStatus } : null));
 
-    if (isActive) {
+    try {
+      const pageConfig = rawSettings[selectedPage.configKey] || {};
+      const updatedPageConfig = { ...pageConfig, enabled: isActive };
+      const newSettings = { ...rawSettings, [selectedPage.configKey]: updatedPageConfig };
+      
+      setRawSettings(newSettings);
+      await settingsApi.update({ [selectedPage.configKey]: updatedPageConfig });
+
+      if (isActive) {
+        setToastMessage({
+          title: "Success! The page has been published and is now live.",
+          type: "success"
+        });
+      } else {
+        setToastMessage({
+          title: "Notice: The page has been unpublished and moved to drafts.",
+          type: "error"
+        });
+      }
+    } catch (error) {
+      console.error("Failed to update page status:", error);
+      // Revert on failure
+      setPages((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, status: isActive ? "Draft" : "Published" } : p)));
+      setSelectedPage((prev: CmsPage | null) => (prev ? { ...prev, status: isActive ? "Draft" : "Published" } : null));
       setToastMessage({
-        title: "Success! The page has been published and is now live.",
-        type: "success"
-      });
-    } else {
-      setToastMessage({
-        title: "Notice: The page has been unpublished and moved to drafts.",
+        title: "Error: Failed to save changes.",
         type: "error"
       });
     }
+
     setTimeout(() => setToastMessage(null), 4000);
   };
 
@@ -321,18 +343,20 @@ export default function PagesCmsPage() {
     return () => { active = false; };
   }, []);
 
-  const selectedPageConfig = selectedPage.configKey && rawSettings ? rawSettings[selectedPage.configKey] : undefined;
+  const selectedPageConfig = selectedPage?.configKey && rawSettings ? rawSettings[selectedPage.configKey] : undefined;
 
-  const selectedPageIsPublished = selectedPage.status === "Published";
+  const selectedPageIsPublished = selectedPage?.status === "Published";
   const selectedPageIsActive =
     selectedPageIsPublished && selectedPageConfig?.enabled !== false;
 
-  const selectedPagePublicUrl = `${PUBLIC_SITE_URL.replace(/\/+$/, "")}${selectedPage.slug === "/"
-    ? "/"
-    : selectedPage.slug.startsWith("/")
-      ? selectedPage.slug
-      : `/${selectedPage.slug}`
-    }`;
+  const selectedPagePublicUrl = selectedPage
+    ? `${PUBLIC_SITE_URL.replace(/\/+$/, "")}${selectedPage.slug === "/"
+        ? "/"
+        : selectedPage.slug.startsWith("/")
+          ? selectedPage.slug
+          : `/${selectedPage.slug}`
+        }`
+    : PUBLIC_SITE_URL;
 
   const runPageSpeedTest = async () => {
     setIsFetchingPageSpeed(true);
@@ -798,7 +822,7 @@ export default function PagesCmsPage() {
               <div className="min-h-0 flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-[2px]">
                 {paginatedPages.map((page) => {
                   const selected =
-                    selectedPage.id === page.id;
+                    selectedPage?.id === page.id;
 
                   return (
                     <div

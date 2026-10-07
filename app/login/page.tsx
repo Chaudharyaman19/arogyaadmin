@@ -31,7 +31,7 @@ import { ApiRequestError } from "@/lib/api";
 import { Input } from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import Swal from "sweetalert2";
+import { createToast, lazySwal } from "@/lib/toast";
 
 type Step =
   | "credentials"
@@ -41,6 +41,12 @@ type Step =
   | "forgot-password"
   | "forgot-password-sent"
   | "reset-password";
+
+/* SweetAlert2 Toast — lazily loaded so sweetalert2 stays out of the entry bundle */
+const Toast = createToast({
+  timerProgressBar: false,
+  customClass: undefined,
+});
 
 export default function LoginPage() {
   const router = useRouter();
@@ -155,17 +161,6 @@ export default function LoginPage() {
     dispatch,
   ]);
 
-  /* SweetAlert2 Toast */
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3500,
-    timerProgressBar: true,
-    background: "#1e2433",
-    color: "#e2e8f0",
-  });
-
   const showToast = (icon: "success" | "error" | "info" | "warning", title: string) => {
     Toast.fire({
       icon,
@@ -220,7 +215,7 @@ export default function LoginPage() {
           setProvisioningUri(setup.provisioningUri);
           setStep("2fa-setup");
 
-          Swal.fire({
+          lazySwal.fire({
             title: "Setup Two-Factor Authentication",
             text: "Scan the QR code with Microsoft Authenticator to secure your account.",
             icon: "info",
@@ -297,7 +292,7 @@ export default function LoginPage() {
       if (err instanceof ApiRequestError && err.status === 429) {
         const lockMsg = "Account temporarily locked. Too many failed login attempts. Please try again in 15 minutes.";
         setError(lockMsg);
-        Swal.fire({
+        lazySwal.fire({
           title: "🔒 Account Locked",
           html: `<p style="font-size:0.95rem;">Too many incorrect password attempts.<br/><br/>Your account has been <strong style="color:#ef4444;">temporarily deactivated</strong> for <strong>15 minutes</strong>.<br/><br/>Please wait and try again later.</p>`,
           icon: "error",
@@ -330,7 +325,7 @@ export default function LoginPage() {
       setBackupCodes(result.backupCodes);
       setStep("backup-codes");
 
-      Swal.fire({
+      lazySwal.fire({
         title: "2FA Activated Successfully!",
         text: "Microsoft Authenticator is now linked to your account. Please save your backup codes.",
         icon: "success",

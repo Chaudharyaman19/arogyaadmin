@@ -34,7 +34,8 @@ export interface CmsPage {
     isActive?: boolean;
   };
 }
-export function getCmsPageRouteKey(page: Pick<CmsPage, "title">): string {
+export function getCmsPageRouteKey(page?: Pick<CmsPage, "title"> | null): string {
+  if (!page || !page.title) return "";
   return page.title
     .toLowerCase()
     .trim()
@@ -76,26 +77,15 @@ type SettingsPageConfig = {
     isActive?: boolean;
   };
   sections?: Array<{ enabled?: boolean }>;
+  enabled?: boolean;
 };
 
-const pageDefinitions = [
+const defaultPageDefinitions: readonly [string, string, string, PageType][] = [
   ["landingPage", "Home", "/", "home"],
-  ["aboutPage", "About Arogya", "/about", "page"],
-  ["speakersPage", "Keynote Speakers & Experts", "/speakers", "page"],
-  ["registerNowPage", "Register Now (Hub)", "/register-now", "page"],
-  ["delegateRegistrationPage", "Delegate Registration", "/delegate-registration", "page"],
-  ["singleRegistrationPage", "Single Delegate Registration", "/new-single-registration", "page"],
-  ["groupRegistrationPage", "Group Delegate Registration", "/new-group-registration", "page"],
-  ["paperPresentationPage", "Paper Presentation", "/paper-presentation", "page"],
-  ["galleryPage", "Glimpses & Gallery", "/gallery", "page"],
-  ["partnersPage", "Partners & Collaborators", "/partners", "page"],
-  ["blogPage", "Blogs & News", "/blogs", "page"],
+  ["aboutPage", "About Us", "/about", "page"],
+  ["servicesPage", "Services", "/services", "page"],
   ["contactPage", "Contact Us", "/contact", "page"],
-  ["verifyDelegatePage", "Verify Delegate Registration", "/verify-delegate", "page"],
-  ["delegateProfilePage", "Delegate Profile", "/delegate-profile", "page"],
-  ["paymentReceiptPage", "Payment Receipt", "/payment-receipt", "page"],
-  ["userLoginPage", "User / Delegate Login", "/login", "page"],
-] as const;
+];
 
 function seoScore(config: SettingsPageConfig): number {
   const seo = config.seo ?? {};
@@ -113,12 +103,31 @@ function seoScore(config: SettingsPageConfig): number {
 
 export function cmsPagesFromSettings(settings: Record<string, unknown>): CmsPage[] {
   const updatedAt = typeof settings.updatedAt === "string" ? new Date(settings.updatedAt) : new Date("2026-09-14T10:00:00.000Z");
-  return pageDefinitions.map(([key, title, slug, type], index) => {
+  const knownKeys = new Set(defaultPageDefinitions.map(([k]) => k));
+  const dynamicDefinitions: [string, string, string, PageType][] = [];
+
+  if (settings && typeof settings === "object") {
+    Object.keys(settings).forEach((key) => {
+      if ((key.endsWith("Page") || key.endsWith("page")) && !knownKeys.has(key)) {
+        const rawName = key.replace(/page$/i, "");
+        const title = rawName.charAt(0).toUpperCase() + rawName.slice(1).replace(/([A-Z])/g, " $1");
+        const slug = `/${rawName.toLowerCase()}`;
+        dynamicDefinitions.push([key, title, slug, "page"]);
+      }
+    });
+  }
+
+  const allDefinitions = [...defaultPageDefinitions, ...dynamicDefinitions];
+
+  return allDefinitions.map(([key, title, slug, type], index) => {
     const config = (settings[key] as SettingsPageConfig | undefined) ?? {};
     const score = seoScore(config);
-    const status: PageStatus = config.sections && config.sections.length > 0
-      ? (config.sections.some((section) => section.enabled !== false) ? "Published" : "Draft")
-      : "Published";
+    let status: PageStatus = "Published";
+    if (config.enabled !== undefined) {
+      status = config.enabled ? "Published" : "Draft";
+    } else if (config.sections && config.sections.length > 0) {
+      status = config.sections.some((section) => section.enabled !== false) ? "Published" : "Draft";
+    }
     return {
       id: index + 1,
       configKey: key,
@@ -137,10 +146,11 @@ export function cmsPagesFromSettings(settings: Record<string, unknown>): CmsPage
 }
 
 export function getCmsPageDefinition(id: number) {
-  const definition = pageDefinitions[id - 1];
+  const definition = defaultPageDefinitions[id - 1];
   if (!definition) return null;
   const [configKey, title, slug, type] = definition;
   return { configKey, title, slug, type };
 }
 
 export const cmsPages: CmsPage[] = cmsPagesFromSettings({});
+

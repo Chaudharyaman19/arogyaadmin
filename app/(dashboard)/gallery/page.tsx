@@ -42,22 +42,10 @@ import {
   Video,
   X,
 } from "lucide-react";
-import Swal from "sweetalert2";
+import { createToast, lazySwal } from "@/lib/toast";
 
 // SweetAlert2 theme matching admin portal dark style with zero shadow
-const Toast = Swal.mixin({
-  toast: true,
-  position: "top-end",
-  showConfirmButton: false,
-  timer: 3500,
-  timerProgressBar: true,
-  background: "#1e2433",
-  color: "#e2e8f0",
-  iconColor: "#4ade80",
-  customClass: {
-    popup: "swal-toast-popup",
-    title: "swal-toast-title",
-  },
+const Toast = createToast({
   didOpen: (toast) => {
     toast.style.boxShadow = "none";
     (toast.style as any).webkitBoxShadow = "none";
@@ -673,7 +661,7 @@ export default function MediaLibraryPage() {
 
   // Delete media item
   const handleDelete = async (item: MediaItem) => {
-    const confirm = await Swal.fire({
+    const confirm = await lazySwal.fire({
       title: `Delete "${item.title}"?`,
       text: "This photo asset will be removed from the Media Library.",
       icon: "warning",

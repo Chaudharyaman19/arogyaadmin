@@ -19,7 +19,7 @@ import {
   Settings,
   Shield,
 } from "lucide-react";
-import Swal from "sweetalert2";
+import { showSuccess, showError, lazySwal } from "@/lib/toast";
 import typography from "../pages/PagesTypography.module.css";
 import Modal from "@/components/ui/Modal";
 import { Input, Select } from "@/components/ui/Input";
@@ -43,30 +43,6 @@ const MODULE_ICONS: Record<string, typeof Building2> = {
   "Enquiries & Leads": Mail,
   "System & Settings": Settings,
 };
-
-// SweetAlert2 theme matching admin portal dark style
-const Toast = Swal.mixin({
-  toast: true,
-  position: "top-end",
-  showConfirmButton: false,
-  timer: 3500,
-  timerProgressBar: true,
-  background: "#1e2433",
-  color: "#e2e8f0",
-  iconColor: "#4ade80",
-  customClass: {
-    popup: "swal-toast-popup",
-    title: "swal-toast-title",
-  },
-});
-
-function showSuccess(message: string) {
-  Toast.fire({ icon: "success", title: message });
-}
-
-function showError(message: string) {
-  Toast.fire({ icon: "error", title: message, iconColor: "#f87171" });
-}
 
 export default function RolesPage() {
   const [roles, setRoles] = useState<Role[]>([]);
@@ -232,7 +208,7 @@ export default function RolesPage() {
       return;
     }
 
-    const confirmResult = await Swal.fire({
+    const confirmResult = await lazySwal.fire({
       title: `Delete "${role.name}"?`,
       text: "This role will be permanently removed. Staff members assigned to this role should be reassigned.",
       icon: "warning",
