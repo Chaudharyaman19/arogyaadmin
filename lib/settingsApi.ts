@@ -1,20 +1,20 @@
 import { Settings } from "./types";
 import { api } from "./api";
 
-const SETTINGS_KEY = "bharat_organic_admin_settings_v3";
+const SETTINGS_KEY = "arogya_admin_settings_v1";
 
 const defaultMockSettings: Settings = {
-  websiteName: "Arogya Bharat Portal 2027",
+  websiteName: "Arogya Expo Portal 2027",
   fullPaymentDiscount: 5,
   currency: "INR",
-  contactEmail: "info@arogyabharat.org",
+  contactEmail: "info@namogangewellness.com",
   contactPhone: "+91 9654900525"
 } as any;
 
 export const settingsApi = {
   get: async (): Promise<Settings> => {
     try {
-      const res: any = await api.get("/settings?website=Organicexpo");
+      const res: any = await api.get("/settings?website=Arogya");
       const backendData = res?.data || res || {};
       if (backendData && Object.keys(backendData).length > 0) {
         if (typeof window !== "undefined") {
@@ -54,7 +54,7 @@ export const settingsApi = {
     const updated = { ...current, ...payload };
 
     try {
-      const res: any = await api.put("/settings?website=Organicexpo", updated);
+      const res: any = await api.put("/settings?website=Arogya", updated);
       const saved = res?.data || res || updated;
       if (typeof window !== "undefined") {
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(saved));

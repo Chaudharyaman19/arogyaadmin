@@ -11,7 +11,7 @@ export type LoginResult = {
 const defaultMockAdmin: AdminUser = {
   id: "admin_101",
   name: "Admin User",
-  email: "admin@bharatorganic.com",
+  email: "admin@arogya.namogange.org",
   phone: "+91 9876543210",
   userType: "INTERNAL",
   roleSlug: "SUPER_ADMIN",
@@ -78,7 +78,7 @@ export const authApi = {
     if (res && (res.secret || res.manualKey)) {
       return {
         secret: res.secret || res.manualKey,
-        provisioningUri: res.provisioningUri || res.otpauthUrl || `otpauth://totp/BharatOrganic:${res.secret}?secret=${res.secret}&issuer=BharatOrganicExpo`,
+        provisioningUri: res.provisioningUri || res.otpauthUrl || `otpauth://totp/ArogyaExpo:${res.secret}?secret=${res.secret}&issuer=ArogyaExpo`,
         qrCodeUrl: res.qrCode,
       };
     }

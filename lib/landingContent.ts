@@ -193,7 +193,45 @@ export interface LandingSectionContent {
   [key: string]: any;
 }
 
-export const defaultLandingSections: LandingSectionContent[] = [];
+import { topbarSection } from "./landing/topbar";
+import { navbarSection } from "./landing/navbar";
+import { heroSection } from "./landing/hero";
+import { audienceStripSection } from "./landing/audienceStrip";
+import { introductionSection } from "./landing/introductionSection";
+import { globalPlatformSection } from "./landing/globalPlatform";
+import { whyParticipateSection } from "./landing/whyParticipate";
+import { conferenceSection } from "./landing/conferenceSection";
+import { expoCategoriesSection } from "./landing/expoCategories";
+import { beyondExhibitionSection } from "./landing/beyondExhibition";
+import { sponsorsAndAttendSection } from "./landing/sponsorsAndAttend";
+import { becomeSponsorSection } from "./landing/becomeSponsor";
+import { sponsorshipCategoriesSection } from "./landing/sponsorshipCategories";
+import { partnersAndBrandsSection } from "./landing/partnersAndBrands";
+import { buyerSellerMeetSection } from "./landing/buyerSellerMeet";
+import { testimonialsCarouselSection } from "./landing/testimonialsCarousel";
+import { latestInsightsSection } from "./landing/latestInsights";
+import { footerSection } from "./landing/footer";
+
+export const defaultLandingSections: LandingSectionContent[] = [
+  topbarSection,
+  navbarSection,
+  heroSection,
+  audienceStripSection,
+  introductionSection,
+  globalPlatformSection,
+  whyParticipateSection,
+  conferenceSection,
+  expoCategoriesSection,
+  beyondExhibitionSection,
+  sponsorsAndAttendSection,
+  becomeSponsorSection,
+  sponsorshipCategoriesSection,
+  partnersAndBrandsSection,
+  buyerSellerMeetSection,
+  testimonialsCarouselSection,
+  latestInsightsSection,
+  footerSection,
+];
 
 export { defaultAboutSections } from "./aboutContent";
 

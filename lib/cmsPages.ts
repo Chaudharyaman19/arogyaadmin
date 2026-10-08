@@ -11,6 +11,9 @@ export interface CmsPage {
   slug: string;
   author: string;
   status: PageStatus;
+  visibility?: "Public" | "Private";
+  publishedAt?: string;
+  lastUpdated?: string;
   seoScore: number;
   rating: "Excellent" | "Good" | "Needs Work";
   updated: string;
@@ -34,8 +37,7 @@ export interface CmsPage {
     isActive?: boolean;
   };
 }
-export function getCmsPageRouteKey(page?: Pick<CmsPage, "title"> | null): string {
-  if (!page || !page.title) return "";
+export function getCmsPageRouteKey(page: Pick<CmsPage, "title">): string {
   return page.title
     .toLowerCase()
     .trim()
@@ -44,21 +46,95 @@ export function getCmsPageRouteKey(page?: Pick<CmsPage, "title"> | null): string
     .replace(/^-+|-+$/g, "");
 }
 
+const routeAliases: Record<string, string> = {
+  "home": "landingPage",
+  "homepage": "landingPage",
+  "about": "aboutPage",
+  "about-us": "aboutPage",
+  "speakers": "speakersPage",
+  "register-now": "registerNowPage",
+  "delegate-registration": "delegateRegistrationPage",
+  "contact": "contactPage",
+  "contact-us": "contactPage",
+  "gallery": "galleryPage",
+  "partners": "partnersPage",
+  "paper-presentation": "paperPresentationPage",
+  "blog": "blogPage",
+  "blogs": "blogPage",
+  "blogs-and-news": "blogPage",
+  "new-single-registration": "newSingleRegistrationPage",
+  "new-group-registration": "newGroupRegistrationPage",
+  "login": "loginPage",
+  "delegate-dashboard": "delegateDashboardPage",
+  "delegate-profile": "delegateProfilePage",
+  "payment-receipt": "paymentReceiptPage",
+  "verify-delegate": "verifyDelegatePage",
+};
+
 export function findCmsPageByRouteKey(pages: CmsPage[], routeKey?: string): CmsPage | undefined {
   if (!routeKey) return undefined;
   const decoded = decodeURIComponent(routeKey).toLowerCase().trim();
   const numericId = Number(decoded);
-  return pages.find((page) => {
-    if (Number.isInteger(numericId) && page.id === numericId) return true;
-    if (getCmsPageRouteKey(page) === decoded) return true;
-    if (page.configKey && page.configKey.toLowerCase() === decoded) return true;
-    const cleanSlug = page.slug.replace(/^\//, "").toLowerCase();
-    if (cleanSlug && cleanSlug === decoded) return true;
-    return false;
+
+  // 1. Numeric ID
+  if (Number.isInteger(numericId)) {
+    const byId = pages.find((p) => p.id === numericId);
+    if (byId) return byId;
+  }
+
+  // 2. Direct alias mapping
+  const aliasConfigKey = routeAliases[decoded];
+  if (aliasConfigKey) {
+    const byAlias = pages.find((p) => p.configKey?.toLowerCase() === aliasConfigKey.toLowerCase());
+    if (byAlias) return byAlias;
+  }
+
+  // 3. Exact route key from title
+  const byTitleRouteKey = pages.find((p) => getCmsPageRouteKey(p) === decoded);
+  if (byTitleRouteKey) return byTitleRouteKey;
+
+  // 4. Exact configKey
+  const byConfigKey = pages.find((p) => p.configKey && p.configKey.toLowerCase() === decoded);
+  if (byConfigKey) return byConfigKey;
+
+  // 5. Full slug match (e.g. /participate/why-exhibit or participate/why-exhibit)
+  const bySlug = pages.find((p) => {
+    const cleanSlug = p.slug.replace(/^\//, "").toLowerCase();
+    return cleanSlug && cleanSlug === decoded;
   });
+  if (bySlug) return bySlug;
+
+  // 6. Last segment of slug (e.g. "why-exhibit" matches "/participate/why-exhibit")
+  const byLastSegment = pages.find((p) => {
+    const cleanSlug = p.slug.replace(/^\//, "").toLowerCase();
+    const lastPart = cleanSlug.split("/").pop()?.toLowerCase();
+    return lastPart && lastPart === decoded;
+  });
+  if (byLastSegment) return byLastSegment;
+
+  // 7. Slug with slashes converted to hyphens
+  const byHyphenatedSlug = pages.find((p) => {
+    const cleanSlug = p.slug.replace(/^\//, "").toLowerCase().replace(/\//g, "-");
+    return cleanSlug && cleanSlug === decoded;
+  });
+  if (byHyphenatedSlug) return byHyphenatedSlug;
+
+  // 8. Loose / partial search on routeKey or title
+  const byPartial = pages.find((p) => {
+    const pageRouteKey = getCmsPageRouteKey(p);
+    return pageRouteKey.includes(decoded) || decoded.includes(pageRouteKey);
+  });
+  if (byPartial) return byPartial;
+
+  return undefined;
 }
 
 type SettingsPageConfig = {
+  publishedAt?: string;
+  lastUpdated?: string;
+  updatedBy?: string;
+  status?: PageStatus;
+  visibility?: "Public" | "Private";
   seo?: {
     metaTitle?: string;
     metaDescription?: string;
@@ -77,15 +153,46 @@ type SettingsPageConfig = {
     isActive?: boolean;
   };
   sections?: Array<{ enabled?: boolean }>;
-  enabled?: boolean;
 };
 
-const defaultPageDefinitions: readonly [string, string, string, PageType][] = [
+export function formatPublishDate(dateString?: string | Date): string {
+  if (!dateString) return "Not published";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return String(dateString);
+  return (
+    date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }) +
+    ", " +
+    date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    })
+  );
+}
+
+const pageDefinitions = [
   ["landingPage", "Home", "/", "home"],
-  ["aboutPage", "About Us", "/about", "page"],
-  ["servicesPage", "Services", "/services", "page"],
+  ["aboutPage", "About", "/about", "page"],
+  ["speakersPage", "Speakers", "/speakers", "page"],
+  ["registerNowPage", "Register Now", "/register-now", "page"],
+  ["delegateRegistrationPage", "Delegate Registration", "/delegate-registration", "page"],
   ["contactPage", "Contact Us", "/contact", "page"],
-];
+  ["galleryPage", "Gallery", "/gallery", "page"],
+  ["partnersPage", "Partners", "/partners", "page"],
+  ["paperPresentationPage", "Paper Presentation", "/paper-presentation", "page"],
+  ["blogPage", "Blogs & News", "/blogs", "page"],
+  ["newSingleRegistrationPage", "Single Registration", "/new-single-registration", "page"],
+  ["newGroupRegistrationPage", "Group Registration", "/new-group-registration", "page"],
+  ["loginPage", "Login", "/login", "page"],
+  ["delegateDashboardPage", "Delegate Dashboard", "/delegate-dashboard", "page"],
+  ["delegateProfilePage", "Delegate Profile", "/delegate-profile", "page"],
+  ["paymentReceiptPage", "Payment Receipt", "/payment-receipt", "page"],
+  ["verifyDelegatePage", "Verify Delegate", "/verify-delegate", "page"],
+] as const;
 
 function seoScore(config: SettingsPageConfig): number {
   const seo = config.seo ?? {};
@@ -102,43 +209,36 @@ function seoScore(config: SettingsPageConfig): number {
 }
 
 export function cmsPagesFromSettings(settings: Record<string, unknown>): CmsPage[] {
-  const updatedAt = typeof settings.updatedAt === "string" ? new Date(settings.updatedAt) : new Date("2026-09-14T10:00:00.000Z");
-  const knownKeys = new Set(defaultPageDefinitions.map(([k]) => k));
-  const dynamicDefinitions: [string, string, string, PageType][] = [];
+  const globalUpdatedAt = typeof settings.updatedAt === "string" ? new Date(settings.updatedAt) : new Date();
+  const globalCreatedAt = typeof settings.createdAt === "string" ? new Date(settings.createdAt) : globalUpdatedAt;
 
-  if (settings && typeof settings === "object") {
-    Object.keys(settings).forEach((key) => {
-      if ((key.endsWith("Page") || key.endsWith("page")) && !knownKeys.has(key)) {
-        const rawName = key.replace(/page$/i, "");
-        const title = rawName.charAt(0).toUpperCase() + rawName.slice(1).replace(/([A-Z])/g, " $1");
-        const slug = `/${rawName.toLowerCase()}`;
-        dynamicDefinitions.push([key, title, slug, "page"]);
-      }
-    });
-  }
-
-  const allDefinitions = [...defaultPageDefinitions, ...dynamicDefinitions];
-
-  return allDefinitions.map(([key, title, slug, type], index) => {
+  return pageDefinitions.map(([key, title, slug, type], index) => {
     const config = (settings[key] as SettingsPageConfig | undefined) ?? {};
     const score = seoScore(config);
-    let status: PageStatus = "Published";
-    if (config.enabled !== undefined) {
-      status = config.enabled ? "Published" : "Draft";
-    } else if (config.sections && config.sections.length > 0) {
-      status = config.sections.some((section) => section.enabled !== false) ? "Published" : "Draft";
-    }
+    const status: PageStatus = config.status
+      ? config.status
+      : (config.sections && config.sections.length > 0
+        ? (config.sections.some((section) => section.enabled !== false) ? "Published" : "Draft")
+        : "Published");
+
+    const publishedDateStr = config.publishedAt || globalCreatedAt.toISOString();
+    const updatedDateStr = config.lastUpdated || (config.publishedAt ? config.publishedAt : globalUpdatedAt.toISOString());
+    const authorName = config.updatedBy || "Admin User";
+
     return {
       id: index + 1,
       configKey: key,
       title,
       slug,
-      author: "Admin User",
+      author: authorName,
       status,
+      visibility: config.visibility || "Public",
+      publishedAt: publishedDateStr,
+      lastUpdated: updatedDateStr,
       seoScore: score,
       rating: score >= 90 ? "Excellent" : score >= 75 ? "Good" : "Needs Work",
-      updated: updatedAt.toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }),
-      updatedBy: "Admin User",
+      updated: formatPublishDate(updatedDateStr),
+      updatedBy: authorName,
       type,
       seo: config.seo,
     };
@@ -146,7 +246,7 @@ export function cmsPagesFromSettings(settings: Record<string, unknown>): CmsPage
 }
 
 export function getCmsPageDefinition(id: number) {
-  const definition = defaultPageDefinitions[id - 1];
+  const definition = pageDefinitions[id - 1];
   if (!definition) return null;
   const [configKey, title, slug, type] = definition;
   return { configKey, title, slug, type };

@@ -1,0 +1,33 @@
+import { LandingSectionContent } from "../landingContent";
+
+export const sponsorshipCategoriesSection: LandingSectionContent = {
+  key: "sponsorship-categories",
+  name: "SponsorshipCategories",
+  enabled: true,
+  headerTitle: "SPONSORSHIP OPPORTUNITIES",
+  title: "SPONSORSHIP TIERS & PACKAGES",
+  subtitle: "Tailored sponsorship packages designed for high brand impact.",
+  bannerTitle: "LIMITED SPONSORSHIP SLOTS AVAILABLE",
+  bannerSubtitle: "Secure your category before it's gone!",
+  bannerFeature: "Featured sponsors get exclusive media coverage & brand promotions.",
+  image: "",
+  imageAlt: "Arogya Expo - B2B Exhibition and Conference",
+  badgeLine1: "GO ORGANIC",
+  badgeLine2: "GO BETTER",
+  titlePrefix: "ELEVATE YOUR BRAND PRESENCE",
+  titleHighlight: "AT AROGYA EXPO 2027",
+  description: "Build meaningful connections and grow your business with India's biggest organic show.",
+  formTitle: "INTERESTED IN SPONSORING?",
+  buttonLabel: "BROCHURE",
+  buttonHref: "/download/invited card.pdf",
+  secondaryButtonLabel: "ANY QUERY?",
+  secondaryButtonHref: "/contact",
+  tertiaryButtonLabel: "TALK TO US",
+  tertiaryButtonHref: "tel:+919654900525",
+  items: [
+    { title: "Title Sponsor", value: "Exclusive", description: "Maximum visibility & brand exclusivity across all promotional materials." },
+    { title: "Powered By Sponsor", value: "Category Tier", description: "Align your brand as the power behind BOE with prime lounge & main stage branding." },
+    { title: "Associate Sponsor", value: "High Impact", description: "High-impact visibility & brand recognition across expo halls." },
+    { title: "Conference Sponsor", value: "Knowledge Tier", description: "Brand association with 20+ global knowledge sessions & workshops." },
+  ],
+};

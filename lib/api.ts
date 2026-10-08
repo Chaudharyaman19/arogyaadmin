@@ -94,7 +94,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
       requester: {
         id: "admin-1",
         name: "Expo Super Admin",
-        email: "admin@arogyabharat.org",
+        email: "admin@arogya.namogange.org",
         twoFactorEnabled: true
       },
       approvers: []
@@ -123,7 +123,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
       {
         _id: "svc-1",
         category: "DOMAIN",
-        name: "Arogya Bharat Domain (arogyabharat.org)",
+        name: "Arogya Domain (arogya.namogange.org)",
         provider: "GoDaddy Inc",
         accountIdentifier: "BOE-DOM-2027",
         loginUrl: "https://godaddy.com",
@@ -136,7 +136,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
         currency: "INR",
         billingCycle: "YEARLY",
         details: {
-          domainName: "arogyabharat.org",
+          domainName: "arogya.namogange.org",
           registrar: "GoDaddy",
           dnsProvider: "Cloudflare",
           nameservers: "ns1.cloudflare.com, ns2.cloudflare.com"
@@ -169,7 +169,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
       {
         _id: "svc-3",
         category: "SSL_CERTIFICATE",
-        name: "Wildcard SSL Certificate (*.arogyabharat.org)",
+        name: "Wildcard SSL Certificate (*.arogya.namogange.org)",
         provider: "Let's Encrypt",
         accountIdentifier: "SSL-BOE-WILD",
         loginUrl: "https://letsencrypt.org",
@@ -179,7 +179,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
         remindersEnabled: true,
         pricingType: "FREE",
         details: {
-          coveredDomains: "arogyabharat.org, *.arogyabharat.org",
+          coveredDomains: "arogya.namogange.org, *.arogya.namogange.org",
           issuer: "Let's Encrypt Authority"
         },
         createdAt: "2026-01-01T10:00:00Z"
@@ -528,10 +528,10 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
   if (p.includes("/settings")) {
     return {
       _id: "settings-1",
-      siteName: "Arogya Bharat Portal 2027",
+      siteName: "Arogya Portal 2027",
       helplineNumber: "+91 11 4567 8900",
       whatsappNumber: "+91 9876543210",
-      supportEmail: "info@arogyabharat.org",
+      supportEmail: "info@namogangewellness.com",
       address: "Yashobhoomi (IICC), Dwarka, Sector 25, New Delhi",
       banners: [],
       socialLinks: []
@@ -544,7 +544,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
         _id: "staff-1",
         id: "staff-1",
         name: "Super Admin",
-        email: "admin@bharatorganic.com",
+        email: "admin@arogya.namogange.org",
         phone: "+91 9876543210",
         role: "superadmin",
         userType: "INTERNAL",
@@ -579,7 +579,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
         id: "admin_101",
         _id: "admin_101",
         name: "Super Admin",
-        email: "admin@bharatorganic.com",
+        email: "admin@arogya.namogange.org",
         phone: "+91 9876543210",
         role: "superadmin",
         isTwoFactorEnabled: true
@@ -598,8 +598,8 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
       return {
         site: {
           id: "site-1",
-          url: "https://arogyabharat.org",
-          label: "Arogya Bharat",
+          url: "https://arogya.namogange.org",
+          label: "Arogya",
           type: "production",
           crawlSettings: {},
           schedule: {},
@@ -689,7 +689,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
     if (p.includes("/competitors/comparison")) {
       return {
         dataSourceNotes: { observed: "", searchAndTraffic: "" },
-        primary: { siteId: "1", label: "Primary", url: "https://arogyabharat.org", lastCrawlAt: null, observed: {}, scores: null, performance: null },
+        primary: { siteId: "1", label: "Primary", url: "https://arogya.namogange.org", lastCrawlAt: null, observed: {}, scores: null, performance: null },
         competitors: [],
         pendingCrawl: []
       };
