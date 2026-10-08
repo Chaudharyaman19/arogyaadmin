@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "@/store/StoreProvider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { StaticDataInterceptor } from "@/components/StaticDataInterceptor";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -27,6 +28,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className={`${inter.className} min-h-full flex flex-col`} suppressHydrationWarning>
+        <StaticDataInterceptor />
         <LanguageProvider><StoreProvider>{children}</StoreProvider></LanguageProvider>
       </body>
     </html>

@@ -594,6 +594,111 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
   }
 
   if (p.includes("/seo")) {
+    if (p.includes("/overview")) {
+      return {
+        site: {
+          id: "site-1",
+          url: "https://arogyabharat.org",
+          label: "Arogya Bharat",
+          type: "production",
+          crawlSettings: {},
+          schedule: {},
+          lastCrawlAt: new Date().toISOString(),
+          lastScore: 98,
+          searchConsoleConnected: true,
+          analyticsConnected: true
+        },
+        hasData: true,
+        message: "",
+        runningCrawl: null,
+        crawl: {
+          id: "crawl-1",
+          status: "completed",
+          trigger: "manual",
+          startedAt: new Date(Date.now() - 3600000).toISOString(),
+          completedAt: new Date().toISOString(),
+          durationMs: 45000,
+          stats: {},
+          robotsFound: true,
+          sitemapFound: true,
+          sitemapUrlCount: 42
+        },
+        scores: {
+          overall: 98,
+          technical: 100,
+          onPage: 95,
+          content: 98,
+          performance: 98,
+          visibility: 96
+        },
+        counts: {
+          criticalIssues: 0,
+          warnings: 2,
+          notices: 5,
+          urlsCrawled: 42,
+          indexablePages: 42,
+          healthyPages: 40
+        },
+        search: {
+          available: false,
+          message: "Search console not fully synced in mock"
+        },
+        analytics: {
+          available: false,
+          message: "Analytics not fully synced in mock"
+        },
+        alerts: [],
+        topIssues: [],
+        history: []
+      };
+    }
+    
+    if (p.includes("/score")) {
+      return {
+        available: true,
+        overall: 98,
+        categories: [],
+        formula: {
+          severityPenalty: { critical: 10, warning: 2, notice: 0 },
+          sensitivity: 1,
+          weights: {},
+          pagesConsidered: 42,
+          description: "Mock score calculation"
+        }
+      };
+    }
+
+    if (p.includes("/broken-links")) {
+      return { links: [] };
+    }
+
+    if (p.includes("/insights")) {
+      return {
+        available: false,
+        message: "No insights available yet",
+        cannibalization: [],
+        contentGaps: [],
+        risingQueries: [],
+        fallingQueries: [],
+        highImpressionLowCtr: [],
+        strikingDistance: [],
+        pagesLosingClicks: []
+      };
+    }
+
+    if (p.includes("/competitors/comparison")) {
+      return {
+        dataSourceNotes: { observed: "", searchAndTraffic: "" },
+        primary: { siteId: "1", label: "Primary", url: "https://arogyabharat.org", lastCrawlAt: null, observed: {}, scores: null, performance: null },
+        competitors: [],
+        pendingCrawl: []
+      };
+    }
+
+    if (p.includes("/competitors")) {
+      return [];
+    }
+
     return {
       score: 98,
       status: "good",
