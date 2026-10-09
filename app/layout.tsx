@@ -12,8 +12,18 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "arogya Admin",
-  description: "Admin dashboard for arogya Bharat — bookings, donations, and content management.",
+  title: {
+    default: "Admin Portal | Arogya Sangoshthi 2026",
+    template: "%s | Arogya Sangoshthi Admin",
+  },
+  description:
+    "Secure admin portal for Arogya Sangoshthi 2026 — manage website content, exhibitors, partners, enquiries, staff and SEO.",
+  robots: { index: false, follow: false },
+  icons: {
+    icon: "/favicon.png",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
