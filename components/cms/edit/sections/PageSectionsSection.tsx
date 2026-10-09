@@ -3,6 +3,9 @@
 /* =========================================================
    PAGE SECTIONS
    Extracted from pages/[id]/edit/page.tsx
+   Renders one collapsible card per section; each card shows its
+   scalar fields plus an editor per repeatable list it owns
+   (items, slides, tracks, days, attendees, features, focusAreas).
 ========================================================= */
 
 import {
@@ -16,15 +19,25 @@ import { SectionFieldsEditor } from "@/components/cms/editor/SectionFieldsEditor
 import { SectionItemsEditor } from "@/components/cms/editor/SectionItemsEditor";
 import { useCmsEdit } from "../CmsEditContext";
 
+/* Sections that own more than one repeatable list. */
+const SECTION_LIST_KEYS: Record<string, string[]> = {
+  hero: ["slides"],
+  "why-arogya-tracks": ["items", "tracks"],
+  "event-highlights": ["items", "days", "attendees"],
+  "global-voices": ["items", "features"],
+  "about-initiatives": ["items", "focusAreas"],
+};
+
+function getListKeys(section: Record<string, any>): string[] {
+  const explicit = SECTION_LIST_KEYS[section.key];
+  if (explicit) return explicit;
+  return ["items", "slides"].filter((key) => Array.isArray(section[key]));
+}
+
 export function PageSectionsSection() {
-  const { addSectionItem, openSectionIndices, page, removeSectionItem, resetToWebsiteDefaults, sectionsDraft, setOpenSectionIndices, setSectionsDraft, toggleSectionAccordion, updateSectionField, updateSectionItem } = useCmsEdit();
+  const { addSectionItem, openSectionIndices, removeSectionItem, resetToWebsiteDefaults, sectionsDraft, setOpenSectionIndices, toggleSectionAccordion, updateSectionField, updateSectionItem } = useCmsEdit();
 
   return (
-    <>
-    {/* =================================================
-        PAGE SECTIONS
-    ================================================= */}
-
     <section
       className="
         flex
@@ -149,61 +162,20 @@ export function PageSectionsSection() {
                     onFieldChange={(key, value) => updateSectionField(sectionIndex, key, value)}
                   />
 
-                  {Array.isArray(section.slides) && (
-                    <div className="flex flex-col gap-[8px]">
+                  {getListKeys(section).map((listKey) =>
+                    Array.isArray(section[listKey]) ? (
                       <SectionItemsEditor
-                        items={section.slides}
-                        onChangeItem={(itemIndex, key, value) => {
-                          setSectionsDraft((previous) =>
-                            previous.map((sec, i) => {
-                              if (i !== sectionIndex) return sec;
-                              const slides = [...(sec.slides ?? [])];
-                              slides[itemIndex] = { ...slides[itemIndex], [key]: value };
-                              return { ...sec, slides };
-                            }),
-                          );
-                        }}
-                        onAddItem={() => {
-                          setSectionsDraft((previous) =>
-                            previous.map((sec, i) => {
-                              if (i !== sectionIndex) return sec;
-                              const slides = [...(sec.slides ?? [])];
-                              const blank = {
-                                title: "NEW HERO SLIDE",
-                                description: "Enter slide description...",
-                                image: "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg",
-                                alt: "Hero Banner Slide",
-                                buttonLabel: "Book Your Stall",
-                                buttonHref: "/registration/book-a-stand",
-                                secondaryButtonLabel: "Register as Visitor",
-                                secondaryButtonHref: "/registration/visitor-registration",
-                              };
-                              return { ...sec, slides: [...slides, blank] };
-                            }),
-                          );
-                        }}
-                        onRemoveItem={(itemIndex) => {
-                          setSectionsDraft((previous) =>
-                            previous.map((sec, i) => {
-                              if (i !== sectionIndex) return sec;
-                              const slides = (sec.slides ?? []).filter((_: unknown, idx: number) => idx !== itemIndex);
-                              return { ...sec, slides };
-                            }),
-                          );
-                        }}
+                        key={listKey}
+                        items={section[listKey]}
+                        listKey={listKey}
                         sectionId={section.key}
+                        onChangeItem={(itemIndex, key, value) =>
+                          updateSectionItem(sectionIndex, itemIndex, key, value, listKey)
+                        }
+                        onAddItem={() => addSectionItem(sectionIndex, listKey)}
+                        onRemoveItem={(itemIndex) => removeSectionItem(sectionIndex, itemIndex, listKey)}
                       />
-                    </div>
-                  )}
-
-                  {Array.isArray(section.items) && section.key !== "hero" && section.key !== "introduction-section" && section.key !== "why-participate" && section.key !== "conference-section" && section.key !== "sponsors-attend" && (
-                    <SectionItemsEditor
-                      items={section.items}
-                      onChangeItem={(itemIndex, key, value) => updateSectionItem(sectionIndex, itemIndex, key, value)}
-                      onAddItem={() => addSectionItem(sectionIndex)}
-                      onRemoveItem={(itemIndex) => removeSectionItem(sectionIndex, itemIndex)}
-                      sectionId={section.key}
-                    />
+                    ) : null,
                   )}
                 </div>
               )}
@@ -212,6 +184,5 @@ export function PageSectionsSection() {
         })}
       </div>
     </section>
-    </>
   );
 }

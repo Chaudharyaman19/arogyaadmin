@@ -8,8 +8,6 @@ import React, {
   useRef,
   type ReactNode,
 } from "react";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { createHomeHero, updateHomeHero, fetchHomeHeros } from "@/store/slices/home/homeHeroSlice";
 import { api } from "@/lib/api";
 
 import Link from "next/link";
@@ -71,10 +69,9 @@ import typography from "../../PagesTypography.module.css";
 import { lazySwal } from "@/lib/toast";
 
 import { FieldLabel, TextInput, SelectField, SectionTitle, Toggle, EditorToolbar } from "@/components/cms/editor/FormPrimitives";
-import { SectionFieldsEditor } from "@/components/cms/editor/SectionFieldsEditor";
-import { SectionItemsEditor } from "@/components/cms/editor/SectionItemsEditor";
 import { SeoScoreCircle, SeoRow } from "@/components/cms/editor/SeoFields";
-import { buildSectionsDraft, getDefaultSectionsForPage, hydrateHomeSections, loadPageSeo } from "@/components/cms/edit/sectionDefaults";
+import { buildSectionsDraft, getDefaultSectionsForPage, loadPageSeo } from "@/components/cms/edit/sectionDefaults";
+import { blankItemFor } from "@/components/cms/edit/blankItems";
 import { saveCmsPage } from "@/components/cms/edit/savePage";
 import { CmsEditProvider, type CmsEditContextValue } from "@/components/cms/edit/CmsEditContext";
 import type { FormState, Status, Visibility } from "@/components/cms/edit/types";
@@ -103,46 +100,6 @@ export default function CmsEditPage() {
 
   const router =
     useRouter();
-
-  const dispatch = useAppDispatch();
-  const { data: homeHeros } = useAppSelector((state) => state.homeHero);
-
-  useEffect(() => {
-    dispatch(fetchHomeHeros());
-  }, [dispatch]);
-
-  const handleHeroApi = async (action: 'add' | 'edit', section: any) => {
-    const form = new FormData();
-    form.append("tagline", section.tagline || "");
-    form.append("titlePrimary", section.titlePrimary || "");
-    form.append("titleSecondary", section.titleSecondary || "");
-    form.append("subtitle", section.subtitle || "");
-    form.append("description", section.description || "");
-    form.append("date", section.date || "");
-    form.append("location", section.location || "");
-    form.append("button1Name", section.buttonLabel || "");
-    form.append("button1Link", section.buttonHref || "");
-    form.append("button2Name", section.secondaryButtonLabel || "");
-    form.append("button2Link", section.secondaryButtonHref || "");
-
-    try {
-      if (action === 'add') {
-        await dispatch(createHomeHero(form)).unwrap();
-        lazySwal.fire({ title: "Success", text: "Added to Home Hero API", icon: "success", timer: 1500 });
-      } else {
-        const id = homeHeros?.[0]?._id;
-        if (id) {
-          await dispatch(updateHomeHero({ id, formData: form })).unwrap();
-          lazySwal.fire({ title: "Success", text: "Updated Home Hero API", icon: "success", timer: 1500 });
-        } else {
-          lazySwal.fire({ title: "Error", text: "No existing hero found to edit. Click Add instead.", icon: "error" });
-        }
-      }
-      dispatch(fetchHomeHeros());
-    } catch (err: any) {
-      lazySwal.fire({ title: "Error", text: err || "API failed", icon: "error" });
-    }
-  };
 
   const [pages, setPages] = useState(cmsPages);
   const [settings, setSettings] = useState<Record<string, any> | null>(null);
@@ -487,7 +444,6 @@ export default function CmsEditPage() {
     const finalSections = buildSectionsDraft(page, settings);
     setSectionsDraft(finalSections.map((section) => ({ ...section })));
     setOpenSectionIndices(new Set());
-    hydrateHomeSections(page, setSectionsDraft);
     loadPageSeo(page, setForm, canonicalEditorRef);
   }, [settings, page]);
 
@@ -511,91 +467,33 @@ export default function CmsEditPage() {
     );
   };
 
-  const updateSectionItem = (sectionIndex: number, itemIndex: number, key: string, value: unknown) => {
+  const updateSectionItem = (sectionIndex: number, itemIndex: number, key: string, value: unknown, listKey: string = "items") => {
     setSectionsDraft((previous) =>
       previous.map((section, index) => {
         if (index !== sectionIndex) return section;
-        const items = [...(section.items ?? [])];
-        items[itemIndex] = { ...items[itemIndex], [key]: value };
-        return { ...section, items };
+        const list = [...(section[listKey] ?? [])];
+        list[itemIndex] = { ...list[itemIndex], [key]: value };
+        return { ...section, [listKey]: list };
       }),
     );
   };
 
-  const addSectionItem = (sectionIndex: number) => {
+  const addSectionItem = (sectionIndex: number, listKey: string = "items") => {
     setSectionsDraft((previous) =>
       previous.map((section, index) => {
         if (index !== sectionIndex) return section;
-        const items = [...(section.items ?? [])];
-        if (section.key === "audience-strip") {
-          const blankAudience = {
-            title: "NEW AUDIENCE",
-            subtitle: "TARGET GROUP",
-            icon: "GraduationCap",
-            color: "#facc15",
-            label: "NEW AUDIENCE TARGET GROUP",
-          };
-          return { ...section, items: [...items, blankAudience] };
-        }
-        if (section.key === "expo-categories") {
-          const blankCategory = {
-            title: "New Exhibition Sector",
-            description: "Enter sector description...",
-            image: "",
-            href: "/exhibition-categories",
-            exploreText: "Explore",
-          };
-          return { ...section, items: [...items, blankCategory] };
-        }
-        if (section.key === "beyond-exhibition") {
-          const blankItem = {
-            title: "NEW HIGHLIGHT / AWARD",
-            description: "Enter description...",
-            icon: "Award",
-          };
-          return { ...section, items: [...items, blankItem] };
-        }
-        if (section.key === "footer") {
-          const blankLink = {
-            label: "New Link",
-            href: "/",
-          };
-          return { ...section, items: [...items, blankLink] };
-        }
-        const defaultItemTemplate: Record<string, any> = {
-          title: "",
-          subtitle: "",
-          description: "",
-          label: "",
-          value: "",
-          icon: "",
-          image: "",
-          buttonLabel: "",
-          buttonHref: "",
-          question: "",
-          answer: "",
-          href: "",
-          category: "",
-          year: "",
-        };
-        if (items[0]) {
-          Object.keys(items[0]).forEach((k) => {
-            if (k !== "_id" && !(k in defaultItemTemplate)) {
-              defaultItemTemplate[k] = "";
-            }
-          });
-        }
-        return { ...section, items: [...items, defaultItemTemplate] };
+        const list = [...(section[listKey] ?? [])];
+        return { ...section, [listKey]: [...list, blankItemFor(section.key, listKey, list[0])] };
       }),
     );
   };
 
-  const removeSectionItem = (sectionIndex: number, itemIndex: number) => {
+  const removeSectionItem = (sectionIndex: number, itemIndex: number, listKey: string = "items") => {
     setSectionsDraft((previous) =>
       previous.map((section, index) => {
         if (index !== sectionIndex) return section;
-        const items = (section.items ?? []).filter((_: unknown, i: number) => i !== itemIndex);
-        return { ...section, items };
+        const list = (section[listKey] ?? []).filter((_: unknown, i: number) => i !== itemIndex);
+        return { ...section, [listKey]: list };
       }),
     );
   };
@@ -616,6 +514,8 @@ export default function CmsEditPage() {
 
   const resetToWebsiteDefaults = () => {
     const defaults = getDefaultSectionsForPage(page);
+    setSectionsDraft(defaults.map((section) => ({ ...section })));
+    setOpenSectionIndices(new Set());
     lazySwal.fire({
       title: "Reset to Website Content",
       text: "Page sections have been reset to match the exact live website defaults.",

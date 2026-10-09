@@ -4,7 +4,7 @@ export const navbarSection: LandingSectionContent = {
   key: "navbar",
   name: "Header Navigation",
   enabled: true,
-  title: "Arogya Expo",
+  title: "Arogya Sangoshthi",
   logoImage: "",
   buttonLabel: "Register Now",
   buttonHref: "/register-now",

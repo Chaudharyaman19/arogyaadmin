@@ -1,4 +1,5 @@
 export interface LandingSectionItem {
+  [key: string]: any;
   code?: string;
   step?: string;
   statusText?: string;
@@ -48,12 +49,12 @@ export interface LandingSectionItem {
 }
 
 export interface LandingHeroSlide {
-  title: string;
+  title?: string;
   tagline?: string;
   titlePrimary?: string;
   titleSecondary?: string;
   subtitle?: string;
-  description: string;
+  description?: string;
   date?: string;
   location?: string;
   image: string;
@@ -196,40 +197,32 @@ export interface LandingSectionContent {
 import { topbarSection } from "./landing/topbar";
 import { navbarSection } from "./landing/navbar";
 import { heroSection } from "./landing/hero";
-import { audienceStripSection } from "./landing/audienceStrip";
-import { introductionSection } from "./landing/introductionSection";
-import { globalPlatformSection } from "./landing/globalPlatform";
-import { whyParticipateSection } from "./landing/whyParticipate";
-import { conferenceSection } from "./landing/conferenceSection";
-import { expoCategoriesSection } from "./landing/expoCategories";
-import { beyondExhibitionSection } from "./landing/beyondExhibition";
-import { sponsorsAndAttendSection } from "./landing/sponsorsAndAttend";
-import { becomeSponsorSection } from "./landing/becomeSponsor";
-import { sponsorshipCategoriesSection } from "./landing/sponsorshipCategories";
-import { partnersAndBrandsSection } from "./landing/partnersAndBrands";
-import { buyerSellerMeetSection } from "./landing/buyerSellerMeet";
-import { testimonialsCarouselSection } from "./landing/testimonialsCarousel";
-import { latestInsightsSection } from "./landing/latestInsights";
+import { trustedBySection } from "./landing/trustedBy";
+import { whyArogyaTracksSection } from "./landing/whyArogyaTracks";
+import { aboutConferenceSection } from "./landing/aboutConference";
+import { statsBandSection } from "./landing/statsBand";
+import { visionMissionSection } from "./landing/visionMission";
+import { upcomingEventSection } from "./landing/upcomingEvent";
+import { eventHighlightsSection } from "./landing/eventHighlights";
+import { testimonialsSection } from "./landing/testimonials";
+import { globalVoicesSection } from "./landing/globalVoices";
+import { featuredSpeakersSection } from "./landing/featuredSpeakers";
 import { footerSection } from "./landing/footer";
 
 export const defaultLandingSections: LandingSectionContent[] = [
   topbarSection,
   navbarSection,
   heroSection,
-  audienceStripSection,
-  introductionSection,
-  globalPlatformSection,
-  whyParticipateSection,
-  conferenceSection,
-  expoCategoriesSection,
-  beyondExhibitionSection,
-  sponsorsAndAttendSection,
-  becomeSponsorSection,
-  sponsorshipCategoriesSection,
-  partnersAndBrandsSection,
-  buyerSellerMeetSection,
-  testimonialsCarouselSection,
-  latestInsightsSection,
+  trustedBySection,
+  whyArogyaTracksSection,
+  aboutConferenceSection,
+  statsBandSection,
+  visionMissionSection,
+  upcomingEventSection,
+  eventHighlightsSection,
+  testimonialsSection,
+  globalVoicesSection,
+  featuredSpeakersSection,
   footerSection,
 ];
 
@@ -240,15 +233,6 @@ export function mergeLandingSections(sections?: LandingSectionContent[]): Landin
   const byKey = new Map(sections.map((section) => [section.key, section]));
   return defaultLandingSections.map((fallback) => {
     const saved = byKey.get(fallback.key);
-    if (
-      fallback.key === "join-mission" &&
-      saved &&
-      (saved.title === "Stand With Arogya Sewa" ||
-        saved.description === "Support the mission as a donor, volunteer or partner." ||
-        saved.items?.some((item) => item.image?.startsWith("/assets/about-optimized/")))
-    ) {
-      return fallback;
-    }
     if (!saved) return fallback;
     const items = fallback.items?.length
       ? fallback.key === "navbar"
@@ -275,90 +259,6 @@ export function mergeLandingSections(sections?: LandingSectionContent[]): Landin
       : saved.slides;
     return normalizeLandingSection({ ...fallback, ...saved, items, slides, enabled: saved.enabled !== false }, fallback);
   });
-}
-
-const genericTextLimits: Partial<Record<keyof LandingSectionContent, number>> = {
-  name: 80,
-  eyebrow: 70,
-  title: 120,
-  subtitle: 140,
-  description: 260,
-  quote: 260,
-  legalNotice: 200,
-  lowerTitle: 90,
-  lowerDescription: 220,
-  bottomStatement: 240,
-  secondaryTitle: 80,
-  secondaryDescription: 140,
-  supportTitle: 160,
-  supportDescription: 120,
-  regionTitle: 90,
-  regionDescription: 90,
-  phoneLabel: 40,
-  phoneNumber: 24,
-  contactEmail: 100,
-  contactAddress: 180,
-  altPhoneNumber: 24,
-  availabilityText: 120,
-  actionTitle: 90,
-  requestTitle: 90,
-  requestDescription: 180,
-  inputPlaceholder: 70,
-  submitLabel: 40,
-  submittedLabel: 40,
-  successMessage: 180,
-  initiativeLabel: 90,
-  quickLinksTitle: 50,
-  servicesTitle: 50,
-  initiativesTitle: 50,
-  contactTitle: 50,
-  buttonLabel: 40,
-  secondaryButtonLabel: 40,
-  tertiaryButtonLabel: 40,
-  sloganTitle: 90,
-  immediateHelpTitle: 70,
-  immediateHelpDescription: 120,
-  supportNowLabel: 40,
-  supportMissionTitle: 70,
-  supportMissionDescription: 140,
-};
-
-const itemTextLimits: Partial<Record<keyof LandingSectionItem, number>> = {
-  title: 120,
-  label: 70,
-  subtitle: 120,
-  value: 50,
-  description: 260,
-};
-
-const slideTextLimits: Partial<Record<keyof LandingHeroSlide, number>> = {
-  title: 110,
-  description: 160,
-  alt: 180,
-  buttonLabel: 40,
-  secondaryButtonLabel: 40,
-};
-
-function withEllipsis(value: string) {
-  const truncated = value
-    .trimEnd()
-    .replace(/[.\u2026]+$/g, "");
-  return `${truncated}...`;
-}
-
-function truncateText(value: string | undefined, limit: number, fallback?: string) {
-  if (!value) return value;
-  const next = value.trim();
-  const fallbackText = fallback?.trim();
-  if (fallbackText && next.startsWith(fallbackText) && next.slice(fallbackText.length).trim()) {
-    return withEllipsis(fallbackText);
-  }
-  if (value.length <= limit) return value;
-  return withEllipsis(value.slice(0, Math.max(0, limit - 3)));
-}
-
-function limitFromFallback(value: string | undefined, generic: number) {
-  return value ? Math.max(value.length, generic) : generic;
 }
 
 export function normalizeLandingSection(section: LandingSectionContent, fallback: LandingSectionContent): LandingSectionContent {

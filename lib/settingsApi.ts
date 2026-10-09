@@ -11,61 +11,61 @@ const defaultMockSettings: Settings = {
   contactPhone: "+91 9654900525"
 } as any;
 
+function readStored(): Record<string, any> | null {
+  if (typeof window === "undefined") return null;
+  const stored = localStorage.getItem(SETTINGS_KEY);
+  if (!stored) return null;
+  try {
+    return JSON.parse(stored);
+  } catch {
+    return null;
+  }
+}
+
+function writeStored(value: Record<string, any>): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(value));
+}
+
+/* =========================================================
+   SETTINGS API
+   localStorage is the source of truth for admin edits (page
+   sections, SEO, config). The backend is synced best-effort —
+   its mock/restricted responses must never overwrite saved
+   page content.
+========================================================= */
 export const settingsApi = {
   get: async (): Promise<Settings> => {
+    let backendData: Record<string, any> | null = null;
     try {
       const res: any = await api.get("/settings?website=Arogya");
-      const backendData = res?.data || res || {};
-      if (backendData && Object.keys(backendData).length > 0) {
-        if (typeof window !== "undefined") {
-          localStorage.setItem(SETTINGS_KEY, JSON.stringify(backendData));
-        }
-        return { ...defaultMockSettings, ...backendData };
-      }
+      backendData = res?.data || res || null;
+      if (backendData && Object.keys(backendData).length === 0) backendData = null;
     } catch (e) {
       console.warn("Failed to fetch settings from backend API, using local storage:", e);
     }
 
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(SETTINGS_KEY);
-      if (stored) {
-        try {
-          return { ...defaultMockSettings, ...JSON.parse(stored) };
-        } catch {
-          // ignore error
-        }
-      }
+    const stored = readStored();
+    const merged = { ...defaultMockSettings, ...(backendData ?? {}), ...(stored ?? {}) };
+    if (JSON.stringify(stored ?? null) !== JSON.stringify(merged)) {
+      writeStored(merged);
     }
-    return defaultMockSettings;
+    return merged;
   },
   getSystemAlerts: async (): Promise<any> => ({ alerts: [] }),
   update: async (payload: Partial<Settings>): Promise<Settings> => {
-    let current = defaultMockSettings;
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(SETTINGS_KEY);
-      if (stored) {
-        try {
-          current = { ...defaultMockSettings, ...JSON.parse(stored) };
-        } catch {
-          // ignore
-        }
-      }
-    }
+    const current = { ...defaultMockSettings, ...(readStored() ?? {}) };
     const updated = { ...current, ...payload };
 
+    /* Persist locally first so page sections survive reloads even
+       when the backend endpoint is mocked or schema-incompatible. */
+    writeStored(updated);
+
     try {
-      const res: any = await api.put("/settings?website=Arogya", updated);
-      const saved = res?.data || res || updated;
-      if (typeof window !== "undefined") {
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify(saved));
-      }
-      return saved;
+      await api.put("/settings?website=Arogya", updated);
     } catch (e) {
-      console.warn("Failed to sync settings to backend API, falling back to local storage:", e);
-      if (typeof window !== "undefined") {
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
-      }
-      return updated;
+      console.warn("Failed to sync settings to backend API, local storage kept the changes:", e);
     }
+    return updated;
   },
 };
