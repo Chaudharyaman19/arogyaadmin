@@ -16,12 +16,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <RequireAdminAuth>
-      <div className="flex h-screen overflow-hidden relative bg-slate-50">
+      <div className="flex h-screen overflow-hidden relative bg-[#eef1f4]">
         {/* Premium Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-[20%] -left-[10%] h-[50%] w-[50%] rounded-full bg-orange-400/10 blur-[120px]" />
-          <div className="absolute top-[20%] -right-[10%] h-[60%] w-[50%] rounded-full bg-blue-500/10 blur-[120px]" />
-          <div className="absolute -bottom-[20%] left-[20%] h-[50%] w-[50%] rounded-full bg-teal-400/10 blur-[100px]" />
           {/* Subtle grid pattern for texture */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
         </div>

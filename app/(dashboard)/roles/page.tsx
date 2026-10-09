@@ -242,8 +242,8 @@ export default function RolesPage() {
         <div className="mb-[20px] flex shrink-0 items-center justify-between border-b-[2px] border-[#293681] pb-[8px]">
           <div>
             <h1
-              className="text-[19px] font-bold leading-[1.15] tracking-[-0.018em] text-[#23471d]"
-              style={{ color: "#23471d" }}
+              className="text-[19px] font-bold leading-[1.15] tracking-[-0.018em] text-[#4B1426]"
+              style={{ color: "#4B1426" }}
             >
               Roles & Permissions
             </h1>
@@ -256,7 +256,7 @@ export default function RolesPage() {
             <button
               type="button"
               onClick={openNew}
-              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] bg-[#4B1426] px-[14px] text-[8.5px] font-semibold text-white shadow-[0_5px_12px_rgba(75,20,38,0.25)] transition hover:bg-[#3a0f1d]"
+              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] bg-[#1b5e20] px-[14px] text-[8.5px] font-semibold text-white shadow-[0_5px_12px_rgba(27,94,32,0.25)] transition hover:bg-[#14491a]"
             >
               <Plus className="h-[12px] w-[12px]" strokeWidth={1.7} />
               New Role
@@ -267,12 +267,12 @@ export default function RolesPage() {
         {/* =============================================
             ROLES TABLE — Clean border, no box shadow, rounded thead
         ============================================= */}
-        <div className="mt-[4px] flex min-h-0 flex-1 flex-col overflow-hidden bg-white border border-[#e8e5df]">
+        <div className="mt-[4px] flex min-h-0 flex-1 flex-col overflow-hidden rounded-[7px] bg-white border border-[#e8e5df]">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
               <thead>
-                <tr className="h-[32px] border-b border-[#e8e5df] bg-[#233D4D]">
-                  <th className="px-[12px] py-[6px] text-[8.5px] font-bold text-white uppercase tracking-wider">
+                <tr className="h-[32px] border-b border-[#e8e5df] bg-[#111844]">
+                  <th className="rounded-tl-[6px] px-[12px] py-[6px] text-[8.5px] font-bold text-white uppercase tracking-wider">
                     Role Name
                   </th>
                   <th className="px-[12px] py-[6px] text-[8.5px] font-bold text-white uppercase tracking-wider">
@@ -287,7 +287,7 @@ export default function RolesPage() {
                   <th className="px-[12px] py-[6px] text-[8.5px] font-bold text-white uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-[12px] py-[6px] text-right text-[8.5px] font-bold text-white uppercase tracking-wider">
+                  <th className="rounded-tr-[6px] px-[12px] py-[6px] text-right text-[8.5px] font-bold text-white uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -455,7 +455,7 @@ export default function RolesPage() {
                     onClick={() => setCurrentPage(pageNum)}
                     className={`flex h-[22px] min-w-[22px] px-1.5 items-center justify-center rounded-[4px] border text-[8px] font-bold transition ${
                       safePage === pageNum
-                        ? "border-[#233D4D] bg-[#233D4D] text-white shadow-xs"
+                        ? "border-[#00291b] bg-[#00291b] text-white shadow-xs"
                         : "border-[#d8dce2] bg-white text-[#334155] hover:bg-slate-50"
                     }`}
                   >

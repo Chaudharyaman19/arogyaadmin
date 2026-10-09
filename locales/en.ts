@@ -17,8 +17,8 @@ export const en: TranslationDictionary = {
     needHelp: "Need help?", contact: "Contact", itSupport: "IT Support",
     footer: { access: "Role Based Access", accessCopy: "Access only what you need", security: "Data Security", securityCopy: "Industry standard encryption", audit: "Audit & Logs", auditCopy: "Every action is recorded", reliable: "Reliable & Secure", reliableCopy: "99.9% uptime commitment" },
     resetTitle: "Reset your password", resetCopy: "Enter your admin account email and we'll send you a link to choose a new password.", email: "Email Address", sendReset: "Send Reset Link", inboxTitle: "Check your inbox", inboxCopy: "If an account exists for this email, a password reset link is on its way. The link expires in 30 minutes.", back: "Back to Sign In",
-    twoStepTitle: "Two-Step Verification", twoStepCopy: "Enter the 6-digit code from your authenticator app.", authCode: "Authentication Code", verify: "Verify Code",
-    setupTitle: "Secure Your Account", setupCopy: "Scan the QR code below with an authenticator app (e.g. Google Authenticator).", manualKey: "Can't scan? Manual Key", confirmCode: "Confirm with 6-digit code", enable2fa: "Enable 2FA",
+    twoStepTitle: "Two-Step Verification", twoStepCopy: "Enter the 6-digit code from Microsoft Authenticator, or a backup code.", authCode: "Authentication Code", verify: "Verify Code",
+    setupTitle: "Secure Your Account", setupCopy: "Scan the QR code below with the Microsoft Authenticator app.", manualKey: "Can't scan? Manual Key", confirmCode: "Confirm with 6-digit code", enable2fa: "Enable 2FA",
     enabledTitle: "2FA Enabled", backupCopy: "Save these emergency backup codes. They will not be shown again.", savedCodes: "I've Saved These"
   }
 };

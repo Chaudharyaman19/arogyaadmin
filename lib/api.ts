@@ -1,5 +1,9 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5001/api/v1";
 const REQUEST_TIMEOUT_MS = 150;
+/** Real backend calls (auth) talk to MongoDB + bcrypt, so they need a realistic timeout. */
+const REAL_BACKEND_TIMEOUT_MS = 20_000;
+/** Public auth endpoints: a 401 here means bad credentials, not an expired session. */
+const NO_REFRESH_PATHS = ["/auth/login", "/auth/verify-2fa", "/auth/refresh-token", "/auth/forgot-password", "/auth/reset-password"];
 const GET_CACHE_TTL_MS = 2_000;
 const getInFlight = new Map<string, Promise<unknown>>();
 const getCache = new Map<string, { expiresAt: number; value: unknown }>();
@@ -28,14 +32,14 @@ let onTokensRefreshed: ((tokens: { accessToken: string; refreshToken: string }) 
 let onRefreshFailed: (() => void) | null = null;
 const AUTH_STORAGE_KEY = "ms_admin_auth";
 
+// localStorage is the source of truth, so a logout or a new login is picked up immediately.
 function syncTokensFromStorage(): void {
   if (typeof window === "undefined") return;
   try {
     const raw = window.localStorage.getItem(AUTH_STORAGE_KEY);
-    if (!raw) return;
-    const stored = JSON.parse(raw) as { accessToken?: string; refreshToken?: string };
-    if (!accessToken && stored.accessToken) accessToken = stored.accessToken;
-    if (!refreshToken && stored.refreshToken) refreshToken = stored.refreshToken;
+    const stored = raw ? (JSON.parse(raw) as { accessToken?: string; refreshToken?: string }) : {};
+    accessToken = stored.accessToken ?? null;
+    refreshToken = stored.refreshToken ?? null;
   } catch {
     // A malformed persisted session is handled by StoreProvider/logout; requests simply proceed
     // without a token and receive the normal 401 response.
@@ -56,6 +60,17 @@ export function setTokenRefreshHandlers(handlers: {
 }
 let refreshInFlight: Promise<boolean> | null = null;
 
+function persistRefreshedTokens(tokens: { accessToken: string; refreshToken: string }): void {
+  if (typeof window === "undefined") return;
+  try {
+    const raw = window.localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) return;
+    window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ ...JSON.parse(raw), ...tokens }));
+  } catch {
+    // Storage unavailable: the in-memory tokens still work for this page session.
+  }
+}
+
 async function refreshAccessToken(): Promise<boolean> {
   syncTokensFromStorage();
   if (!refreshToken) return false;
@@ -72,6 +87,7 @@ async function refreshAccessToken(): Promise<boolean> {
       if (!res.ok || !body.success) return false;
 
       setTokens(body.data);
+      persistRefreshedTokens(body.data);
       onTokensRefreshed?.(body.data);
       return true;
     } catch {
@@ -123,7 +139,7 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
       {
         _id: "svc-1",
         category: "DOMAIN",
-        name: "Arogya Bharat Domain (arogyabharat.org)",
+        name: "arogya.namogange.org",
         provider: "GoDaddy Inc",
         accountIdentifier: "BOE-DOM-2027",
         loginUrl: "https://godaddy.com",
@@ -714,7 +730,11 @@ function getMockDataForPath(path: string, method: string = "GET"): unknown {
 }
 
 async function request<T>(path: string, options?: ApiRequestOptions, isRetry = false): Promise<T> {
-  const isRealBackendPath = false;
+  // A write can change any list, so cached GET responses are dropped before it runs.
+  if (options?.method && options.method !== "GET") getCache.clear();
+
+  // Auth, Staff, Roles, Contact Enquiry and Partner logos are served by backend-arogya; every other module still runs on mock data.
+  const isRealBackendPath = ["/auth/", "/users/admin/", "/roles/", "/contact-enquiry", "/partner-logos/"].some((prefix) => path.startsWith(prefix));
 
   // In standalone/mock mode, return mock data instantly (0ms latency) without blocking navigation on failed network timeouts
   if (!isRealBackendPath) {
@@ -734,7 +754,7 @@ async function request<T>(path: string, options?: ApiRequestOptions, isRetry = f
   }
 
   const timeoutController = new AbortController();
-  const timeoutId = setTimeout(() => timeoutController.abort(), options?.timeoutMs ?? REQUEST_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => timeoutController.abort(), options?.timeoutMs ?? (isRealBackendPath ? REAL_BACKEND_TIMEOUT_MS : REQUEST_TIMEOUT_MS));
   const { timeoutMs: _timeoutMs, ...fetchOptions } = options ?? {};
   let res: Response;
 
@@ -746,12 +766,15 @@ async function request<T>(path: string, options?: ApiRequestOptions, isRetry = f
     });
   } catch (_error) {
     clearTimeout(timeoutId);
+    if (isRealBackendPath) {
+      throw new ApiRequestError(0, "Cannot reach the server. Please check that the backend is running.");
+    }
     return getMockDataForPath(path, options?.method ?? "GET") as T;
   } finally {
     clearTimeout(timeoutId);
   }
 
-  if (res.status === 401 && !isRetry && path !== "/auth/refresh-token") {
+  if (res.status === 401 && !isRetry && !NO_REFRESH_PATHS.includes(path)) {
     const refreshed = await refreshAccessToken();
     if (refreshed) return request<T>(path, options, true);
     onRefreshFailed?.();

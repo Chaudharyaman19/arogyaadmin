@@ -1,12 +1,12 @@
 import type { NextConfig } from "next";
 
-let apiOrigin = "http://localhost:4000";
+let apiOrigin = "http://localhost:5001";
 try {
   if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.startsWith("http")) {
     apiOrigin = new URL(process.env.NEXT_PUBLIC_API_URL).origin;
   }
 } catch {
-  apiOrigin = "http://localhost:4000";
+  apiOrigin = "http://localhost:5001";
 }
 
 let siteOrigin = "http://localhost:3001";
@@ -64,11 +64,11 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:4000/api/:path*",
+        destination: `${apiOrigin}/api/:path*`,
       },
       {
         source: "/uploads/:path*",
-        destination: "http://localhost:4000/uploads/:path*",
+        destination: `${apiOrigin}/uploads/:path*`,
       },
     ];
   },

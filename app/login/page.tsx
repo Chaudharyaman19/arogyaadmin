@@ -193,7 +193,7 @@ export default function LoginPage() {
         }
 
         if (result && result.user && result.user.userType !== "INTERNAL") {
-          const msg = "This portal is for Bharat Organic Expo staff accounts only.";
+          const msg = "This portal is for Arogya Sangoshthi Expo staff accounts only.";
           setError(msg);
           showToast("error", msg);
           return;
@@ -231,8 +231,9 @@ export default function LoginPage() {
       }
 
       if (step === "totp") {
-        if (!totpCode || totpCode.length !== 6) {
-          const msg = "Please enter a valid 6-digit code from Microsoft Authenticator.";
+        // 6-digit authenticator code, or a one-time backup code like 1234-5678
+        if (!/^\d{6}$/.test(totpCode) && !/^\d{4}-\d{4}$/.test(totpCode)) {
+          const msg = "Enter the 6-digit code from Microsoft Authenticator or a backup code (1234-5678).";
           setError(msg);
           showToast("error", msg);
           return;
@@ -439,85 +440,6 @@ export default function LoginPage() {
       />
 
       {/* =====================================================
-          LEFT BRAND
-      ===================================================== */}
-
-      <section
-        className="
-          login-brand
-          md:translate-y-10
-          xl:translate-y-14
-          mt-[100px] ml-[30px]
-        "
-        aria-label="Arogya Sewa values"
-      >
-        {/* LOGO */}
-
-        <div
-          className="
-            brand-emblem
-            !w-[190px]
-            !h-[85px]
-           
-            xl:!w-[300px]
-            xl:!h-[110px]
-          "
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-
-          <img
-            src="/logo1.webp"
-            alt="Logo"
-          />
-        </div>
-
-        {/* ORNAMENT */}
-
-        <div className="gold-ornament">
-          <i />
-          <b>◆</b>
-          <i />
-        </div>
-
-        {/* INITIATIVE */}
-
-        <p
-          className="
-            brand-initiative
-            !text-[18px]
-            xl:!text-[20px]
-            !font-semibold
-          "
-        >
-          {text.initiative}
-        </p>
-
-        <div className="gold-ornament">
-          <i />
-          <b>◆</b>
-          <i />
-        </div>
-
-        {/* TITLE */}
-
-        <h1 style={{ WebkitTextStroke: "none", textShadow: "none", border: "none" }}>
-          <span style={{ color: "#14532d", fontWeight: 600 }}>Arogya</span>{" "}
-          <span style={{ color: "#3A6806", fontWeight: 600 }}>Sangoshthi</span>{" "}
-          <span style={{ color: "#4B1426", fontWeight: 600 }}>Expo</span>
-          <br />
-
-          <span style={{ color: "#ffffff", WebkitTextStroke: "none", textShadow: "none" }}>
-            {text.portalTitle}
-          </span>
-        </h1>
-
-
-
-
-
-      </section>
-
-      {/* =====================================================
           RIGHT AUTH
       ===================================================== */}
 
@@ -548,25 +470,30 @@ export default function LoginPage() {
               <img
                 src="/logo1.webp"
                 alt="Logo"
-                style={{ width: "100%", height: "100%", objectFit: "contain", transform: "scale(2.2)" }}
+                style={{ width: "100%", height: "100%", objectFit: "contain", transform: "scale(2.8)" }}
               />
             </div>
 
-            <h2>
-              {text.welcome}
-            </h2>
+            {/* Hidden on the QR setup step so it fits without scrolling */}
+            {step !== "2fa-setup" && (
+              <>
+                <h2>
+                  {text.welcome}
+                </h2>
 
-            <p>
-              <strong>
-                {text.portalName}
-              </strong>
-            </p>
+                <p>
+                  <strong>
+                    {text.portalName}
+                  </strong>
+                </p>
 
-            <div className="gold-ornament">
-              <i />
-              <b>◆</b>
-              <i />
-            </div>
+                <div className="gold-ornament">
+                  <i />
+                  <b>◆</b>
+                  <i />
+                </div>
+              </>
+            )}
           </div>
 
           {/* =================================================
@@ -1126,10 +1053,11 @@ export default function LoginPage() {
                 required
                 autoFocus
                 inputMode="numeric"
-                maxLength={6}
+                autoComplete="one-time-code"
+                maxLength={9}
                 value={totpCode}
                 onChange={(e) =>
-                  setTotpCode(e.target.value.replace(/\D/g, ""))
+                  setTotpCode(e.target.value.replace(/[^\d-]/g, ""))
                 }
                 placeholder="123456"
                 className="h-14 text-center font-mono text-2xl tracking-[0.25em] shadow-sm"
@@ -1189,32 +1117,12 @@ export default function LoginPage() {
                 onSubmit={
                   handleConfirmSetup
                 }
-                className="space-y-6"
+                className="space-y-4"
               >
                 <div className="text-center">
-                  <div
-                    className="
-                    mx-auto
-                    flex
-                    h-14
-                    w-14
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    bg-blue-50
-                    text-blue-600
-                    shadow-sm
-                    ring-1
-                    ring-blue-100
-                  "
-                  >
-                    <KeyRound className="h-7 w-7" />
-                  </div>
-
                   <h3
                     className="
-                    mt-5
-                    text-xl
+                    text-lg
                     font-semibold
                     text-slate-900
                   "
@@ -1224,8 +1132,8 @@ export default function LoginPage() {
 
                   <p
                     className="
-                    mt-2
-                    text-sm
+                    mt-1
+                    text-[13px]
                     text-slate-500
                   "
                   >
@@ -1243,7 +1151,7 @@ export default function LoginPage() {
                       border
                       border-slate-200
                       bg-white
-                      p-4
+                      p-2.5
                       shadow-sm
                     "
                     >
@@ -1254,7 +1162,7 @@ export default function LoginPage() {
                           qrDataUrl
                         }
                         alt="QR Code"
-                        className="h-40 w-40"
+                        className="h-32 w-32"
                       />
                     </div>
                   </div>
@@ -1276,7 +1184,7 @@ export default function LoginPage() {
                     border-b
                     border-slate-200
                     bg-slate-100/50
-                    p-2.5
+                    p-1.5
                     text-center
                   "
                   >
@@ -1298,13 +1206,13 @@ export default function LoginPage() {
                     flex
                     items-center
                     justify-between
-                    p-3
-                    pl-4
+                    p-2
+                    pl-3
                   "
                   >
                     <code
                       className="
-                      text-sm
+                      text-xs
                       font-semibold
                       tracking-wide
                       text-slate-800
@@ -1363,10 +1271,10 @@ export default function LoginPage() {
                   }
                   placeholder="123456"
                   className="
-                  h-14
+                  h-11
                   text-center
                   font-mono
-                  text-2xl
+                  text-xl
                   tracking-[0.25em]
                   shadow-sm
                 "
@@ -1401,9 +1309,9 @@ export default function LoginPage() {
                     isSubmitting
                   }
                   className="
-                  h-12
+                  h-10
                   w-full
-                  text-[15px]
+                  text-[14px]
                   shadow-sm
                 "
                 >

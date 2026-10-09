@@ -27,6 +27,7 @@ import {
   UserCog,
   Users,
   type LucideIcon,
+  MessageSquareText,
 } from "lucide-react";
 
 export interface NavItem {
@@ -55,6 +56,7 @@ export const NAV_SECTIONS: NavSection[] = [
     title: "Engagement & Leads",
     items: [
       { label: "Engagement & Leads", href: "/engagement-leads", icon: Users, badge: "48" },
+      { label: "Contact Enquiry", href: "/contact-enquiry", icon: MessageSquareText },
       { label: "Forms & Submissions", href: "/forms-submissions", icon: Mail, badge: "125" },
       { label: "Help Requests", href: "/requests", icon: ClipboardList, badge: "210" },
       { label: "Partners & CSR Enquiries", href: "/enquiries?category=csr", icon: Handshake, badge: "36" },

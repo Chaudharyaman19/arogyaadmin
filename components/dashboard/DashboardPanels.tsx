@@ -217,11 +217,11 @@ const defaultTopStats = [
     suffix: "/100",
     note: "Loading",
     icon: TrendingUp,
-    tone: "emerald",
+    tone: "peach",
     gradient:
-      "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #dcfce7 100%)",
-    borderColor: "#d1fae5",
-    numColor: "#15803d",
+      "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #ffedd5 100%)",
+    borderColor: "#fed7aa",
+    numColor: "#c2410c",
     footer:
       "View full SEO report",
     href: "/pages",
@@ -232,11 +232,11 @@ const defaultTopStats = [
     value: "—",
     note: "Loading",
     icon: FileText,
-    tone: "violet",
+    tone: "coral",
     gradient:
-      "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #ede9fe 100%)",
-    borderColor: "#e9d5ff",
-    numColor: "#6d28d9",
+      "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #fee2e2 100%)",
+    borderColor: "#fecaca",
+    numColor: "#dc2626",
     footer:
       "View all pages",
     href: "/pages",
@@ -247,7 +247,7 @@ const defaultTopStats = [
     value: "—",
     note: "Loading",
     icon: FileSearch,
-    tone: "amber",
+    tone: "apricot",
     gradient:
       "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #fef3c7 100%)",
     borderColor: "#fde68a",
@@ -263,11 +263,11 @@ const defaultTopStats = [
     suffix: "",
     note: "Not Connected",
     icon: Search,
-    tone: "blue",
+    tone: "rose",
     gradient:
-      "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #dbeafe 100%)",
-    borderColor: "#bfdbfe",
-    numColor: "#1d4ed8",
+      "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #ffe4e6 100%)",
+    borderColor: "#fecdd3",
+    numColor: "#be123c",
     footer:
       "View details",
     href: "/seo",
@@ -279,11 +279,11 @@ const defaultTopStats = [
     value: "—",
     note: "Loading",
     icon: Users,
-    tone: "rose",
+    tone: "gold",
     gradient:
-      "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #ffe4e6 100%)",
-    borderColor: "#fecdd3",
-    numColor: "#be123c",
+      "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #fef9c3 100%)",
+    borderColor: "#fef08a",
+    numColor: "#a16207",
     footer:
       "View all submissions",
     href: "/submissions",
@@ -295,11 +295,11 @@ const defaultTopStats = [
     value: "—",
     note: "Loading",
     icon: Target,
-    tone: "emerald",
+    tone: "salmon",
     gradient:
-      "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #ccfbf1 100%)",
-    borderColor: "#a7f3d0",
-    numColor: "#0f766e",
+      "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #ffe4d6 100%)",
+    borderColor: "#fdc9b0",
+    numColor: "#ea580c",
     footer:
       "View analytics",
     href: "/analytics",
@@ -321,6 +321,22 @@ const toneClass = {
 
   rose:
     "bg-rose-50 text-rose-700 ring-rose-100",
+
+  // Warm "sunset" tones used by the dashboard KPI cards
+  peach:
+    "bg-orange-50 text-orange-700 ring-orange-100",
+
+  coral:
+    "bg-red-50 text-red-600 ring-red-100",
+
+  apricot:
+    "bg-amber-50 text-amber-700 ring-amber-100",
+
+  gold:
+    "bg-yellow-50 text-yellow-700 ring-yellow-100",
+
+  salmon:
+    "bg-orange-50 text-orange-600 ring-orange-100",
 } as const;
 
 /* =========================================================

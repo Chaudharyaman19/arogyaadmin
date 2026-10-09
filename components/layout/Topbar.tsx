@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState, type ComponentType } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
-import { AstronautIcon } from "@/components/icons/BrandIcons";
+import { motion } from "framer-motion";
+import { FaUserAstronaut } from "react-icons/fa";
 import {
   Menu,
   X,
@@ -17,13 +18,7 @@ import {
   Sun,
   Moon,
   Sunrise,
-  Search,
-  AlertTriangle,
-  HeartHandshake,
   Mail,
-  FolderKanban,
-  HandHeart,
-  CheckCheck,
   CalendarDays,
   Check,
   ArrowUpRight,
@@ -46,14 +41,15 @@ import {
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 
+import LottieAvatar from "@/components/LottieAvatar";
 import { authApi } from "@/lib/authApi";
 import { getSwal } from "@/lib/swal";
 import { casesApi, SlaBreach } from "@/lib/casesApi";
 import {
   adminNotificationsApi,
   AdminNotificationItem,
-  AdminNotificationType,
 } from "@/lib/adminNotificationsApi";
+import NotificationsModal, { DEMO_NOTIFICATIONS } from "./NotificationsModal";
 import { ApiRequestError } from "@/lib/api";
 import { externalServiceApi } from "@/lib/externalServiceApi";
 import { settingsApi } from "@/lib/settingsApi";
@@ -71,23 +67,8 @@ import { Input } from "@/components/ui/Input";
 
 const EXPIRY_POPUP_DISMISS_KEY = "ms_admin_expiry_popup_dismissed_on";
 
-// 3.5MB lottie runtime — defer until the avatar actually needs it so the
-// dashboard shell never waits on it during navigation.
-const AvatarLottie = dynamic(
-  () => import("@lottiefiles/dotlottie-react").then((mod) => mod.DotLottieReact),
-  { ssr: false, loading: () => null }
-);
-
 /** A service is "urgent" once it is expired or inside its last two weeks. */
 const URGENT_DAYS = 14;
-
-const NOTIFICATION_ICONS: Record<AdminNotificationType, typeof HeartHandshake> = {
-  DONATION: HeartHandshake,
-  ENQUIRY: Mail,
-  CASE: FolderKanban,
-  VOLUNTEER: HandHeart,
-  SYSTEM_EXPIRY: AlertTriangle,
-};
 
 type CategoryIcon = ComponentType<{ className?: string }>;
 
@@ -130,23 +111,7 @@ const FAR_FUTURE = "2099-01-01T00:00:00.000Z";
 
 type Countdown = ReturnType<typeof useCountdown>;
 
-function timeAgo(iso: string): string {
-  const minutes = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
 
-  if (minutes < 1) return "just now";
-
-  if (minutes < 60) {
-    return `${minutes}m ago`;
-  }
-
-  const hours = Math.floor(minutes / 60);
-
-  if (hours < 24) {
-    return `${hours}h ago`;
-  }
-
-  return `${Math.floor(hours / 24)}d ago`;
-}
 
 function currentPageTitle(pathname: string): string {
   for (const section of NAV_SECTIONS) {
@@ -192,43 +157,61 @@ function ServiceClock({
   expiryDate: string;
   onClick: () => void;
 }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const days = daysRemaining(expiryDate);
   const urgent = countdown.isExpired || days <= URGENT_DAYS;
-  const palette = countdown.isExpired
-    ? { card: "border-red-200 bg-gradient-to-br from-red-50 via-white to-rose-50 hover:border-red-300", label: "text-red-700", digit: "text-red-700", unit: "text-red-600", dot: "animate-pulse bg-red-500", icon: "border-red-200 bg-red-50 text-red-600", live: "bg-red-100 text-red-700" }
+  // Light glass card (citycalls navbar recipe, light variant): translucent white, white
+  // hairline border, inset top highlight and a soft drop shadow. Only the accent changes with status.
+  const tone = countdown.isExpired
+    ? { accent: "text-red-600", glow: "bg-red-300/40", dot: "bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.7)] animate-pulse", ring: "ring-red-200" }
     : urgent
-      ? { card: "border-amber-200 bg-gradient-to-br from-amber-50 via-white to-orange-50 hover:border-amber-300", label: "text-amber-700", digit: "text-amber-700", unit: "text-amber-600", dot: "animate-pulse bg-amber-500", icon: "border-amber-200 bg-amber-50 text-amber-600", live: "bg-amber-100 text-amber-700" }
-      : { card: "border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-teal-50 hover:border-emerald-300", label: "text-emerald-700", digit: "text-emerald-700", unit: "text-emerald-600", dot: "bg-emerald-500", icon: "border-emerald-200 bg-emerald-50 text-emerald-600", live: "bg-emerald-100 text-emerald-700" };
+      ? { accent: "text-amber-600", glow: "bg-amber-200/50", dot: "bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.7)] animate-pulse", ring: "ring-amber-200" }
+      : { accent: "text-emerald-600", glow: "bg-emerald-200/50", dot: "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.7)]", ring: "ring-emerald-200" };
   const parts = [
-    { value: countdown.days, unit: "Days" },
-    { value: countdown.hours, unit: "Hours" },
-    { value: countdown.minutes, unit: "Mins" },
-    { value: countdown.seconds, unit: "Secs" },
+    { value: mounted ? countdown.days : 0, unit: "Days" },
+    { value: mounted ? countdown.hours : 0, unit: "Hours" },
+    { value: mounted ? countdown.minutes : 0, unit: "Mins" },
+    { value: mounted ? countdown.seconds : 0, unit: "Secs" },
   ];
 
   return (
     <button
       type="button"
       onClick={onClick}
-      title={`${name} — renews ${new Date(expiryDate).toLocaleDateString()}`}
-      className={`group flex h-[46px] min-w-[210px] items-center gap-2 rounded-none border px-2.5 text-left shadow-[0_4px_14px_rgba(15,23,42,0.06)] transition-all hover:-translate-y-px hover:shadow-[0_7px_20px_rgba(15,23,42,0.10)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent ${palette.card}`}
+      suppressHydrationWarning
+      title={mounted ? `${name} — renews ${new Date(expiryDate).toLocaleDateString()}` : name}
+      className="group relative flex h-[52px] min-w-[212px] items-center gap-2.5 overflow-hidden rounded-2xl border border-white/80 bg-[linear-gradient(135deg,rgba(240,253,244,0.75),rgba(255,255,255,0.55))] pl-2.5 pr-3 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_8px_24px_-12px_rgba(0,41,27,0.25),0_0_0_1px_rgba(0,41,27,0.06)] backdrop-blur-2xl backdrop-saturate-150 transition-all duration-300 hover:-translate-y-px hover:shadow-[inset_0_1px_0_rgba(255,255,255,1),0_12px_28px_-12px_rgba(0,41,27,0.32),0_0_0_1px_rgba(0,41,27,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00291b]"
     >
-      <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-none border shadow-inner ${palette.icon}`}>
-        <Icon className="h-4 w-4" />
+      {/* soft status glow + glass sheen */}
+      <span aria-hidden className={`pointer-events-none absolute -right-6 -top-10 h-24 w-24 rounded-full blur-2xl ${tone.glow}`} />
+      <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/60 to-transparent" />
+
+      <span className={`relative grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_2px_6px_rgba(0,41,27,0.06)] ring-1 ${tone.ring} ${tone.accent}`}>
+        <Icon className="h-[18px] w-[18px]" />
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="mb-0.5 flex items-center justify-between gap-2">
-          <span className={`truncate text-[10px] font-semibold ${palette.label}`}>{label} Renews In</span>
-          <span className={`inline-flex shrink-0 items-center gap-1 rounded-none px-2 py-0.5 text-[8px] font-semibold ${palette.live}`}>
-            <span className={`h-1.5 w-1.5 rounded-full ${palette.dot}`} />
+
+      <span className="relative min-w-0 flex-1">
+        <span className="mb-1 flex items-center justify-between gap-2">
+          <span className="truncate text-[10.5px] font-semibold tracking-wide text-[#00291b]">{label} Renews In</span>
+          <span className={`inline-flex shrink-0 items-center gap-1 rounded-full bg-white/80 px-2 py-[2px] text-[8px] font-semibold uppercase tracking-wider ring-1 ring-slate-200 ${tone.accent}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${tone.dot}`} />
             {countdown.isExpired ? "Expired" : "Live"}
           </span>
         </span>
-        <span className="grid grid-cols-4 divide-x divide-current/15">
+        <span className="grid grid-cols-4 gap-1">
           {parts.map((part) => (
-            <span key={part.unit} className={`flex flex-col items-center justify-center px-1 ${palette.digit}`}>
-              <span className="font-mono text-[12px] font-semibold leading-none tabular-nums">{String(part.value).padStart(2, "0")}</span>
-              <small className={`mt-0.5 text-[5.5px] font-semibold uppercase leading-none tracking-wide ${palette.unit}`}>{part.unit}</small>
+            <span
+              key={part.unit}
+              className="flex flex-col items-center justify-center rounded-lg bg-white/75 py-[3px] shadow-[inset_0_1px_0_rgba(255,255,255,1)] ring-1 ring-[#00291b]/10"
+            >
+              <span className="font-mono text-[13px] font-bold leading-none tabular-nums text-[#00291b]" suppressHydrationWarning>
+                {String(part.value).padStart(2, "0")}
+              </span>
+              <small className="mt-[2px] text-[6px] font-semibold uppercase leading-none tracking-wider text-slate-500">{part.unit}</small>
             </span>
           ))}
         </span>
@@ -247,6 +230,8 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  // Sample notifications shown in the popup until the backend has a notifications feed
+  const [demoNotifications, setDemoNotifications] = useState(DEMO_NOTIFICATIONS);
 
   const [expiringOpen, setExpiringOpen] = useState(false);
   const [dateOpen, setDateOpen] = useState(false);
@@ -259,7 +244,8 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
   const [systemSettings, setSystemSettings] = useState<Settings | null>(null);
   const [expiryPopupOpen, setExpiryPopupOpen] = useState(false);
 
-  const [notifications, setNotifications] = useState<AdminNotificationItem[]>([]);
+  // Backend notifications only feed the unread count for now; the popup shows sample data
+  const [, setNotifications] = useState<AdminNotificationItem[]>([]);
 
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -326,7 +312,15 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
 
     adminNotificationsApi
       .list()
-      .then(({ notifications, unreadCount }) => {
+      .then((result) => {
+        // The backend has no /notifications/admin route yet, so a failed
+        // request currently resolves to a bare mock `[]` rather than the
+        // expected `{ notifications, unreadCount }` shape — destructuring
+        // that blindly left both values `undefined` and crashed the whole
+        // dashboard (Topbar wraps every page) on `.length`. Guard both
+        // regardless of what actually comes back.
+        const notifications = Array.isArray(result?.notifications) ? result.notifications : [];
+        const unreadCount = typeof result?.unreadCount === "number" ? result.unreadCount : 0;
         setNotifications(notifications);
         setUnreadCount(unreadCount);
       })
@@ -379,8 +373,12 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
     )
     .sort(byExpiry);
 
-  const hostingCountdown = useCountdown(hostingService?.expiryDate ?? FAR_FUTURE);
-  const domainCountdown = useCountdown(domainService?.expiryDate ?? FAR_FUTURE);
+  const fallbackDomainExpiry = "2027-05-31T00:00:00.000Z";
+  const fallbackHostingExpiry = "2027-05-31T00:00:00.000Z";
+  const domainExpiryDate = domainService?.expiryDate ?? fallbackDomainExpiry;
+  const hostingExpiryDate = hostingService?.expiryDate ?? fallbackHostingExpiry;
+  const hostingCountdown = useCountdown(hostingExpiryDate);
+  const domainCountdown = useCountdown(domainExpiryDate);
 
   const urgentOtherCount = otherServices.filter(
     (service) => daysRemaining(service.expiryDate) <= URGENT_DAYS
@@ -417,6 +415,9 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
 
   const goToServices = () => {
     setExpiringOpen(false);
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("arogya_system_services_grant");
+    }
     router.push("/system-services");
   };
 
@@ -458,36 +459,14 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
     setMenuOpen((value) => !value);
   };
 
-  const handleNotificationClick = async (notification: AdminNotificationItem) => {
-    setNotifOpen(false);
-
-    setNotifications((previous) =>
-      previous.filter((item) => item._id !== notification._id)
-    );
-
-    setUnreadCount((previous) => Math.max(0, previous - 1));
-
-    adminNotificationsApi.markRead(notification._id).catch(() => { });
-
-    if (notification.link) {
-      router.push(notification.link);
-    }
-  };
-
-  const handleMarkAllRead = async () => {
-    setNotifications([]);
-    setUnreadCount(0);
-
-    adminNotificationsApi.markAllRead().catch(() => { });
-  };
-
   const bellBadgeCount = breaches.length + unreadCount;
+  const bellCount = bellBadgeCount || demoNotifications.filter((n) => n.unread).length;
+  const closeNotifications = useCallback(() => setNotifOpen(false), []);
 
   const handleLogout = async () => {
     setMenuOpen(false);
 
     const Swal = await getSwal();
-
     const result = await Swal.fire({
       title: "Logout?",
       text: "You will be logged out from admin panel",
@@ -505,27 +484,28 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
     });
 
     if (result.isConfirmed) {
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("ms_admin_auth");
-        sessionStorage.clear();
-      }
-      dispatch(logout());
-
       await Swal.fire({
         title: "Logged Out!",
         text: "You have been successfully logged out",
         icon: "success",
-        timer: 1000,
+        timer: 1500,
         showConfirmButton: false,
         background: "#1e2433",
         color: "#e2e8f0",
       });
 
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
-      } else {
-        router.replace("/login");
+      if (refreshToken) {
+        await authApi.logout(refreshToken).catch(() => { });
       }
+
+      dispatch(logout());
+
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("ms_admin_auth");
+        sessionStorage.clear();
+      }
+
+      router.push("/login");
     }
   };
 
@@ -563,72 +543,72 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
             <Menu className="h-[18px] w-[18px]" />
           </button>
 
-          {/* ACTIVE PAGE TITLE / BREADCRUMB */}
-          {pagesSubRouteLabel(pathname) ? (
-            <h1 className="flex min-w-0 items-center gap-1.5 text-[15px] font-semibold tracking-tight">
-              <span
-                className="truncate"
-                style={{ color: "#4B1426" }}
+          {/* ACTIVE PAGE TITLE / BREADCRUMB (HIDDEN ON DASHBOARD AS IT IS PLACED IN CONTENT AREA) */}
+          {!isDashboard && (
+            pagesSubRouteLabel(pathname) ? (
+              <h1 className="flex min-w-0 items-center gap-1.5 text-[15px] font-semibold tracking-tight">
+                <span
+                  className="truncate"
+                  style={{ color: "#00291b" }}
+                >
+                  {currentPageTitle(pathname)}
+                </span>
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-300" />
+                <span className="truncate font-bold" style={{ color: "#23471d" }}>
+                  {pagesSubRouteLabel(pathname)}
+                </span>
+              </h1>
+            ) : (
+              <h1
+                className="truncate text-[15px] font-bold tracking-tight"
+                style={{ color: "#00291b" }}
               >
                 {currentPageTitle(pathname)}
-              </span>
-              <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-300" />
-              <span className="truncate font-bold" style={{ color: "#23471d" }}>
-                {pagesSubRouteLabel(pathname)}
-              </span>
-            </h1>
-          ) : (
-            <h1
-              className="truncate text-[15px] font-bold tracking-tight"
-              style={{ color: "#4B1426" }}
-            >
-              {currentPageTitle(pathname)}
-            </h1>
+              </h1>
+            )
           )}
 
-          {/* GREETING BADGE (DASHBOARD ONLY) */}
+          {/* GREETING (DASHBOARD ONLY - NO BORDER, NO SHADOW) */}
           {isDashboard && (
-            <div
-              className="topbar-enter flex items-center gap-2.5 bg-slate-50/80 px-3 py-1 rounded-xl border border-[#23471d]/25 group transition-all duration-300 hover:bg-white hover:border-[#23471d]/50 shadow-xs"
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="flex items-center gap-1.5 py-1"
             >
-              {/* Icon Circle */}
-              <div className="flex items-center justify-center w-7 h-7 rounded-full bg-white border border-slate-100 shadow-xs">
+              {/* Icon */}
+              <div className="flex items-center justify-center">
                 {greeting.icon}
               </div>
 
               {/* Text Content */}
-              <div className="flex flex-col leading-tight">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[12px] font-medium text-slate-700 tracking-tight">
-                    {greeting.text},
-                  </span>
-                  <span className="text-[12px] font-bold text-[#23471d] tracking-tight">
-                    {firstName}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <div className="relative flex items-center justify-center">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                    <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-green-500 animate-ping opacity-75" />
-                  </div>
-                  <span className="text-[10px] font-bold text-red-600 uppercase tracking-widest">
-                    {displayRole}
-                  </span>
-                </div>
+              <div className="flex items-center">
+                <span className="text-[13px] font-semibold text-[#23471d] tracking-tight">
+                  {greeting.text}
+                </span>
               </div>
-            </div>
+            </motion.div>
           )}
+        </div>
 
-          {/* SEARCH BOX */}
-          <div className="hidden lg:flex items-center relative ml-4 xl:ml-8">
-            <Search className="absolute left-3 text-slate-400 pointer-events-none" size={14} />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="pl-8 pr-3 py-1 w-44 xl:w-56 bg-white border-2 border-slate-300 shadow-xs rounded-full text-xs font-medium text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#23471d] focus:ring-4 focus:ring-[#23471d]/10 transition-all focus:w-52 xl:focus:w-64"
-            />
-          </div>
+        {/* CENTER – DOMAIN & HOSTING EXPIRE COUNTDOWN TIMERS */}
+        <div className="hidden lg:flex items-center justify-center gap-2.5 min-w-0 px-2">
+          <ServiceClock
+            label="Domain"
+            name={domainService?.name || "arogya.namogange.org"}
+            icon={Globe2}
+            countdown={domainCountdown}
+            expiryDate={domainExpiryDate}
+            onClick={goToServices}
+          />
+          <ServiceClock
+            label="Hosting"
+            name={hostingService?.name || "Server Hosting"}
+            icon={Server}
+            countdown={hostingCountdown}
+            expiryDate={hostingExpiryDate}
+            onClick={goToServices}
+          />
         </div>
 
         {/* RIGHT – ICONS & PROFILE */}
@@ -644,12 +624,14 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
               <HelpCircle size={18} className="text-[#23471d]" />
             </button>
             {activeTitle === "help" && (
-              <div
-                className="topbar-fade whitespace-nowrap absolute top-12 right-0 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg z-50"
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="whitespace-nowrap absolute top-12 right-0 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg z-50"
               >
                 Help &amp; Support
                 <div className="absolute -top-1 right-2 w-2 h-2 bg-slate-900 rotate-45" />
-              </div>
+              </motion.div>
             )}
           </div>
 
@@ -667,12 +649,14 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
               <BellRing size={18} className="text-[#23471d]" />
             </button>
             {activeTitle === "reminder" && !expiringOpen && (
-              <div
-                className="topbar-fade whitespace-nowrap absolute top-12 right-0 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg z-50"
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="whitespace-nowrap absolute top-12 right-0 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg z-50"
               >
                 Reminder List
                 <div className="absolute -top-1 right-2 w-2 h-2 bg-slate-900 rotate-45" />
-              </div>
+              </motion.div>
             )}
           </div>
 
@@ -688,110 +672,18 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
               title="Notifications"
             >
               <Bell size={18} className="text-[#23471d]" />
-              <span
-                className="topbar-badge-throb absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-rose-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-semibold shadow-lg"
-              >
-                {bellBadgeCount > 9 ? "9+" : bellBadgeCount || 3}
-              </span>
+              {bellCount > 0 && (
+                <motion.span
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-rose-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-semibold shadow-lg"
+                >
+                  {bellCount > 9 ? "9+" : bellCount}
+                </motion.span>
+              )}
             </button>
 
-            {notifOpen && (
-              <>
-                <button
-                  type="button"
-                  aria-label="Close notifications"
-                  className="fixed inset-0 z-10 cursor-default"
-                  onClick={() => setNotifOpen(false)}
-                />
-
-                <div className="absolute right-0 top-full z-20 mt-2 w-80 overflow-hidden rounded-[12px] border border-slate-200 bg-white shadow-2xl">
-                  <div className="max-h-[28rem] overflow-y-auto">
-                    {breaches.length > 0 && (
-                      <div className="border-b border-slate-200/70 pb-1">
-                        <p className="px-3 py-2 text-[11px] font-semibold text-slate-900">
-                          SLA breaches
-                        </p>
-
-                        {breaches.map((breach) => (
-                          <button
-                            type="button"
-                            key={`${breach._id}-${breach.breachReason}`}
-                            onClick={() => {
-                              setNotifOpen(false);
-                              router.push(`/cases/${breach._id}`);
-                            }}
-                            className="flex w-full items-start gap-2 px-3 py-2.5 text-left text-xs transition-colors hover:bg-slate-900/5"
-                          >
-                            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500" />
-                            <span>
-                              <span className="font-semibold text-slate-900">
-                                {breach.caseId}
-                              </span>
-                              <span className="mt-0.5 block text-[11px] font-medium text-slate-500">
-                                {breach.breachReason}
-                              </span>
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between px-3 py-2">
-                      <p className="text-[11px] font-semibold text-slate-900">
-                        Activity
-                      </p>
-
-                      {notifications.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={handleMarkAllRead}
-                          className="flex items-center gap-1 text-[10px] font-semibold text-accent hover:underline"
-                        >
-                          <CheckCheck className="h-3 w-3" />
-                          Mark all read
-                        </button>
-                      )}
-                    </div>
-
-                    {notifications.length === 0 ? (
-                      <p className="px-3 pb-3 text-xs font-medium text-slate-500">
-                        Nothing new right now.
-                      </p>
-                    ) : (
-                      notifications.map((notification) => {
-                        const Icon = NOTIFICATION_ICONS[notification.type];
-                        return (
-                          <button
-                            type="button"
-                            key={notification._id}
-                            onClick={() => handleNotificationClick(notification)}
-                            className="flex w-full items-start gap-2 bg-accent-soft/40 px-3 py-2.5 text-left text-xs transition-colors hover:bg-slate-900/5"
-                          >
-                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent">
-                              <Icon className="h-3 w-3" />
-                            </span>
-
-                            <span className="min-w-0 flex-1">
-                              <span className="block font-semibold text-slate-900">
-                                {notification.title}
-                              </span>
-                              <span className="block truncate text-[11px] font-medium text-slate-500">
-                                {notification.message}
-                              </span>
-                              <span className="mt-0.5 block text-[10px] text-slate-400">
-                                {timeAgo(notification.createdAt)}
-                              </span>
-                            </span>
-
-                            <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
-                          </button>
-                        );
-                      })
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
+            <NotificationsModal open={notifOpen} onClose={closeNotifications} items={demoNotifications} onItemsChange={setDemoNotifications} />
           </div>
 
           {/* Profile */}
@@ -815,12 +707,7 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <AvatarLottie
-                      src="/avatar-lottie.lottie"
-                      loop
-                      autoplay
-                      style={{ width: "100%", height: "100%", transform: "scale(1.2)" }}
-                    />
+                    <LottieAvatar style={{ width: "100%", height: "100%", transform: "scale(1.2)" }} />
                   )}
                 </div>
 
@@ -857,8 +744,11 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                   onClick={() => setMenuOpen(false)}
                 />
 
-                <div
-                  className="topbar-pop whitespace-nowrap absolute right-0 top-full mt-2 w-52 bg-white border border-slate-200 shadow-2xl rounded-xl overflow-hidden z-50"
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="whitespace-nowrap absolute right-0 top-full mt-2 w-52 bg-white border border-slate-200 shadow-2xl rounded-xl overflow-hidden z-50"
                 >
                   {/* Header */}
                   <div className="px-4 py-3 bg-gradient-to-r from-slate-50 to-white border-b border-slate-200">
@@ -875,8 +765,21 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                     }}
                     className="flex items-center gap-3 w-full px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 transition-colors duration-150"
                   >
-                    <AstronautIcon size={14} className="text-blue-600" />
+                    <FaUserAstronaut size={14} className="text-blue-600" />
                     <span className="font-medium">Manage Admin Users</span>
+                  </button>
+
+                  {/* Notification Settings */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      router.push("/settings");
+                      setMenuOpen(false);
+                    }}
+                    className="flex items-center gap-3 w-full px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 transition-colors duration-150"
+                  >
+                    <Bell size={14} className="text-[#15633a]" />
+                    <span className="font-medium">Notification Settings</span>
                   </button>
 
                   {/* Change Password */}
@@ -906,7 +809,7 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                     <LogOut size={14} />
                     <span className="font-semibold">Logout</span>
                   </button>
-                </div>
+                </motion.div>
               </>
             )}
           </div>

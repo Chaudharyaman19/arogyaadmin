@@ -143,7 +143,7 @@ export default function Sidebar({
 
           ${active
             ? `
-                bg-[linear-gradient(90deg,#1e5e1a_0%,#2a6d21_48%,#66871c_68%,#cb620c_92%,#b85208_100%)]
+                bg-[linear-gradient(90deg,#8b5a2b_0%,#2e7d32_100%)]
                 text-white
                 shadow-[0_3px_10px_rgba(0,0,0,0.32)]
               `
@@ -184,8 +184,8 @@ export default function Sidebar({
         flex-col
         overflow-hidden
         border-r
-        border-[#183E59]
-        bg-[#071f3c]
+        border-[#0b4a30]
+        bg-[#00291b]
         text-white
         shadow-[4px_0_18px_rgba(0,0,0,0.20)]
       "
@@ -207,6 +207,8 @@ export default function Sidebar({
           backgroundPosition: "center bottom",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
+          // The artwork is navy; shift it to the portal's dark green
+          filter: "hue-rotate(-70deg) saturate(1.15)",
         }}
       />
 
@@ -219,9 +221,9 @@ export default function Sidebar({
           z-[1]
           bg-[linear-gradient(
             180deg,
-            rgba(3,22,47,0.06)_0%,
-            rgba(3,25,50,0.04)_55%,
-            rgba(2,20,40,0.02)_100%
+            rgba(0,41,27,0.06)_0%,
+            rgba(0,41,27,0.04)_55%,
+            rgba(0,41,27,0.02)_100%
           )]
         "
       />
@@ -247,14 +249,8 @@ export default function Sidebar({
             h-[78px]
             items-center
             justify-center
-            rounded-[12px]
-            bg-white
             px-2
             py-1
-            shadow-[0_2px_8px_rgba(0,0,0,0.18)]
-            transition-all
-            duration-200
-            hover:shadow-[0_4px_14px_rgba(0,0,0,0.25)]
           "
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -323,7 +319,7 @@ export default function Sidebar({
                     uppercase
                     leading-[13px]
                     tracking-[0.035em]
-                    text-[#facc15]
+                    text-[#d4a373]
                   "
                   style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.4)" }}
                 >
@@ -334,7 +330,7 @@ export default function Sidebar({
                   className="
                     h-px
                     flex-1
-                    bg-[#668196]/20
+                    bg-[#6b9a82]/25
                   "
                 />
               </div>
@@ -365,14 +361,14 @@ export default function Sidebar({
           className="
             relative
             flex
-            h-[64px]
+            h-[46px]
             items-center
-            gap-[10px]
+            gap-[9px]
             overflow-hidden
             rounded-[9px]
             border
-            border-emerald-500/30
-            bg-[linear-gradient(90deg,#14532d_0%,#16a34a_55%,#15803d_100%)]
+            border-[#c4925a]/35
+            bg-[linear-gradient(90deg,#5c3a1e_0%,#8b5a2b_55%,#6b4226_100%)]
             px-[13px]
             text-white
             shadow-[0_4px_14px_rgba(0,0,0,0.24)]
@@ -393,8 +389,8 @@ export default function Sidebar({
             className="
               relative
               z-10
-              h-[29px]
-              w-[29px]
+              h-[22px]
+              w-[22px]
               shrink-0
               text-white
             "

@@ -67,9 +67,7 @@ export const authApi = {
   },
 
   changePassword: async (currentPassword: string, newPassword: string) => {
-    try {
-      await api.post("/auth/change-password", { currentPassword, newPassword });
-    } catch {}
+    await api.post("/auth/change-password", { currentPassword, newPassword });
     return { success: true };
   },
 
@@ -78,7 +76,7 @@ export const authApi = {
     if (res && (res.secret || res.manualKey)) {
       return {
         secret: res.secret || res.manualKey,
-        provisioningUri: res.provisioningUri || res.otpauthUrl || `otpauth://totp/BharatOrganic:${res.secret}?secret=${res.secret}&issuer=BharatOrganicExpo`,
+        provisioningUri: res.provisioningUri || res.otpauthUrl || `otpauth://totp/ArogyaSangoshthi:${res.secret}?secret=${res.secret}&issuer=ArogyaSangoshthi`,
         qrCodeUrl: res.qrCode,
       };
     }
@@ -86,43 +84,25 @@ export const authApi = {
   },
 
   confirmTwoFactor: async (code: string) => {
-    const res = await api.post<any>("/auth/verify-2fa", { token: code });
-    if (res && res.backupCodes) {
-      return { backupCodes: res.backupCodes };
-    }
-    return {
-      backupCodes: ["1234-5678", "8765-4321", "9988-7766", "4433-2211"],
-    };
+    const res = await api.post<any>("/auth/confirm-2fa", { token: code });
+    return { backupCodes: (res?.backupCodes ?? []) as string[] };
   },
 
   getMe: async () => {
-    try {
-      const res = await api.get<any>("/auth/me");
-      if (res && res.user) {
-        return {
-          userId: res.user.id || res.user._id,
-          name: res.user.name,
-          email: res.user.email,
-          phone: res.user.phone,
-          avatarUrl: res.user.avatarUrl || undefined,
-          userType: "INTERNAL",
-          roleSlug: res.user.role === "superadmin" ? "SUPER_ADMIN" : "EXPO_ADMIN",
-          permissions: ["*"],
-          twoFactorPending: false,
-        };
-      }
-    } catch {}
-
+    const res = await api.get<any>("/auth/me");
+    if (!res?.user) throw new Error("Could not load your session.");
     return {
-      userId: defaultMockAdmin.id,
-      name: defaultMockAdmin.name,
-      email: defaultMockAdmin.email,
-      phone: defaultMockAdmin.phone,
-      avatarUrl: undefined,
+      userId: res.user.id || res.user._id,
+      name: res.user.name,
+      email: res.user.email,
+      phone: res.user.phone,
+      avatarUrl: res.user.avatarUrl || undefined,
       userType: "INTERNAL",
-      roleSlug: defaultMockAdmin.roleSlug,
-      permissions: defaultMockAdmin.permissions,
-      twoFactorPending: false,
+      roleSlug: res.user.role === "superadmin" ? "SUPER_ADMIN" : "EXPO_ADMIN",
+      permissions: ["*"],
+      // Staff who still have to link Microsoft Authenticator go back to the setup screen.
+      // The seeded super admin has 2FA off, so this stays false for it.
+      twoFactorPending: Boolean(res.user.twoFactorPending),
     };
   },
 

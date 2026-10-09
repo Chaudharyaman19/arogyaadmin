@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Plus, Copy, Check, Pencil, Camera, Loader2, PowerOff, Power, Trash2, ExternalLink, User, ChevronLeft, ChevronRight } from "lucide-react";
 import { showSuccess, showError, showInfo, lazySwal } from "@/lib/toast";
+import LottieAvatar from "@/components/LottieAvatar";
+import { showUploadError } from "@/lib/uploadLimit";
 import typography from "../pages/PagesTypography.module.css";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
@@ -145,10 +147,10 @@ export default function StaffPage() {
       const result = await uploadApi.file(file);
       setForm((f) => ({ ...f, avatarUrl: result.url }));
       showSuccess("Avatar image uploaded!");
-    } catch {
-      const msg = "Could not upload that image. Try a different file.";
+    } catch (err) {
+      const msg = err instanceof Error && err.message ? err.message : "Could not upload that image. Try a different file.";
       setError(msg);
-      showError(msg);
+      showUploadError(msg);
     } finally {
       setUploadingAvatar(false);
     }
@@ -238,8 +240,8 @@ export default function StaffPage() {
         <div className="mb-[20px] flex shrink-0 items-center justify-between border-b-[2px] border-[#293681] pb-[8px]">
           <div>
             <h1
-              className="text-[19px] font-bold leading-[1.15] tracking-[-0.018em] text-[#23471d]"
-              style={{ color: "#23471d" }}
+              className="text-[19px] font-bold leading-[1.15] tracking-[-0.018em] text-[#4B1426]"
+              style={{ color: "#4B1426" }}
             >
               Staff &amp; Team Members
             </h1>
@@ -252,7 +254,7 @@ export default function StaffPage() {
             <button
               type="button"
               onClick={openInvite}
-              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] bg-[#4B1426] px-[14px] text-[8.5px] font-semibold text-white shadow-[0_5px_12px_rgba(75,20,38,0.25)] transition hover:bg-[#3a0f1d]"
+              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] bg-[#1b5e20] px-[14px] text-[8.5px] font-semibold text-white shadow-[0_5px_12px_rgba(27,94,32,0.25)] transition hover:bg-[#14491a]"
             >
               <Plus
                 className="h-[12px] w-[12px]"
@@ -270,8 +272,11 @@ export default function StaffPage() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
               <thead>
-                <tr className="h-[32px] border-b border-[#e8e5df] bg-[#233D4D]">
+                <tr className="h-[32px] border-b border-[#e8e5df] bg-[#111844]">
                   <th className="rounded-tl-[6px] px-[12px] py-[6px] text-[8.5px] font-bold text-white uppercase tracking-wider">
+                    Photo
+                  </th>
+                  <th className="px-[12px] py-[6px] text-[8.5px] font-bold text-white uppercase tracking-wider">
                     Name
                   </th>
                   <th className="px-[12px] py-[6px] text-[8.5px] font-bold text-white uppercase tracking-wider">
@@ -300,7 +305,7 @@ export default function StaffPage() {
               <tbody className="divide-y divide-[#f0f0ec]">
                 {loading ? (
                   <tr>
-                    <td colSpan={8} className="py-12 text-center">
+                    <td colSpan={9} className="py-12 text-center">
                       <div className="flex items-center justify-center gap-2 text-[11px] text-[#6c7587]">
                         <Loader2 className="h-4 w-4 animate-spin text-[#293681]" />
                         <span>Loading staff members...</span>
@@ -309,7 +314,7 @@ export default function StaffPage() {
                   </tr>
                 ) : staff.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-12 text-center text-[10px] text-[#6c7587]">
+                    <td colSpan={9} className="py-12 text-center text-[10px] text-[#6c7587]">
                       No staff accounts found.
                     </td>
                   </tr>
@@ -327,6 +332,22 @@ export default function StaffPage() {
                         key={s._id}
                         className="transition hover:bg-slate-50/80"
                       >
+                        {/* PHOTO — real avatar if uploaded, otherwise the placeholder animation */}
+                        <td className="px-[12px] py-[8px]">
+                          <div className="h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full border border-[#e2e8f0] bg-[#f8fafc]">
+                            {s.avatarUrl && s.avatarUrl.trim() !== "" ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={s.avatarUrl}
+                                alt={s.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <LottieAvatar style={{ width: "100%", height: "100%", transform: "scale(1.2)" }} />
+                            )}
+                          </div>
+                        </td>
+
                         {/* NAME — Burgundy/Wine color from previous email */}
                         <td className="px-[12px] py-[8px]">
                           <span className="text-[8.5px] font-semibold text-[#4B1426]">
@@ -505,7 +526,7 @@ export default function StaffPage() {
                     onClick={() => setCurrentPage(pageNum)}
                     className={`flex h-[22px] min-w-[22px] px-1.5 items-center justify-center rounded-[4px] border text-[8px] font-bold transition ${
                       safePage === pageNum
-                        ? "border-[#233D4D] bg-[#233D4D] text-white shadow-xs"
+                        ? "border-[#00291b] bg-[#00291b] text-white shadow-xs"
                         : "border-[#d8dce2] bg-white text-[#334155] hover:bg-slate-50"
                     }`}
                   >

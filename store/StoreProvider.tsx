@@ -96,8 +96,8 @@ export default function StoreProvider({ children }: { children: React.ReactNode 
     } else if (action?.type === "auth/setCredentials" || action?.type === "auth/updateAdmin") {
       if (action.payload) {
         const newAdmin = action.payload.admin || action.payload.user || state.auth.admin;
-        const newAccessToken = action.payload.accessToken || state.auth.accessToken || "mock-access-token";
-        const newRefreshToken = action.payload.refreshToken || state.auth.refreshToken || "mock-refresh-token";
+        const newAccessToken = action.payload.accessToken || state.auth.accessToken;
+        const newRefreshToken = action.payload.refreshToken || state.auth.refreshToken || "";
         
         if (typeof window !== "undefined" && newAdmin && newAccessToken) {
           localStorage.setItem("ms_admin_auth", JSON.stringify({

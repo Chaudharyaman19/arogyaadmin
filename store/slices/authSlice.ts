@@ -1,3 +1,5 @@
+import { authApi } from "@/lib/authApi";
+
 export interface AdminUser {
   id: string;
   name: string;
@@ -42,58 +44,15 @@ export const logout = () => ({
   type: "auth/logout",
 });
 
-export const loginAdmin = (payload: any) => async (dispatch: any) => {
-  let result: any;
-  if (payload?.totpCode) {
-    result = {
-      user: defaultAdminUser,
-      admin: defaultAdminUser,
-      requiresTwoFactor: false,
-      twoFactorSetupRequired: false,
-      accessToken: "mock-access-token",
-      refreshToken: "mock-refresh-token",
-    };
-    dispatch(setCredentials({
-      admin: defaultAdminUser,
-      accessToken: "mock-access-token",
-      refreshToken: "mock-refresh-token",
-    }));
-  } else {
-    result = {
-      user: defaultAdminUser,
-      admin: defaultAdminUser,
-      requiresTwoFactor: true,
-      tempToken: "mock-2fa-temp-token",
-      twoFactorSetupRequired: false,
-      accessToken: "",
-      refreshToken: "",
-    };
-  }
+// Thunks for StoreProvider's dispatch, which adds `.unwrap()` to the returned promise.
 
-  const promise: any = Promise.resolve(result);
-  promise.unwrap = async () => result;
-  return promise;
-};
+/** Step 1: password check against backend-arogya. Tokens are stored by the login page. */
+export const loginAdmin = (payload: { email: string; password: string; totpCode?: string }) => async () =>
+  authApi.login(payload.email, payload.password, payload.totpCode);
 
-export const verifyTwoFactor = (payload: any) => async (dispatch: any) => {
-  const result = {
-    user: defaultAdminUser,
-    admin: defaultAdminUser,
-    requiresTwoFactor: false,
-    twoFactorSetupRequired: false,
-    accessToken: "mock-access-token",
-    refreshToken: "mock-refresh-token",
-  };
-  dispatch(setCredentials({
-    admin: defaultAdminUser,
-    accessToken: "mock-access-token",
-    refreshToken: "mock-refresh-token",
-  }));
-
-  const promise: any = Promise.resolve(result);
-  promise.unwrap = async () => result;
-  return promise;
-};
+/** Step 2: Microsoft Authenticator code (or a backup code) for the pending sign-in. */
+export const verifyTwoFactor = (payload: { totpCode: string; tempToken: string }) => async () =>
+  authApi.verifyTwoFactor(payload.totpCode, payload.tempToken);
 
 export const updateAdmin = (payload: Partial<AdminUser>) => ({
   type: "auth/updateAdmin",

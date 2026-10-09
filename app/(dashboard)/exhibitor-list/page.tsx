@@ -28,7 +28,6 @@ import {
   Plus,
   RefreshCw,
   Search,
-  Settings,
   ShieldCheck,
   Sparkles,
   Tag,
@@ -37,6 +36,8 @@ import {
   X,
 } from "lucide-react";
 import { createToast, lazySwal } from "@/lib/toast";
+import { partnerLogosApi, type PartnerCategory, type PartnerLogo } from "@/lib/partnerLogosApi";
+import { ApiRequestError } from "@/lib/api";
 
 // SweetAlert2 theme matching admin portal dark style
 const Toast = createToast({
@@ -64,6 +65,9 @@ export interface ExhibitorItem {
   _id: string;
   name: string;
   category: string;
+  categoryId: string;
+  categoryColor: string;
+  designation: string;
   location: string;
   order: number;
   logo: string;
@@ -75,7 +79,31 @@ export interface ExhibitorItem {
   updatedBy?: string;
 }
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+// Logos and categories come from backend-arogya (/api/v1/partners) and show on the website's Partners page
+const WEBSITE_PARTNERS_URL = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/partners`;
+
+const errorMessage = (err: unknown, fallback: string) =>
+  err instanceof ApiRequestError || err instanceof Error ? err.message || fallback : fallback;
+
+/** Map an API logo to the row shape this page renders (numeric id = position in the list). */
+const toItem = (logo: PartnerLogo, index: number): ExhibitorItem => ({
+  id: index + 1,
+  _id: logo._id,
+  name: logo.name,
+  category: logo.categoryName,
+  categoryId: logo.categoryId,
+  categoryColor: logo.categoryColor || "#0a4b9c",
+  designation: logo.designation,
+  location: "",
+  order: logo.order,
+  logo: logo.logo,
+  altText: logo.logoAlt,
+  websiteUrl: logo.websiteUrl,
+  status: logo.status,
+  updatedAt: formatTimestampFrom(logo.updatedAt),
+  fileSize: logo.fileSize,
+  updatedBy: logo.updatedBy,
+});
 
 const formatTimestamp = () => {
   const d = new Date();
@@ -111,76 +139,6 @@ const formatTimestampFrom = (val?: string) => {
   } catch {
     return val;
   }
-};
-
-const INITIAL_EXHIBITORS: ExhibitorItem[] = [
-  { id: 1, _id: "ex1", name: "THE WORLD OF MARĪCT", category: "ORGANIC FOOD", location: "India", order: 1, logo: "/exhibitors/1.jpg", altText: "THE WORLD OF MARĪCT Organic Food Exhibitor Logo", status: "Published", updatedAt: "30 May 2026, 11:30 AM", updatedBy: "Vansh Chaudhary", fileSize: "9.3 KB" },
-  { id: 2, _id: "ex2", name: "SNOWFLAKZ", category: "ORGANIC FOOD", location: "India", order: 2, logo: "/exhibitors/2.jpg", altText: "SNOWFLAKZ Organic Expo Brand Logo", status: "Published", updatedAt: "30 May 2026, 10:15 AM", updatedBy: "Vansh Chaudhary", fileSize: "13.8 KB" },
-  { id: 3, _id: "ex3", name: "The Pahari Life", category: "ORGANIC FOOD", location: "Himachal Pradesh", order: 3, logo: "/exhibitors/3.jpg", altText: "The Pahari Life Natural Himalayan Organic Products Logo", status: "Published", updatedAt: "29 May 2026, 04:45 PM", updatedBy: "Vansh Chaudhary", fileSize: "11.8 KB" },
-  { id: 4, _id: "ex4", name: "Heritiage Oils", category: "ORGANIC FOOD", location: "India", order: 4, logo: "/exhibitors/4.jpg", altText: "Heritage Oils Cold Pressed Cooking Oils Exhibitor Logo", status: "Published", updatedAt: "29 May 2026, 02:20 PM", updatedBy: "Vansh Chaudhary", fileSize: "20.2 KB" },
-  { id: 5, _id: "ex5", name: "Tripti Natural Himachal", category: "NATURAL CARE", location: "Himachal Pradesh", order: 5, logo: "/exhibitors/5.jpg", altText: "Tripti Natural Himachal Honey and Organic Care Logo", status: "Published", updatedAt: "28 May 2026, 06:10 PM", updatedBy: "Vansh Chaudhary", fileSize: "17.1 KB" },
-  { id: 6, _id: "ex6", name: "FARMIYA ORGANICS", category: "AGRICULTURE", location: "India", order: 6, logo: "/exhibitors/6.jpg", altText: "FARMIYA ORGANICS Sustainable Agriculture Logo", status: "Published", updatedAt: "28 May 2026, 01:15 PM", updatedBy: "Vansh Chaudhary", fileSize: "16.3 KB" },
-  { id: 7, _id: "ex7", name: "Saatwik Aaruyeda", category: "AYURVEDA", location: "India", order: 7, logo: "/exhibitors/7.jpg", altText: "Saatwik Ayurveda Traditional Herbal Products Logo", status: "Published", updatedAt: "27 May 2026, 11:05 AM", updatedBy: "Vansh Chaudhary", fileSize: "12.7 KB" },
-  { id: 8, _id: "ex8", name: "The Himavan Essence", category: "AYURVEDA", location: "India", order: 8, logo: "/exhibitors/8.jpg", altText: "The Himavan Essence Essential Herbs and Oils Logo", status: "Published", updatedAt: "27 May 2026, 09:40 AM", updatedBy: "Vansh Chaudhary", fileSize: "9.8 KB" },
-  { id: 9, _id: "ex9", name: "Prabhushree", category: "ORGANIC FOOD", location: "India", order: 9, logo: "/exhibitors/9.jpg", altText: "Prabhushree Pure Spices and Organic Foods Logo", status: "Published", updatedAt: "26 May 2026, 05:30 PM", updatedBy: "Vansh Chaudhary", fileSize: "9.3 KB" },
-  { id: 10, _id: "ex10", name: "SPICES & HERBS", category: "ORGANIC FOOD", location: "India", order: 10, logo: "/exhibitors/10.jpg", altText: "Van Vibhuti Spices and Herbs Natural Brand Logo", status: "Published", updatedAt: "26 May 2026, 03:50 PM", updatedBy: "Vansh Chaudhary", fileSize: "11.4 KB" },
-  { id: 11, _id: "ex11", name: "Etbar", category: "NATURAL CARE", location: "India", order: 11, logo: "/exhibitors/11.jpg", altText: "Etbar The Purity You Can Trust Organic Care Logo", status: "Published", updatedAt: "25 May 2026, 12:25 PM", updatedBy: "Vansh Chaudhary", fileSize: "12.7 KB" },
-  { id: 12, _id: "ex12", name: "Safe Agri", category: "AGRICULTURE", location: "India", order: 12, logo: "/exhibitors/12.jpg", altText: "Safe Agri Farm Science and Organic Farming Logo", status: "Published", updatedAt: "25 May 2026, 10:00 AM", updatedBy: "Vansh Chaudhary", fileSize: "11.1 KB" },
-  { id: 13, _id: "ex13", name: "SHREE HARI", category: "AYURVEDA", location: "India", order: 13, logo: "/exhibitors/13.jpg", altText: "Shree Hari Nursery and Raw Herbs Exhibitor Logo", status: "Published", updatedAt: "24 May 2026, 04:15 PM", updatedBy: "Vansh Chaudhary", fileSize: "14.5 KB" },
-  { id: 14, _id: "ex14", name: "Ropuiliani", category: "ORGANIC FOOD", location: "India", order: 14, logo: "/exhibitors/14.jpg", altText: "Ropuiliani Farmers Producer Company Limited Logo", status: "Published", updatedAt: "24 May 2026, 02:40 PM", updatedBy: "Vansh Chaudhary", fileSize: "15.1 KB" },
-  { id: 15, _id: "ex15", name: "VEER FITNESS", category: "HEALTH & WELLNESS", location: "India", order: 15, logo: "/exhibitors/15.jpg", altText: "VEER FITNESS Health and Sports Wellness Brand Logo", status: "Published", updatedAt: "23 May 2026, 11:55 AM", updatedBy: "Vansh Chaudhary", fileSize: "12.0 KB" },
-  { id: 16, _id: "ex16", name: "Pratham Pahal", category: "AGRICULTURE", location: "India", order: 16, logo: "/exhibitors/16.jpg", altText: "Pratham Pahal Medical and Agricultural Consultancy Logo", status: "Published", updatedAt: "23 May 2026, 09:10 AM", updatedBy: "Vansh Chaudhary", fileSize: "12.5 KB" },
-  { id: 17, _id: "ex17", name: "V S Natural", category: "NATURAL CARE", location: "India", order: 17, logo: "/exhibitors/17.jpg", altText: "V S Natural Agro Foods and Wellness Products Logo", status: "Published", updatedAt: "22 May 2026, 03:30 PM", updatedBy: "Vansh Chaudhary", fileSize: "11.9 KB" },
-  { id: 18, _id: "ex18", name: "Viraj Agro Foods", category: "ORGANIC FOOD", location: "India", order: 18, logo: "/exhibitors/18.jpg", altText: "Viraj Agro Foods Cold Pressed Mustard Oil Logo", status: "Published", updatedAt: "22 May 2026, 01:20 PM", updatedBy: "Vansh Chaudhary", fileSize: "17.4 KB" },
-  { id: 19, _id: "ex19", name: "CFEI", category: "AGRICULTURE", location: "India", order: 19, logo: "/exhibitors/19.jpg", altText: "CFEI Agri Cluster and Farmer Eco Initiative Logo", status: "Published", updatedAt: "21 May 2026, 05:45 PM", updatedBy: "Vansh Chaudhary", fileSize: "13.8 KB" },
-  { id: 20, _id: "ex20", name: "PELLE NUDA", category: "NATURAL CARE", location: "India", order: 20, logo: "/exhibitors/20.jpg", altText: "PELLE NUDA Skincare with Purity Brand Logo", status: "Published", updatedAt: "21 May 2026, 11:15 AM", updatedBy: "Vansh Chaudhary", fileSize: "14.1 KB" },
-  { id: 21, _id: "ex21", name: "Dadu Fresh", category: "ORGANIC FOOD", location: "India", order: 21, logo: "/exhibitors/21.jpg", altText: "Dadu Fresh Love Nature Stay Healthy Organic Logo", status: "Published", updatedAt: "20 May 2026, 04:50 PM", updatedBy: "Vansh Chaudhary", fileSize: "42.5 KB" },
-  { id: 22, _id: "ex22", name: "Bhukranti", category: "AGRICULTURE", location: "India", order: 22, logo: "/exhibitors/22.jpg", altText: "Bhukranti Eco Friendly Soil Bio Fertilizer Logo", status: "Published", updatedAt: "20 May 2026, 10:30 AM", updatedBy: "Vansh Chaudhary", fileSize: "98.5 KB" },
-  { id: 23, _id: "ex23", name: "Nutrelis", category: "HEALTH & WELLNESS", location: "India", order: 23, logo: "/exhibitors/23.jpg", altText: "Nutrelis Agro Food Natural Nutrition Logo", status: "Published", updatedAt: "19 May 2026, 03:40 PM", updatedBy: "Vansh Chaudhary", fileSize: "70.2 KB" },
-  { id: 24, _id: "ex24", name: "Herbal Eco", category: "AYURVEDA", location: "India", order: 24, logo: "/exhibitors/24.jpg", altText: "Herbal Eco Holistic Natural Wellness Logo", status: "Published", updatedAt: "19 May 2026, 01:10 PM", updatedBy: "Vansh Chaudhary", fileSize: "40.5 KB" },
-  { id: 25, _id: "ex25", name: "Khasiyat", category: "ORGANIC FOOD", location: "India", order: 25, logo: "/exhibitors/25.jpg", altText: "Khasiyat Traditional Taste Organic Food Logo", status: "Published", updatedAt: "18 May 2026, 05:25 PM", updatedBy: "Vansh Chaudhary", fileSize: "40.8 KB" },
-  { id: 26, _id: "ex26", name: "Shree Ratnam", category: "AYURVEDA", location: "India", order: 26, logo: "/exhibitors/26.jpg", altText: "Shree Ratnam Herbal and Ayurveda Remedies Logo", status: "Published", updatedAt: "18 May 2026, 11:35 AM", updatedBy: "Vansh Chaudhary", fileSize: "19.5 KB" },
-  { id: 27, _id: "ex27", name: "Star Holo India", category: "OTHERS", location: "India", order: 27, logo: "/exhibitors/27.jpg", altText: "Star Holo India Organic Security Packaging Logo", status: "Published", updatedAt: "17 May 2026, 04:15 PM", updatedBy: "Vansh Chaudhary", fileSize: "48.8 KB" },
-  { id: 28, _id: "ex28", name: "Baiso Organics", category: "ORGANIC FOOD", location: "India", order: 28, logo: "/exhibitors/28.jpg", altText: "Baiso Organics Farm Fresh Products Logo", status: "Published", updatedAt: "17 May 2026, 09:50 AM", updatedBy: "Vansh Chaudhary", fileSize: "51.4 KB" },
-  { id: 29, _id: "ex29", name: "Kaki maa", category: "ORGANIC FOOD", location: "India", order: 29, logo: "/exhibitors/29.jpg", altText: "Kaki Maa Desi Achar and Organic Condiments Logo", status: "Published", updatedAt: "16 May 2026, 02:45 PM", updatedBy: "Vansh Chaudhary", fileSize: "56.5 KB" },
-  { id: 30, _id: "ex30", name: "Moorahav Organic", category: "AGRICULTURE", location: "India", order: 30, logo: "/exhibitors/30.jpg", altText: "Moorahav Organic Sustainable Crop Solutions Logo", status: "Published", updatedAt: "16 May 2026, 10:20 AM", updatedBy: "Vansh Chaudhary", fileSize: "10.4 KB" },
-  { id: 31, _id: "ex31", name: "Mohan Ghee", category: "ORGANIC FOOD", location: "India", order: 31, logo: "/exhibitors/31.jpg", altText: "Mohan Ghee Traditional Bilona Cow Ghee Logo", status: "Published", updatedAt: "15 May 2026, 04:05 PM", updatedBy: "Vansh Chaudhary", fileSize: "11.1 KB" },
-  { id: 32, _id: "ex32", name: "Shabari Naturals", category: "NATURAL CARE", location: "India", order: 32, logo: "/exhibitors/32.jpg", altText: "Shabari Naturals Tribal and Forest Organic Produce Logo", status: "Published", updatedAt: "15 May 2026, 11:40 AM", updatedBy: "Vansh Chaudhary", fileSize: "14.2 KB" },
-  { id: 33, _id: "ex33", name: "Raheja Solar Food Processing pvt. ltd", category: "AGRICULTURE", location: "India", order: 33, logo: "/exhibitors/33.jpg", altText: "Raheja Solar Food Processing Solar Dryers Logo", status: "Published", updatedAt: "14 May 2026, 03:15 PM", updatedBy: "Vansh Chaudhary", fileSize: "39.0 KB" },
-  { id: 34, _id: "ex34", name: "Shanara", category: "NATURAL CARE", location: "India", order: 34, logo: "/exhibitors/34.jpg", altText: "Shanara Herbal Beauty and Care Products Logo", status: "Published", updatedAt: "14 May 2026, 09:30 AM", updatedBy: "Vansh Chaudhary", fileSize: "27.2 KB" },
-  { id: 35, _id: "ex35", name: "Good And Grow", category: "AGRICULTURE", location: "India", order: 35, logo: "/exhibitors/35.jpg", altText: "Good And Grow Bio Plant Boosters Logo", status: "Published", updatedAt: "13 May 2026, 04:20 PM", updatedBy: "Vansh Chaudhary", fileSize: "25.6 KB" },
-  { id: 36, _id: "ex36", name: "E-Bio-Cares", category: "AYURVEDA", location: "India", order: 36, logo: "/exhibitors/36.jpg", altText: "E-Bio-Cares Natural Health Solutions Logo", status: "Published", updatedAt: "13 May 2026, 10:50 AM", updatedBy: "Vansh Chaudhary", fileSize: "17.3 KB" },
-  { id: 37, _id: "ex37", name: "Panchtattav foods Pvt Ltd", category: "ORGANIC FOOD", location: "India", order: 37, logo: "/exhibitors/37.jpg", altText: "Panchtattav Foods Vedic Nutrition Logo", status: "Published", updatedAt: "12 May 2026, 02:35 PM", updatedBy: "Vansh Chaudhary", fileSize: "33.5 KB" },
-  { id: 38, _id: "ex38", name: "Sharekhan", category: "OTHERS", location: "India", order: 38, logo: "/exhibitors/38.jpg", altText: "Sharekhan Agri Trade and Commodity Services Logo", status: "Published", updatedAt: "12 May 2026, 11:10 AM", updatedBy: "Vansh Chaudhary", fileSize: "18.4 KB" },
-  { id: 39, _id: "ex39", name: "Bhartiye Crafts", category: "OTHERS", location: "India", order: 39, logo: "/exhibitors/39.jpg", altText: "Bhartiye Crafts Eco Handicrafts and Natural Utensils Logo", status: "Published", updatedAt: "11 May 2026, 04:55 PM", updatedBy: "Vansh Chaudhary", fileSize: "13.6 KB" },
-  { id: 40, _id: "ex40", name: "Vinayak Group", category: "AGRICULTURE", location: "India", order: 40, logo: "/exhibitors/40.jpg", altText: "Vinayak Group Farm Mechanization and Supplies Logo", status: "Published", updatedAt: "11 May 2026, 01:25 PM", updatedBy: "Vansh Chaudhary", fileSize: "9.5 KB" },
-  { id: 41, _id: "ex41", name: "Sri Yamuna Essence", category: "AYURVEDA", location: "India", order: 41, logo: "/exhibitors/41.jpg", altText: "Sri Yamuna Essence Natural Fragrance and Oils Logo", status: "Published", updatedAt: "10 May 2026, 03:40 PM", updatedBy: "Vansh Chaudhary", fileSize: "11.2 KB" },
-  { id: 42, _id: "ex42", name: "Kajah Balm & Oil", category: "AYURVEDA", location: "India", order: 42, logo: "/exhibitors/42.jpg", altText: "Kajah Balm & Oil Herbal Pain Relief Formula Logo", status: "Published", updatedAt: "10 May 2026, 10:15 AM", updatedBy: "Vansh Chaudhary", fileSize: "15.4 KB" },
-  { id: 43, _id: "ex43", name: "Soultatva", category: "ORGANIC FOOD", location: "India", order: 43, logo: "/exhibitors/43.jpg", altText: "Soultatva Superfoods Seeds and Nuts Brand Logo", status: "Published", updatedAt: "09 May 2026, 05:05 PM", updatedBy: "Vansh Chaudhary", fileSize: "15.9 KB" },
-  { id: 44, _id: "ex44", name: "Shroonius", category: "ORGANIC FOOD", location: "India", order: 44, logo: "/exhibitors/44.jpg", altText: "Shroonius Mushroom and Functional Foods Logo", status: "Published", updatedAt: "09 May 2026, 11:30 AM", updatedBy: "Vansh Chaudhary", fileSize: "11.8 KB" },
-  { id: 45, _id: "ex45", name: "Skyrr Up", category: "HEALTH & WELLNESS", location: "India", order: 45, logo: "/exhibitors/45.jpg", altText: "Skyrr Up High Protein Dairy and Wellness Logo", status: "Published", updatedAt: "08 May 2026, 02:50 PM", updatedBy: "Vansh Chaudhary", fileSize: "24.9 KB" },
-  { id: 46, _id: "ex46", name: "Achyutam Aahar", category: "ORGANIC FOOD", location: "India", order: 46, logo: "/exhibitors/46.jpg", altText: "Achyutam Aahar Pure Organic Flour and Millets Logo", status: "Published", updatedAt: "08 May 2026, 09:45 AM", updatedBy: "Vansh Chaudhary", fileSize: "38.3 KB" },
-  { id: 47, _id: "ex47", name: "Grunwald", category: "OTHERS", location: "India", order: 47, logo: "/exhibitors/47.jpg", altText: "Grunwald Packaging and Sustainable Machinery Logo", status: "Published", updatedAt: "07 May 2026, 04:30 PM", updatedBy: "Vansh Chaudhary", fileSize: "15.8 KB" },
-  { id: 48, _id: "ex48", name: "Viridian", category: "AYURVEDA", location: "India", order: 48, logo: "/exhibitors/48.jpg", altText: "Viridian Pure Botanical Extract Nutrition Logo", status: "Published", updatedAt: "07 May 2026, 11:00 AM", updatedBy: "Vansh Chaudhary", fileSize: "3.2 KB" },
-];
-
-const CATEGORIES = [
-  "ALL",
-  "ORGANIC FOOD",
-  "NATURAL CARE",
-  "AGRICULTURE",
-  "AYURVEDA",
-  "HEALTH & WELLNESS",
-  "OTHERS",
-];
-
-const CATEGORY_STYLES: Record<string, { badge: string; pill: string }> = {
-  "ORGANIC FOOD": { badge: "bg-emerald-50 text-emerald-700 border-emerald-200", pill: "bg-emerald-600 text-white" },
-  "NATURAL CARE": { badge: "bg-cyan-50 text-cyan-700 border-cyan-200", pill: "bg-cyan-600 text-white" },
-  "AGRICULTURE": { badge: "bg-green-50 text-green-700 border-green-200", pill: "bg-green-600 text-white" },
-  "AYURVEDA": { badge: "bg-amber-50 text-amber-700 border-amber-200", pill: "bg-amber-600 text-white" },
-  "HEALTH & WELLNESS": { badge: "bg-purple-50 text-purple-700 border-purple-200", pill: "bg-purple-600 text-white" },
-  "OTHERS": { badge: "bg-slate-100 text-slate-700 border-slate-200", pill: "bg-slate-700 text-white" },
 };
 
 function AnimatedCounter({
@@ -327,10 +285,9 @@ export default function ExhibitorListPage() {
 
   const loggedInAdminName = useMemo(() => getAdminName(), [currentAdmin]);
 
-  const [exhibitors, setExhibitors] = useState<ExhibitorItem[]>(INITIAL_EXHIBITORS);
-  const [heading, setHeading] = useState("Our Previous Exhibitors");
-  const [subheading, setSubheading] = useState("A Platform Trusted by Industry Leaders");
-  const [headingSaved, setHeadingSaved] = useState(false);
+  const [exhibitors, setExhibitors] = useState<ExhibitorItem[]>([]);
+  const [categories, setCategories] = useState<PartnerCategory[]>([]);
+  const [loadingList, setLoadingList] = useState(true);
 
   // Filters & Selection
   const [searchQuery, setSearchQuery] = useState("");
@@ -428,12 +385,12 @@ export default function ExhibitorListPage() {
         borderColor: "#99f6e4",
         numColor: "#0f766e",
         footer: "Live on website",
-        onClick: () => window.open("http://localhost:3002/exhibitors", "_blank"),
+        onClick: () => window.open(WEBSITE_PARTNERS_URL, "_blank"),
       },
     ],
     [exhibitors, publishedCount, draftCount, altConfiguredCount]
   );
-  const [selectedId, setSelectedId] = useState<number>(14); // Default to Ropuiliani
+  const [selectedId, setSelectedId] = useState<number>(1);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -447,8 +404,9 @@ export default function ExhibitorListPage() {
 
   // Form State
   const [formName, setFormName] = useState("");
-  const [formCategory, setFormCategory] = useState("ORGANIC FOOD");
-  const [formLocation, setFormLocation] = useState("India");
+  const [formCategoryId, setFormCategoryId] = useState("");
+  const [formDesignation, setFormDesignation] = useState("");
+  const [savingModal, setSavingModal] = useState(false);
   const [formOrder, setFormOrder] = useState(49);
   const [formLogo, setFormLogo] = useState("");
   const [formAltText, setFormAltText] = useState("");
@@ -458,127 +416,50 @@ export default function ExhibitorListPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const replaceFileRef = useRef<HTMLInputElement>(null);
 
-  // Load persistence and fetch live data from backend (sorted by order ascending: 1, 2, 3...)
-  useEffect(() => {
+  // Load logos and categories from backend-arogya
+  const loadData = async () => {
     try {
-      const savedExhibitors = localStorage.getItem("bharat_exhibitor_list_data");
-      if (savedExhibitors) {
-        const parsed = JSON.parse(savedExhibitors);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const normalized = parsed.map((item: ExhibitorItem) => ({
-            ...item,
-            updatedAt:
-              item.updatedAt && (item.updatedAt.includes(":") || item.updatedAt.includes("AM") || item.updatedAt.includes("PM"))
-                ? item.updatedAt
-                : `${item.updatedAt || "30 May 2026"}, 11:30 AM`,
-            updatedBy: item.updatedBy || loggedInAdminName,
-          }));
-          const sorted = normalized.sort((a: ExhibitorItem, b: ExhibitorItem) => a.order - b.order);
-          setExhibitors(sorted);
-        }
-      }
-      const savedHeading = localStorage.getItem("bharat_exhibitor_heading");
-      if (savedHeading) setHeading(savedHeading);
-      const savedSubheading = localStorage.getItem("bharat_exhibitor_subheading");
-      if (savedSubheading) setSubheading(savedSubheading);
-    } catch {
-      // ignore
-    }
-
-    // Fetch live exhibitors and header from backend API with robust fallback
-    const fetchBackendData = async () => {
-      try {
-        let itemsRes = await fetch(`${BACKEND_URL}/api/website/participate/exhibitor-list/items`, { signal: AbortSignal.timeout(150) }).catch(() => null);
-        if (!itemsRes || !itemsRes.ok) {
-          itemsRes = await fetch(`/api/website/participate/exhibitor-list/items`, { signal: AbortSignal.timeout(150) }).catch(() => null);
-        }
-
-        let headerRes = await fetch(`${BACKEND_URL}/api/website/participate/exhibitor-list/header`, { signal: AbortSignal.timeout(150) }).catch(() => null);
-        if (!headerRes || !headerRes.ok) {
-          headerRes = await fetch(`/api/website/participate/exhibitor-list/header`, { signal: AbortSignal.timeout(150) }).catch(() => null);
-        }
-
-        if (itemsRes && itemsRes.ok) {
-          const json = await itemsRes.json().catch(() => null);
-          if (json && Array.isArray(json.data) && json.data.length > 0) {
-            const mapped: ExhibitorItem[] = json.data.map((item: any, idx: number) => ({
-              id: typeof item.order === "number" ? item.order : idx + 1,
-              _id: item._id,
-              name: item.name || item.title || "Exhibitor",
-              category: item.category || "ORGANIC FOOD",
-              location: item.location || "India",
-              order: typeof item.order === "number" ? item.order : idx + 1,
-              logo: item.logo || item.image || "/exhibitors/1.jpg",
-              altText: item.altText || `${item.name || item.title} Logo`,
-              status: (item.status === "Draft" ? "Draft" : "Published") as "Published" | "Draft",
-              websiteUrl: item.websiteUrl || "",
-              updatedAt: item.updatedAt ? formatTimestampFrom(item.updatedAt) : formatTimestamp(),
-              updatedBy: item.updatedBy || loggedInAdminName,
-              fileSize: item.fileSize || "15.0 KB",
-            }));
-            const sorted = mapped.sort((a, b) => a.order - b.order);
-            setExhibitors(sorted);
-            try {
-              localStorage.setItem("bharat_exhibitor_list_data", JSON.stringify(sorted));
-            } catch {}
-          }
-        }
-
-        if (headerRes && headerRes.ok) {
-          const json = await headerRes.json().catch(() => null);
-          if (json && json.data) {
-            if (json.data.title) {
-              setHeading(json.data.title);
-              try {
-                localStorage.setItem("bharat_exhibitor_heading", json.data.title);
-              } catch {}
-            }
-            if (json.data.subtitle) {
-              setSubheading(json.data.subtitle);
-              try {
-                localStorage.setItem("bharat_exhibitor_subheading", json.data.subtitle);
-              } catch {}
-            }
-          }
-        }
-      } catch (err) {
-        console.error("Failed to load exhibitors from backend:", err);
-      }
-    };
-
-    fetchBackendData();
-  }, [loggedInAdminName]);
-
-  const handleSaveHeading = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      localStorage.setItem("bharat_exhibitor_heading", heading);
-      localStorage.setItem("bharat_exhibitor_subheading", subheading);
-
-      const payload = JSON.stringify({ title: heading, subtitle: subheading });
-      let saved = false;
-      try {
-        const res = await fetch(`/api/website/participate/exhibitor-list/header`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: payload,
-        });
-        if (res.ok) saved = true;
-      } catch {}
-
-      if (!saved) {
-        await fetch(`${BACKEND_URL}/api/website/participate/exhibitor-list/header`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: payload,
-        });
-      }
+      const [cats, logos] = await Promise.all([partnerLogosApi.categories(), partnerLogosApi.logos()]);
+      setCategories(cats);
+      setExhibitors(logos.map(toItem));
     } catch (err) {
-      console.error("Save heading error:", err);
+      showError(errorMessage(err, "Could not load partner logos."));
+    } finally {
+      setLoadingList(false);
     }
-    setHeadingSaved(true);
-    showSuccess("Section Heading & Subheading updated successfully!");
-    setTimeout(() => setHeadingSaved(false), 3000);
+  };
+
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /** Ask for a name and create a new partner category; returns its id. */
+  const handleCreateCategory = async (): Promise<string | null> => {
+    const result = await lazySwal.fire({
+      title: "New Category",
+      input: "text",
+      inputLabel: "Category name (shown as a section on the website's Partners page)",
+      inputPlaceholder: "e.g. Healthcare Partners",
+      showCancelButton: true,
+      confirmButtonText: "Create",
+      cancelButtonText: "Cancel",
+      background: "#1e2433",
+      color: "#e2e8f0",
+      confirmButtonColor: "#16a34a",
+      cancelButtonColor: "#374151",
+      inputValidator: (value) => (!value || !value.trim() ? "Please enter a category name" : undefined),
+    });
+    if (!result.isConfirmed || typeof result.value !== "string") return null;
+    try {
+      const created = await partnerLogosApi.createCategory({ name: result.value.trim() });
+      setCategories((prev) => [...prev, created]);
+      showSuccess(`Category "${created.name}" created`);
+      return created._id;
+    } catch (err) {
+      showError(errorMessage(err, "Could not create the category."));
+      return null;
+    }
   };
 
   // Filtered rows (always sorted by order ascending: #1 at top, latest #49 at bottom)
@@ -592,10 +473,13 @@ export default function ExhibitorListPage() {
       const matchesStatus =
         statusFilter === "All Status" || item.status === statusFilter;
 
-      return matchesSearch && matchesStatus;
+      const matchesCategory =
+        selectedCategory === "ALL" || item.categoryId === selectedCategory;
+
+      return matchesSearch && matchesStatus && matchesCategory;
     });
-    return list.sort((a, b) => a.order - b.order);
-  }, [exhibitors, searchQuery, statusFilter]);
+    return list.sort((a, b) => a.category.localeCompare(b.category) || a.order - b.order);
+  }, [exhibitors, searchQuery, statusFilter, selectedCategory]);
 
   // Paginated rows
   const totalPages = Math.ceil(filteredRows.length / pageSize) || 1;
@@ -609,20 +493,19 @@ export default function ExhibitorListPage() {
     return exhibitors.find((item) => item.id === selectedId) || exhibitors[0];
   }, [exhibitors, selectedId]);
 
-  const defaultCloudinaryLogo = "https://res.cloudinary.com/dr8mld4i0/image/upload/v1788165233/arogya-sewa/assets/km.jpg";
-
   // Open modal for Create
   const handleOpenCreate = () => {
     setEditingItem(null);
     setFormName("");
-    setFormCategory("ORGANIC FOOD");
-    setFormLocation("India");
-    setFormOrder(exhibitors.length + 1);
-    setFormLogo(defaultCloudinaryLogo);
-    setFormAltText("Exhibitor Brand Logo - Arogya Expo");
+    const defaultCategory = selectedCategory !== "ALL" ? selectedCategory : categories[0]?._id || "";
+    setFormCategoryId(defaultCategory);
+    setFormDesignation("");
+    setFormOrder(exhibitors.filter((x) => x.categoryId === defaultCategory).length + 1);
+    setFormLogo("");
+    setFormAltText("");
     setFormStatus("Published");
     setFormWebsiteUrl("");
-    setFormFileSize("15.0 KB");
+    setFormFileSize("");
     setIsModalOpen(true);
   };
 
@@ -630,8 +513,8 @@ export default function ExhibitorListPage() {
   const handleOpenEdit = (item: ExhibitorItem) => {
     setEditingItem(item);
     setFormName(item.name);
-    setFormCategory(item.category);
-    setFormLocation(item.location);
+    setFormCategoryId(item.categoryId);
+    setFormDesignation(item.designation);
     setFormOrder(item.order);
     setFormLogo(item.logo);
     setFormAltText(item.altText);
@@ -643,114 +526,41 @@ export default function ExhibitorListPage() {
 
   const [isUploading, setIsUploading] = useState(false);
 
-  // Upload file helper (Cloudinary / Base64 Data URL)
-  const uploadImageFile = async (file: File): Promise<string> => {
+  // Upload to Cloudinary through backend-arogya
+  const uploadImageFile = async (file: File): Promise<{ url: string; fileSize: string } | null> => {
     try {
       setIsUploading(true);
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("folder", "bharat-organic/exhibitors");
-
-      let res = await fetch(`${BACKEND_URL}/api/uploads?folder=bharat-organic/exhibitors`, {
-        method: "POST",
-        body: formData,
-      }).catch(() => null);
-
-      if (!res || !res.ok) {
-        res = await fetch(`/api/uploads?folder=bharat-organic/exhibitors`, {
-          method: "POST",
-          body: formData,
-        }).catch(() => null);
-      }
-
-      if (res && res.ok) {
-        const json = await res.json().catch(() => null);
-        if (json) {
-          let finalUrl = json.data?.url || json.url || json.data?.secure_url || json.secure_url;
-          if (finalUrl) {
-            if (finalUrl.startsWith("http://res.cloudinary.com")) {
-              finalUrl = finalUrl.replace("http://res.cloudinary.com", "https://res.cloudinary.com");
-            }
-            if (finalUrl.startsWith("http")) return finalUrl;
-            return `${BACKEND_URL.replace(/\/$/, "")}${finalUrl.startsWith("/") ? "" : "/"}${finalUrl}`;
-          }
-        }
-      }
+      return await partnerLogosApi.upload(file);
     } catch (err) {
-      console.error("Cloudinary upload error:", err);
+      showError(errorMessage(err, "Logo upload failed. Please try again."));
+      return null;
     } finally {
       setIsUploading(false);
     }
-
-    // Convert file to Base64 Data URL instead of blob: temporary URL
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        resolve(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    });
   };
 
   // Handle Logo Upload file
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isReplace = false) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const activeAdmin = getAdminName();
-      const sizeStr = `${(file.size / 1024).toFixed(1)} KB`;
-      const timeNow = formatTimestamp();
-      
-      const uploadedUrl = await uploadImageFile(file);
+    e.target.value = "";
+    if (!file) return;
 
-      if (isReplace && selected) {
-        const updated = exhibitors.map((ex) =>
-          ex.id === selected.id
-            ? {
-                ...ex,
-                logo: uploadedUrl,
-                image: uploadedUrl,
-                fileSize: sizeStr,
-                updatedAt: timeNow,
-                updatedBy: activeAdmin,
-              }
-            : ex
-        );
-        setExhibitors(updated);
-        try {
-          localStorage.setItem("bharat_exhibitor_list_data", JSON.stringify(updated));
-        } catch {}
+    const uploaded = await uploadImageFile(file);
+    if (!uploaded) return;
 
-        try {
-          const payload = {
-            logo: uploadedUrl,
-            image: uploadedUrl,
-            fileSize: sizeStr,
-            updatedAt: timeNow,
-            updatedBy: activeAdmin,
-          };
-          let res = await fetch(`/api/website/participate/exhibitor-list/items/${selected._id || selected.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-          if (!res.ok) {
-            await fetch(`${BACKEND_URL}/api/website/participate/exhibitor-list/items/${selected._id || selected.id}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            });
-          }
-        } catch (err) {
-          console.error("Error updating logo in backend:", err);
-        }
-
-        showSuccess(`Logo for "${selected.name || "Exhibitor"}" updated by ${activeAdmin}!`);
-      } else {
-        setFormLogo(uploadedUrl);
-        setFormFileSize(sizeStr);
-        if (!formAltText) {
-          setFormAltText(`${formName || "Exhibitor"} Brand Logo - Arogya Expo`);
-        }
+    if (isReplace && selected) {
+      try {
+        await partnerLogosApi.updateLogo(selected._id, { logo: uploaded.url, fileSize: uploaded.fileSize });
+        await loadData();
+        showSuccess(`Logo for "${selected.name}" replaced`);
+      } catch (err) {
+        showError(errorMessage(err, "Could not replace the logo."));
+      }
+    } else {
+      setFormLogo(uploaded.url);
+      setFormFileSize(uploaded.fileSize);
+      if (!formAltText) {
+        setFormAltText(`${formName || "Partner"} Logo - Arogya Sangoshthi`);
       }
     }
   };
@@ -759,149 +569,47 @@ export default function ExhibitorListPage() {
   const handleSaveModal = async (e?: React.FormEvent) => {
     if (e?.preventDefault) e.preventDefault();
 
-    const activeAdmin = getAdminName();
-    const finalName = formName.trim() || "Exhibitor Brand";
-    const finalLogo = formLogo.trim() || "/exhibitors/1.jpg";
-    const finalAlt = formAltText.trim() || `${finalName} Brand Logo - Arogya Expo Exhibitor`;
-    const finalOrder = Number(formOrder) || (editingItem ? editingItem.order : exhibitors.length + 1);
-    const timeNow = formatTimestamp();
+    const name = formName.trim();
+    if (!name) return showError("Please enter the partner name.");
+    if (!formCategoryId) return showError("Please select a category.");
+    if (!formLogo.trim()) return showError("Please upload a logo.");
+    if (!formAltText.trim()) return showError("Please enter the logo alt text.");
 
-    if (editingItem) {
-      const updatedList = exhibitors
-        .map((item) =>
-          item.id === editingItem.id
-            ? {
-                ...item,
-                name: finalName,
-                title: finalName,
-                category: formCategory,
-                location: formLocation.trim() || "India",
-                order: finalOrder,
-                logo: finalLogo,
-                image: finalLogo,
-                altText: finalAlt,
-                status: formStatus,
-                websiteUrl: formWebsiteUrl.trim(),
-                updatedAt: timeNow,
-                updatedBy: activeAdmin,
-                fileSize: formFileSize || item.fileSize || "15.0 KB",
-              }
-            : item
-        )
-        .sort((a, b) => a.order - b.order);
-      setExhibitors(updatedList);
-      try {
-        localStorage.setItem("bharat_exhibitor_list_data", JSON.stringify(updatedList));
-      } catch {}
+    const payload = {
+      name,
+      designation: formDesignation.trim(),
+      categoryId: formCategoryId,
+      logo: formLogo.trim(),
+      logoAlt: formAltText.trim(),
+      order: Number(formOrder) || 1,
+      status: formStatus,
+      websiteUrl: formWebsiteUrl.trim(),
+      fileSize: formFileSize,
+    };
 
-      try {
-        const payload = {
-          name: finalName,
-          title: finalName,
-          category: formCategory,
-          location: formLocation.trim() || "India",
-          order: finalOrder,
-          logo: finalLogo,
-          image: finalLogo,
-          altText: finalAlt,
-          status: formStatus,
-          websiteUrl: formWebsiteUrl.trim(),
-          updatedAt: timeNow,
-          updatedBy: activeAdmin,
-          fileSize: formFileSize || editingItem.fileSize || "15.0 KB",
-        };
-        let res = await fetch(`/api/website/participate/exhibitor-list/items/${editingItem._id || editingItem.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) {
-          await fetch(`${BACKEND_URL}/api/website/participate/exhibitor-list/items/${editingItem._id || editingItem.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-        }
-      } catch (err) {
-        console.error("Error updating exhibitor in backend:", err);
+    setSavingModal(true);
+    try {
+      if (editingItem) {
+        await partnerLogosApi.updateLogo(editingItem._id, payload);
+        showSuccess(`"${name}" updated`);
+      } else {
+        await partnerLogosApi.createLogo(payload);
+        showSuccess(`"${name}" added — it is now on the website's Partners page`);
       }
-
-      showSuccess(`Exhibitor "${finalName}" updated successfully!`);
-    } else {
-      const newId = exhibitors.length > 0 ? Math.max(...exhibitors.map((x) => x.id)) + 1 : 1;
-      let realBackendId = `ex${newId}`;
-
-      try {
-        const payload = {
-          name: finalName,
-          title: finalName,
-          category: formCategory,
-          location: formLocation.trim() || "India",
-          order: finalOrder,
-          logo: finalLogo,
-          image: finalLogo,
-          altText: finalAlt,
-          status: formStatus,
-          websiteUrl: formWebsiteUrl.trim(),
-          updatedAt: timeNow,
-          updatedBy: activeAdmin,
-          fileSize: formFileSize || "15.0 KB",
-        };
-        let res = await fetch(`/api/website/participate/exhibitor-list/items`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) {
-          res = await fetch(`${BACKEND_URL}/api/website/participate/exhibitor-list/items`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-        }
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data && json.data._id) {
-            realBackendId = json.data._id;
-          }
-        }
-      } catch (err) {
-        console.error("Error creating exhibitor in backend:", err);
-      }
-
-      const newItem: ExhibitorItem = {
-        id: newId,
-        _id: realBackendId,
-        name: finalName,
-        category: formCategory,
-        location: formLocation.trim() || "India",
-        order: finalOrder,
-        logo: finalLogo,
-        altText: finalAlt,
-        status: formStatus,
-        websiteUrl: formWebsiteUrl.trim(),
-        updatedAt: timeNow,
-        updatedBy: activeAdmin,
-        fileSize: formFileSize || "15.0 KB",
-      };
-      const updatedList = [...exhibitors, newItem].sort((a, b) => a.order - b.order);
-      setExhibitors(updatedList);
-      setSelectedId(newId);
-      try {
-        localStorage.setItem("bharat_exhibitor_list_data", JSON.stringify(updatedList));
-      } catch {}
-
-      showSuccess(`New Exhibitor "${finalName}" added successfully!`);
+      setIsModalOpen(false);
+      await loadData();
+    } catch (err) {
+      showError(errorMessage(err, "Could not save this logo."));
+    } finally {
+      setSavingModal(false);
     }
-
-    setIsModalOpen(false);
   };
 
-  // Delete Exhibitor (SweetAlert2 Yes / No Confirmation)
+  // Delete (SweetAlert2 Yes / No Confirmation)
   const handleDelete = async (item: ExhibitorItem) => {
     const result = await lazySwal.fire({
-      title: "Delete Exhibitor?",
-      html: `<p style="color:#e2e8f0;font-size:0.9rem;">Are you sure you want to remove <strong>${item.name || "this exhibitor"}</strong> from the directory?<br/>This action cannot be undone.</p>`,
+      title: "Delete Logo?",
+      html: `<p style="color:#e2e8f0;font-size:0.9rem;">Remove <strong>${item.name.replace(/</g, "&lt;")}</strong> from the website's Partners page?<br/>This action cannot be undone.</p>`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, Delete",
@@ -911,76 +619,29 @@ export default function ExhibitorListPage() {
       confirmButtonColor: "#dc2626",
       cancelButtonColor: "#374151",
     });
-
     if (!result.isConfirmed) return;
 
-    const updated = exhibitors.filter((x) => x.id !== item.id);
-    setExhibitors(updated);
     try {
-      localStorage.setItem("bharat_exhibitor_list_data", JSON.stringify(updated));
-    } catch {}
-    if (selectedId === item.id && updated.length > 0) {
-      setSelectedId(updated[0].id);
-    }
-
-    try {
-      let res = await fetch(`/api/website/participate/exhibitor-list/items/${item._id || item.id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        await fetch(`${BACKEND_URL}/api/website/participate/exhibitor-list/items/${item._id || item.id}`, {
-          method: "DELETE",
-        });
-      }
+      await partnerLogosApi.deleteLogo(item._id);
+      await loadData();
+      setSelectedId(1);
+      showSuccess(`"${item.name}" removed`);
     } catch (err) {
-      console.error("Error deleting exhibitor in backend:", err);
+      showError(errorMessage(err, "Could not delete this logo."));
     }
-
-    showSuccess(`"${item.name || "Exhibitor"}" removed from Exhibitor List.`);
   };
 
   // Quick Status Toggle / Change
   const handleStatusChange = async (id: number, newStatus: "Published" | "Draft") => {
-    const activeAdmin = getAdminName();
-    const timeNow = formatTimestamp();
     const target = exhibitors.find((x) => x.id === id);
-
-    const updated = exhibitors.map((ex) =>
-      ex.id === id
-        ? {
-            ...ex,
-            status: newStatus,
-            updatedAt: timeNow,
-            updatedBy: activeAdmin,
-          }
-        : ex
-    );
-    setExhibitors(updated);
+    if (!target) return;
     try {
-      localStorage.setItem("bharat_exhibitor_list_data", JSON.stringify(updated));
-    } catch {}
-
-    if (target) {
-      try {
-        const payload = { status: newStatus, updatedAt: timeNow, updatedBy: activeAdmin };
-        let res = await fetch(`/api/website/participate/exhibitor-list/items/${target._id || target.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) {
-          await fetch(`${BACKEND_URL}/api/website/participate/exhibitor-list/items/${target._id || target.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-        }
-      } catch (err) {
-        console.error("Error updating status in backend:", err);
-      }
+      await partnerLogosApi.updateLogo(target._id, { status: newStatus });
+      setExhibitors((prev) => prev.map((x) => (x.id === id ? { ...x, status: newStatus } : x)));
+      showSuccess(`"${target.name}" is now ${newStatus === "Published" ? "live on the website" : "hidden (Draft)"}`);
+    } catch (err) {
+      showError(errorMessage(err, "Could not change the status."));
     }
-
-    showSuccess(`Status updated to "${newStatus}" for ${target?.name || "Exhibitor"}`);
   };
 
   // Toggle Select All
@@ -1014,8 +675,8 @@ export default function ExhibitorListPage() {
         <div className="mb-[18px] flex shrink-0 items-center justify-between border-b-[2px] border-[#293681] pb-[8px]">
           <div>
             <h1
-              className="text-[19px] font-bold leading-[1.15] tracking-[-0.018em] text-[#23471d]"
-              style={{ color: "#23471d" }}
+              className="text-[19px] font-bold leading-[1.15] tracking-[-0.018em] text-[#4B1426]"
+              style={{ color: "#4B1426" }}
             >
               Exhibitor List
             </h1>
@@ -1026,7 +687,7 @@ export default function ExhibitorListPage() {
 
           <div className="flex items-center gap-[10px]">
             <a
-              href="http://localhost:3002/exhibitors"
+              href={WEBSITE_PARTNERS_URL}
               target="_blank"
               rel="noreferrer"
               className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] border border-[#fed7aa] bg-[#fff7ed] px-[14px] text-[8.5px] font-semibold text-[#ea580c] transition hover:bg-[#ffedd5] shadow-sm"
@@ -1041,7 +702,7 @@ export default function ExhibitorListPage() {
             <button
               type="button"
               onClick={handleOpenCreate}
-              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] bg-[#4B1426] px-[14px] text-[8.5px] font-semibold text-white shadow-[0_5px_12px_rgba(75,20,38,0.25)] transition hover:bg-[#3a0f1d]"
+              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] bg-[#1b5e20] px-[14px] text-[8.5px] font-semibold text-white shadow-[0_5px_12px_rgba(27,94,32,0.25)] transition hover:bg-[#14491a]"
             >
               <Plus
                 className="h-[12px] w-[12px]"
@@ -1119,67 +780,6 @@ export default function ExhibitorListPage() {
           })}
         </div>
 
-        {/* SECTION HEADER EDIT BAR (Heading & Subheading Settings) */}
-        <section
-          className="mt-[14px] rounded-[6px] border border-[#cbe2fc] bg-[#f0f7ff] p-[12px] px-[14px]"
-        >
-          <form onSubmit={handleSaveHeading} className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between w-full">
-            {/* Title Info */}
-            <div className="flex items-center gap-2.5 shrink-0">
-              <span className="grid h-[32px] w-[32px] shrink-0 place-items-center rounded-[5px] bg-[#0284c7] text-white">
-                <Settings className="h-[16px] w-[16px]" />
-              </span>
-              <div>
-                <h2 className="text-[11.5px] font-bold text-[#0369a1]">
-                  Exhibitors Showcase Section Content
-                </h2>
-                <p className="text-[9px] font-medium text-[#52637a]">
-                  Changes here directly update the title and subtitle on the live website exhibitors page.
-                </p>
-              </div>
-            </div>
-
-            {/* Inputs + Button Container - Compact & Auto-fitting */}
-            <div className="flex flex-1 items-end justify-end gap-2 min-w-0">
-              <div className="flex-1 min-w-[130px] max-w-[180px]">
-                <label className="mb-0.5 block text-[8px] font-bold uppercase tracking-wider text-[#34445f]">
-                  Heading
-                </label>
-                <input
-                  type="text"
-                  value={heading}
-                  onChange={(e) => setHeading(e.target.value)}
-                  placeholder="e.g. Our Previous Exhibitors"
-                  className="h-[32px] w-full rounded-[4px] border border-[#cbd8d1] bg-white px-2 text-[10px] font-semibold text-[#142347] outline-none focus:border-[#0284c7]"
-                />
-              </div>
-
-              <div className="flex-1 min-w-[150px] max-w-[210px]">
-                <label className="mb-0.5 block text-[8px] font-bold uppercase tracking-wider text-[#34445f]">
-                  Sub Heading
-                </label>
-                <input
-                  type="text"
-                  value={subheading}
-                  onChange={(e) => setSubheading(e.target.value)}
-                  placeholder="e.g. A Platform Trusted by Industry Leaders"
-                  className="h-[32px] w-full rounded-[4px] border border-[#cbd8d1] bg-white px-2 text-[10px] font-semibold text-[#142347] outline-none focus:border-[#0284c7]"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="h-[32px] shrink-0 inline-flex items-center justify-center gap-1 rounded-[4px] bg-[#0284c7] px-3.5 text-[9.5px] font-bold text-white transition hover:bg-[#0369a1]"
-              >
-                {headingSaved ? <Check className="h-3 w-3 text-emerald-200" /> : null}
-                {headingSaved ? "Saved!" : "Update Header"}
-              </button>
-            </div>
-          </form>
-        </section>
-
-
-
         {/* MAIN SPLIT CONTENT */}
         <section className="mt-[14px] grid items-start gap-[14px] xl:grid-cols-[minmax(0,1fr)_310px]">
           {/* LEFT COLUMN: FILTERS + TABLE / GRID */}
@@ -1194,10 +794,26 @@ export default function ExhibitorListPage() {
                     setSearchQuery(e.target.value);
                     setCurrentPage(1);
                   }}
-                  placeholder="Search exhibitor by name..."
+                  placeholder="Search partner by name..."
                   className="h-[40px] w-full rounded-[6px] border border-[#dfe4e8] bg-white px-[14px] pr-[40px] text-[10.5px] font-semibold text-[#273655] outline-none placeholder:text-[#8b95a7]"
                 />
               </label>
+
+              <select
+                value={selectedCategory}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="h-[40px] min-w-[150px] rounded-[6px] border border-[#dfe4e8] bg-white px-[10px] text-[10px] font-semibold text-[#2a3855] outline-none"
+              >
+                <option value="ALL">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
 
               <select
                 value={statusFilter}
@@ -1252,7 +868,7 @@ export default function ExhibitorListPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[920px] border-collapse text-left">
                     <thead>
-                      <tr className="h-[32px] border-b border-[#e8e5df] bg-[#233D4D]">
+                      <tr className="h-[32px] border-b border-[#e8e5df] bg-[#111844]">
                         <th className="w-[42px] rounded-tl-[6px] px-[12px] py-[6px] text-center">
                           <input
                             type="checkbox"
@@ -1286,7 +902,7 @@ export default function ExhibitorListPage() {
                       {paginatedRows.length === 0 ? (
                         <tr>
                           <td colSpan={6} className="py-12 text-center text-xs font-medium text-slate-500">
-                            No exhibitors match your filter criteria.
+                            {loadingList ? "Loading partner logos..." : exhibitors.length === 0 ? "No logos yet — click \"Add New Exhibitor\" to add the first one." : "No logos match your filter criteria."}
                           </td>
                         </tr>
                       ) : (
@@ -1334,8 +950,18 @@ export default function ExhibitorListPage() {
                                     <span className="truncate text-[8.5px] font-semibold text-[#4B1426] block">
                                       {item.name}
                                     </span>
-                                    <span className="mt-[2px] inline-block rounded-[3px] bg-[#f0f4f8] px-[5px] py-[1px] font-mono text-[7px] font-semibold text-[#233D4D]">
-                                      {item.fileSize || "14 KB"}
+                                    <span className="mt-[2px] flex items-center gap-1">
+                                      <span
+                                        className="inline-block rounded-[3px] px-[5px] py-[1px] text-[7px] font-bold text-white"
+                                        style={{ backgroundColor: item.categoryColor }}
+                                      >
+                                        {item.category}
+                                      </span>
+                                      {item.fileSize && (
+                                        <span className="inline-block rounded-[3px] bg-[#f0f4f8] px-[5px] py-[1px] font-mono text-[7px] font-semibold text-[#233D4D]">
+                                          {item.fileSize}
+                                        </span>
+                                      )}
                                     </span>
                                   </div>
                                 </div>
@@ -1460,7 +1086,7 @@ export default function ExhibitorListPage() {
                         onClick={() => setCurrentPage(pageNum)}
                         className={`flex h-[22px] min-w-[22px] px-1.5 items-center justify-center rounded-[4px] border text-[8px] font-bold transition ${
                           currentPage === pageNum
-                            ? "border-[#233D4D] bg-[#233D4D] text-white shadow-xs"
+                            ? "border-[#00291b] bg-[#00291b] text-white shadow-xs"
                             : "border-[#d8dce2] bg-white text-[#334155] hover:bg-slate-50"
                         }`}
                       >
@@ -1529,6 +1155,7 @@ export default function ExhibitorListPage() {
           {/* RIGHT SIDEBAR: EXHIBITOR DETAILS (Exact Media Library Style) */}
           <aside className="space-y-[12px]">
             {/* EXHIBITOR DETAILS CARD */}
+            {selected ? (
             <section
               className="bg-white px-[14px] py-[13px]"
               style={{
@@ -1675,6 +1302,11 @@ export default function ExhibitorListPage() {
                 </div>
               </div>
             </section>
+            ) : (
+              <section className="bg-white px-[14px] py-[13px] text-[10px] font-medium text-[#59657a]" style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset" }}>
+                {loadingList ? "Loading..." : "Add a logo to see its details here."}
+              </section>
+            )}
 
             {/* QUICK ACTIONS CARD */}
             <section className="rounded-[8px] border border-[#e7e9ec] bg-white px-[14px] py-[13px] shadow-[0_1px_3px_rgba(15,23,42,0.025)]">
@@ -1693,7 +1325,7 @@ export default function ExhibitorListPage() {
                 </button>
 
                 <a
-                  href="http://localhost:3002/exhibitors"
+                  href={WEBSITE_PARTNERS_URL}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex h-[36px] items-center justify-center gap-[7px] rounded-[5px] border border-[#e2e6ea] bg-white text-[8.5px] font-semibold text-[#33415b] transition hover:bg-slate-50"
@@ -1710,7 +1342,7 @@ export default function ExhibitorListPage() {
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          title={editingItem ? "Edit Exhibitor" : "New Exhibitor"}
+          title={editingItem ? "Edit Partner Logo" : "New Partner Logo"}
           size="md"
           footer={
             <>
@@ -1729,6 +1361,7 @@ export default function ExhibitorListPage() {
               <button
                 type="button"
                 onClick={() => handleSaveModal()}
+                disabled={savingModal || isUploading}
                 className="inline-flex h-[32px] items-center gap-1.5 px-[14px] text-[12px] font-semibold text-white transition-all hover:opacity-90 active:scale-95"
                 style={{
                   background: "#16a34a",
@@ -1736,17 +1369,58 @@ export default function ExhibitorListPage() {
                   boxShadow: "rgba(0,0,0,0.02) 0px 1px 3px 0px, rgba(22,163,74,0.2) 0px 0px 0px 1px",
                 }}
               >
-                {editingItem ? "Save Changes" : "Create Account"}
+                {savingModal ? "Saving..." : editingItem ? "Save Changes" : "Add Logo"}
               </button>
             </>
           }
         >
           <div className="space-y-3">
+            <div>
+              <div className="mb-1 flex items-center justify-between">
+                <Label required>Category</Label>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const id = await handleCreateCategory();
+                    if (id) setFormCategoryId(id);
+                  }}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#16a34a] hover:underline"
+                >
+                  <Plus className="h-3 w-3" />
+                  New Category
+                </button>
+              </div>
+              <select
+                value={formCategoryId}
+                onChange={(e) => setFormCategoryId(e.target.value)}
+                className="h-[38px] w-full cursor-pointer rounded-[4px] border border-[#cbd5e1] bg-white px-[12px] text-[12px] font-semibold text-[#142347] outline-none focus:border-[#16a34a]"
+              >
+                <option value="" disabled>
+                  Select a category
+                </option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <Input
               label="Name"
+              required
               value={formName}
               onChange={(e) => setFormName(e.target.value)}
-              placeholder="e.g. Ropuiliani"
+              placeholder="e.g. AIIMS"
+              maxLength={120}
+            />
+
+            <Input
+              label="Designation / Full Name"
+              value={formDesignation}
+              onChange={(e) => setFormDesignation(e.target.value)}
+              placeholder="e.g. All India Institute of Medical Sciences"
+              maxLength={200}
             />
 
             <div className="grid grid-cols-2 gap-3">
@@ -1782,7 +1456,7 @@ export default function ExhibitorListPage() {
             </div>
 
             <div>
-              <Label required>Exhibitor Logo</Label>
+              <Label required>Logo</Label>
               <div className="flex gap-3 items-center">
                 <div className="relative flex h-[64px] w-[80px] shrink-0 items-center justify-center overflow-hidden border border-surface-border bg-surface-card p-1 shadow-xs">
                   {formLogo ? (
@@ -1840,8 +1514,9 @@ export default function ExhibitorListPage() {
               required
               value={formAltText}
               onChange={(e) => setFormAltText(e.target.value)}
-              placeholder="e.g. Ropuiliani Organic Food Exhibitor Logo - Arogya Expo"
-              hint="Unique for every exhibitor. Embedded into HTML <img alt='...'> tag for image SEO and screen readers."
+              placeholder="e.g. AIIMS Knowledge Partner Logo - Arogya Sangoshthi"
+              maxLength={250}
+              hint="Shown as the logo's <img alt='...'> on the website — used for image SEO and screen readers."
             />
           </div>
         </Modal>
