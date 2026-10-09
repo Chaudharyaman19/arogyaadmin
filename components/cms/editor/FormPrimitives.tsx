@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, type ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import { ChevronDown, FileText } from "lucide-react";
 
 /* =========================================================
@@ -424,11 +424,7 @@ export function Textarea({
   noLimit?: boolean;
 }) {
   const currentLength = (value || "").length;
-  const initialLengthRef = useRef<number | null>(null);
-  if (initialLengthRef.current === null) {
-    initialLengthRef.current = currentLength > 0 ? currentLength : maxLength;
-  }
-  const maxAllowed = noLimit ? 10000 : initialLengthRef.current;
+  const maxAllowed = noLimit ? 10000 : Math.max(currentLength, maxLength);
   const isAtLimit = !noLimit && currentLength >= maxAllowed;
 
   return (

@@ -14,13 +14,21 @@ import {
   VIDEO_KEY_PATTERN,
   humanizeKey,
 } from "./sectionMeta";
+import {
+  getFieldLimit,
+  isMultilineField,
+} from "@/lib/sectionLimits";
 
 /* =========================================================
    GENERIC SECTION FIELDS EDITOR
-   Renders an input for every scalar field a section has, so any of the
-   18 section shapes in the backend (hero, footer, faq, ...) becomes
-   editable without a bespoke form per section.
+   Renders an input for every scalar field a section has, so any
+   section shape becomes editable without a bespoke form per
+   section. Character limits come from lib/sectionLimits.ts and
+   match what the Arogya website UI can display.
 ========================================================= */
+
+const DATE_FIELD_KEYS = new Set(["eventDate", "targetDate"]);
+const NON_VIDEO_KEYS = new Set(["mapEmbedUrl"]);
 
 export function SectionFieldsEditor({
   section,
@@ -30,226 +38,12 @@ export function SectionFieldsEditor({
   onFieldChange: (key: string, value: unknown) => void;
 }) {
   if (section.key === "footer" || section.name === "Footer & Social Links") {
-    return (
-      <div className="flex flex-col gap-4">
-        {/* Description (About Arogya Expo in Footer Left Column) */}
-        <div className="flex flex-col gap-1.5 bg-white p-3 border border-[#e2e8f0] rounded-[6px]">
-          <FieldLabel required>Footer Description</FieldLabel>
-          <Textarea
-            value={
-              section.description !== undefined && !section.description.startsWith("Showcasing certified products")
-                ? String(section.description)
-                : "A global platform uniting over 500+ exhibitors from across the organic value chain, showcasing certified products, advanced agritech, sustainable practices, and the rich heritage of traditional wellness. Discover organic living with conferences and B2B opportunities."
-            }
-            onChange={(next) => onFieldChange("description", next)}
-            rows={4}
-            noLimit={true}
-            placeholder="A global platform uniting over 500+ exhibitors from across the organic value chain..."
-          />
-        </div>
-
-        {/* 5 Image Uploads with Previews & Reset */}
-        <div className="bg-white p-3 border border-[#e2e8f0] rounded-[6px] flex flex-col gap-3">
-          <div className="text-[11px] font-bold text-[#1e40af] border-b border-gray-100 pb-1.5 flex items-center gap-2">
-            <span>Footer Images & Decorations</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <FieldLabel>Main Logo Image</FieldLabel>
-              <ImageUploadField
-                value={String(section.logoImage || "")}
-                onChange={(next) => onFieldChange("logoImage", next)}
-                defaultValue="http://localhost:4000/uploads/bharat-organic_footer/1789129240083-112323989.png"
-              />
-            </div>
-            <div>
-              <FieldLabel>Left Leaf Decoration Image</FieldLabel>
-              <ImageUploadField
-                value={String(section.leafImage || "")}
-                onChange={(next) => onFieldChange("leafImage", next)}
-                defaultValue="http://localhost:4000/uploads/bharat-organic_footer/1789129240457-21656484.png"
-              />
-            </div>
-            <div>
-              <FieldLabel>Down / Mandala Pattern Image</FieldLabel>
-              <ImageUploadField
-                value={String(section.downImage || "")}
-                onChange={(next) => onFieldChange("downImage", next)}
-                defaultValue="http://localhost:4000/uploads/bharat-organic_footer/1789129240816-597711504.png"
-              />
-            </div>
-            <div>
-              <FieldLabel>Organised By Logo Image</FieldLabel>
-              <ImageUploadField
-                value={String(section.organisedByLogo || "")}
-                onChange={(next) => onFieldChange("organisedByLogo", next)}
-                defaultValue="http://localhost:4000/uploads/bharat-organic_footer/1789129241128-849314126.png"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <FieldLabel>Bottom Nature / Event Banner Image</FieldLabel>
-              <ImageUploadField
-                value={String(section.bottomBannerImage || "")}
-                onChange={(next) => onFieldChange("bottomBannerImage", next)}
-                defaultValue="http://localhost:4000/uploads/bharat-organic_footer/1789129242465-452827954.webp"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Contact Information (GET IN TOUCH) */}
-        <div className="bg-white p-3 border border-[#e2e8f0] rounded-[6px] flex flex-col gap-3">
-          <div className="text-[11px] font-bold text-[#1e40af] border-b border-gray-100 pb-1.5 flex items-center gap-2">
-            <span>Get In Touch (Contact Information)</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <FieldLabel required>Phone Number</FieldLabel>
-              <TextInput
-                value={String(section.phoneNumber || "")}
-                onChange={(next) => onFieldChange("phoneNumber", next)}
-                placeholder="+91 96549 00525"
-                hideLimit={true}
-              />
-            </div>
-            <div>
-              <FieldLabel required>Contact Email</FieldLabel>
-              <TextInput
-                value={String(section.contactEmail || "")}
-                onChange={(next) => onFieldChange("contactEmail", next)}
-                placeholder="info@namogangewellness.com"
-                hideLimit={true}
-              />
-            </div>
-            <div>
-              <FieldLabel required>Website URL</FieldLabel>
-              <TextInput
-                value={String(section.websiteUrl || "")}
-                onChange={(next) => onFieldChange("websiteUrl", next)}
-                placeholder="www.arogyabharat.org"
-                hideLimit={true}
-              />
-            </div>
-            <div>
-              <FieldLabel>Conference Helpline (Phone)</FieldLabel>
-              <TextInput
-                value={String(section.conferenceHelpline || section.altPhoneNumber || "")}
-                onChange={(next) => {
-                  onFieldChange("conferenceHelpline", next);
-                  onFieldChange("altPhoneNumber", next);
-                }}
-                placeholder="+91 98183 53841"
-                hideLimit={true}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <FieldLabel required>Contact Address</FieldLabel>
-              <TextInput
-                value={String(section.contactAddress || "")}
-                onChange={(next) => onFieldChange("contactAddress", next)}
-                placeholder="Hall 12, Pragati Maidan, New Delhi, India 110001"
-                hideLimit={true}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* CONNECT WITH US (Social Media Links) */}
-        <div className="bg-white p-3 border border-[#e2e8f0] rounded-[6px] flex flex-col gap-3">
-          <div className="text-[11px] font-bold text-[#1e40af] border-b border-gray-100 pb-1.5 flex items-center gap-2">
-            <span>Connect With Us (Social Media Links)</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <FieldLabel>Facebook URL</FieldLabel>
-              <TextInput
-                value={String(section.facebookUrl || "")}
-                onChange={(next) => onFieldChange("facebookUrl", next)}
-                placeholder="https://facebook.com/arogyabharat"
-                hideLimit={true}
-              />
-            </div>
-            <div>
-              <FieldLabel>Instagram URL</FieldLabel>
-              <TextInput
-                value={String(section.instagramUrl || "")}
-                onChange={(next) => onFieldChange("instagramUrl", next)}
-                placeholder="https://instagram.com/arogyabharat"
-                hideLimit={true}
-              />
-            </div>
-            <div>
-              <FieldLabel>Twitter / X URL</FieldLabel>
-              <TextInput
-                value={String(section.twitterUrl || "")}
-                onChange={(next) => onFieldChange("twitterUrl", next)}
-                placeholder="https://twitter.com/bharatorganic"
-                hideLimit={true}
-              />
-            </div>
-            <div>
-              <FieldLabel>YouTube URL</FieldLabel>
-              <TextInput
-                value={String(section.youtubeUrl || "")}
-                onChange={(next) => onFieldChange("youtubeUrl", next)}
-                placeholder="https://youtube.com/@arogyabharat"
-                hideLimit={true}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <FieldLabel>LinkedIn URL</FieldLabel>
-              <TextInput
-                value={String(section.linkedinUrl || "")}
-                onChange={(next) => onFieldChange("linkedinUrl", next)}
-                placeholder="https://linkedin.com/company/arogyabharat"
-                hideLimit={true}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <FooterFieldsEditor section={section} onFieldChange={onFieldChange} />;
   }
+
   const entries = Object.entries(section).filter(
     ([key, value]) => {
       if (SECTION_SKIP_KEYS.has(key)) return false;
-      if ((section.key === "audience-strip" || section.name === "AudienceStrip") && key === "title") return false;
-      if (
-        (section.key === "global-platform" || section.name === "GlobalPlatform") &&
-        (key === "subtitle" || key === "title" || key === "image" || key === "imageAlt")
-      ) {
-        return false;
-      }
-      if (
-        (section.key === "why-participate" || section.name === "WhyParticipate") &&
-        (key === "subtitle" || key === "title")
-      ) {
-        return false;
-      }
-      if (
-        (section.key === "conference-section" || section.name === "ConferenceSection") &&
-        (key === "subtitle" || key === "title")
-      ) {
-        return false;
-      }
-      if (
-        (section.key === "expo-categories" || section.name === "ExpoCategories") &&
-        (key === "image" || key === "imageAlt" || key === "title" || key === "subtitle")
-      ) {
-        return false;
-      }
-      if (
-        (section.key === "beyond-exhibition" || section.name === "BeyondExhibition") &&
-        (key === "title" || key === "subtitle")
-      ) {
-        return false;
-      }
-      if (
-        (section.key === "sponsors-attend" || section.name === "SponsorsAndAttend") &&
-        (key === "title" || key === "subtitle" || key === "rightTitle" || key === "rightBottomText" || key === "centerText1" || key === "centerText2" || key === "centerText3")
-      ) {
-        return false;
-      }
       return typeof value === "string" || typeof value === "boolean";
     },
   );
@@ -261,15 +55,15 @@ export function SectionFieldsEditor({
   return (
     <div className="grid grid-cols-2 gap-x-[16px] gap-y-[10px]">
       {entries.map(([key, value]) => {
-        const isLong = LONG_TEXT_KEY_PATTERN.test(key);
+        const isMultiline = isMultilineField(section.key, key);
+        const isLong = isMultiline || LONG_TEXT_KEY_PATTERN.test(key);
         const isImage = IMAGE_KEY_PATTERN.test(key) && !/alt/i.test(key);
-        const isVideo = VIDEO_KEY_PATTERN.test(key);
+        const isVideo = VIDEO_KEY_PATTERN.test(key) && !NON_VIDEO_KEYS.has(key);
         const isPdf =
-          (section.key === "why-participate" && key === "secondaryButtonHref") ||
           /brochure|pdf/i.test(key) ||
           (typeof value === "string" && /\.pdf$/i.test(value));
-        const isDate = /date|time/i.test(key) && typeof value === "string";
-        const fieldLimit = isLong ? 450 : 140;
+        const isDate = DATE_FIELD_KEYS.has(key) && typeof value === "string";
+        const fieldLimit = getFieldLimit(section.key, key, isLong);
 
         return (
           <div
@@ -310,17 +104,204 @@ export function SectionFieldsEditor({
                 <span className="text-[10px] text-[#64748b]">Select date and time for live countdown timer</span>
               </div>
             ) : isLong ? (
-              <Textarea value={String(value)} onChange={(next: string) => onFieldChange(key, next)} rows={3} />
+              <Textarea
+                value={String(value)}
+                onChange={(next: string) => onFieldChange(key, next)}
+                rows={3}
+                maxLength={fieldLimit}
+              />
             ) : (
               <TextInput
                 value={String(value)}
                 onChange={(next: string) => onFieldChange(key, next)}
-                maxLength={120}
+                maxLength={fieldLimit}
               />
             )}
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/* =========================================================
+   FOOTER — bespoke form (images, contact info, socials)
+========================================================= */
+function FooterFieldsEditor({
+  section,
+  onFieldChange,
+}: {
+  section: Record<string, any>;
+  onFieldChange: (key: string, value: unknown) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Description (About text in Footer Left Column) */}
+      <div className="flex flex-col gap-1.5 bg-white p-3 border border-[#e2e8f0] rounded-[6px]">
+        <FieldLabel required>Footer Description</FieldLabel>
+        <Textarea
+          value={String(section.description || "")}
+          onChange={(next) => onFieldChange("description", next)}
+          rows={4}
+          maxLength={450}
+          placeholder="Arogya Expo - A global platform uniting traditional wellness, Ayurveda, Yoga..."
+        />
+      </div>
+
+      {/* 5 Image Uploads with Previews & Reset */}
+      <div className="bg-white p-3 border border-[#e2e8f0] rounded-[6px] flex flex-col gap-3">
+        <div className="text-[11px] font-bold text-[#1e40af] border-b border-gray-100 pb-1.5 flex items-center gap-2">
+          <span>Footer Images & Decorations</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <FieldLabel>Main Logo Image</FieldLabel>
+            <ImageUploadField
+              value={String(section.logoImage || "")}
+              onChange={(next) => onFieldChange("logoImage", next)}
+            />
+          </div>
+          <div>
+            <FieldLabel>Left Leaf Decoration Image</FieldLabel>
+            <ImageUploadField
+              value={String(section.leafImage || "")}
+              onChange={(next) => onFieldChange("leafImage", next)}
+            />
+          </div>
+          <div>
+            <FieldLabel>Down / Mandala Pattern Image</FieldLabel>
+            <ImageUploadField
+              value={String(section.downImage || "")}
+              onChange={(next) => onFieldChange("downImage", next)}
+            />
+          </div>
+          <div>
+            <FieldLabel>Organised By Logo Image</FieldLabel>
+            <ImageUploadField
+              value={String(section.organisedByLogo || "")}
+              onChange={(next) => onFieldChange("organisedByLogo", next)}
+            />
+          </div>
+          <div className="md:col-span-2">
+            <FieldLabel>Bottom Nature / Event Banner Image</FieldLabel>
+            <ImageUploadField
+              value={String(section.bottomBannerImage || "")}
+              onChange={(next) => onFieldChange("bottomBannerImage", next)}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Contact Information (GET IN TOUCH) */}
+      <div className="bg-white p-3 border border-[#e2e8f0] rounded-[6px] flex flex-col gap-3">
+        <div className="text-[11px] font-bold text-[#1e40af] border-b border-gray-100 pb-1.5 flex items-center gap-2">
+          <span>Get In Touch (Contact Information)</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <FieldLabel required>Phone Number</FieldLabel>
+            <TextInput
+              value={String(section.phoneNumber || "")}
+              onChange={(next) => onFieldChange("phoneNumber", next)}
+              placeholder="+91 96549 00525"
+              hideLimit={true}
+            />
+          </div>
+          <div>
+            <FieldLabel required>Contact Email</FieldLabel>
+            <TextInput
+              value={String(section.contactEmail || "")}
+              onChange={(next) => onFieldChange("contactEmail", next)}
+              placeholder="info@namogangewellness.com"
+              hideLimit={true}
+            />
+          </div>
+          <div>
+            <FieldLabel required>Website URL</FieldLabel>
+            <TextInput
+              value={String(section.websiteUrl || "")}
+              onChange={(next) => onFieldChange("websiteUrl", next)}
+              placeholder="www.arogyabharat.org"
+              hideLimit={true}
+            />
+          </div>
+          <div>
+            <FieldLabel>Conference Helpline (Phone)</FieldLabel>
+            <TextInput
+              value={String(section.conferenceHelpline || section.altPhoneNumber || "")}
+              onChange={(next) => {
+                onFieldChange("conferenceHelpline", next);
+                onFieldChange("altPhoneNumber", next);
+              }}
+              placeholder="+91 98183 53841"
+              hideLimit={true}
+            />
+          </div>
+          <div className="md:col-span-2">
+            <FieldLabel required>Contact Address</FieldLabel>
+            <TextInput
+              value={String(section.contactAddress || "")}
+              onChange={(next) => onFieldChange("contactAddress", next)}
+              placeholder="Hall 12, Pragati Maidan, New Delhi, India 110001"
+              hideLimit={true}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* CONNECT WITH US (Social Media Links) */}
+      <div className="bg-white p-3 border border-[#e2e8f0] rounded-[6px] flex flex-col gap-3">
+        <div className="text-[11px] font-bold text-[#1e40af] border-b border-gray-100 pb-1.5 flex items-center gap-2">
+          <span>Connect With Us (Social Media Links)</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <FieldLabel>Facebook URL</FieldLabel>
+            <TextInput
+              value={String(section.facebookUrl || "")}
+              onChange={(next) => onFieldChange("facebookUrl", next)}
+              placeholder="https://facebook.com/arogyabharat"
+              hideLimit={true}
+            />
+          </div>
+          <div>
+            <FieldLabel>Instagram URL</FieldLabel>
+            <TextInput
+              value={String(section.instagramUrl || "")}
+              onChange={(next) => onFieldChange("instagramUrl", next)}
+              placeholder="https://instagram.com/arogyabharat"
+              hideLimit={true}
+            />
+          </div>
+          <div>
+            <FieldLabel>Twitter / X URL</FieldLabel>
+            <TextInput
+              value={String(section.twitterUrl || "")}
+              onChange={(next) => onFieldChange("twitterUrl", next)}
+              placeholder="https://twitter.com/bharatorganic"
+              hideLimit={true}
+            />
+          </div>
+          <div>
+            <FieldLabel>YouTube URL</FieldLabel>
+            <TextInput
+              value={String(section.youtubeUrl || "")}
+              onChange={(next) => onFieldChange("youtubeUrl", next)}
+              placeholder="https://youtube.com/@arogyabharat"
+              hideLimit={true}
+            />
+          </div>
+          <div className="md:col-span-2">
+            <FieldLabel>LinkedIn URL</FieldLabel>
+            <TextInput
+              value={String(section.linkedinUrl || "")}
+              onChange={(next) => onFieldChange("linkedinUrl", next)}
+              placeholder="https://linkedin.com/company/arogyabharat"
+              hideLimit={true}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
