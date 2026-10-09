@@ -11,7 +11,7 @@ export type LoginResult = {
 const defaultMockAdmin: AdminUser = {
   id: "admin_101",
   name: "Admin User",
-  email: "admin@bharatorganic.com",
+  email: "admin@arogya.namogange.org",
   phone: "+91 9876543210",
   userType: "INTERNAL",
   roleSlug: "SUPER_ADMIN",

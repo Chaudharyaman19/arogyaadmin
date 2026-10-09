@@ -157,10 +157,10 @@ export const dashboardApi = {
           position: 8.4,
           growth: { clicks: 14.2, impressions: 21.0, ctr: 1.8, position: -1.2 },
           queries: [
-            { query: "bharat organic expo 2027", clicks: 3200, impressions: 24000, ctr: 13.3, position: 1.2 },
-            { query: "organic food exhibition india", clicks: 1850, impressions: 19800, ctr: 9.3, position: 2.4 },
-            { query: "book stall organic expo", clicks: 1420, impressions: 12500, ctr: 11.4, position: 1.8 },
-            { query: "herbal ayush expo registration", clicks: 980, impressions: 11200, ctr: 8.75, position: 3.1 }
+            { query: "arogya expo 2027", clicks: 3200, impressions: 24000, ctr: 13.3, position: 1.2 },
+            { query: "ayush healthcare exhibition india", clicks: 1850, impressions: 19800, ctr: 9.3, position: 2.4 },
+            { query: "book stall arogya expo", clicks: 1420, impressions: 12500, ctr: 11.4, position: 1.8 },
+            { query: "ayurveda expo registration", clicks: 980, impressions: 11200, ctr: 8.75, position: 3.1 }
           ]
         }
       },
@@ -195,8 +195,8 @@ export const dashboardApi = {
           total: 42,
           notIndexed: 0,
           urls: [
-            { url: "https://arogyabharat.org/", indexed: true, coverageState: "Submitted and indexed" },
-            { url: "https://arogyabharat.org/registration/book-a-stand", indexed: true, coverageState: "Submitted and indexed" }
+            { url: "https://arogya.namogange.org/", indexed: true, coverageState: "Submitted and indexed" },
+            { url: "https://arogya.namogange.org/register-now", indexed: true, coverageState: "Submitted and indexed" }
           ]
         }
       },
@@ -211,7 +211,7 @@ export const dashboardApi = {
           sslExpiresAt: "2027-03-31T00:00:00Z",
           sslIssuer: "Let's Encrypt Authority X3",
           certificateDaysRemaining: 204,
-          finalUrl: "https://arogyabharat.org",
+          finalUrl: "https://arogya.namogange.org",
           redirected: false,
           ipAddress: "76.76.21.21",
           securityHeaders: { present: 6, total: 6 },
@@ -250,7 +250,7 @@ export const dashboardApi = {
       indexed: 42,
       total: 42,
       notIndexed: 0,
-      urls: [{ url: "https://arogyabharat.org/", indexed: true }]
+      urls: [{ url: "https://arogya.namogange.org/", indexed: true }]
     }
   }),
   siteStatus: async () => ({
@@ -264,7 +264,7 @@ export const dashboardApi = {
       sslExpiresAt: "2027-03-31T00:00:00Z",
       sslIssuer: "Let's Encrypt Authority X3",
       certificateDaysRemaining: 204,
-      finalUrl: "https://arogyabharat.org",
+      finalUrl: "https://arogya.namogange.org",
       redirected: false,
       ipAddress: "76.76.21.21",
       securityHeaders: { present: 6, total: 6 },

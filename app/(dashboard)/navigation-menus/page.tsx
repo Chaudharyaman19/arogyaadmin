@@ -125,129 +125,58 @@ const MENUS: MenuRecord[] = [
 const MENU_STRUCTURES: Record<number, MenuStructureItem[]> = {
   1: [
     { id: "home", label: "Home", type: "Custom Link", url: "/", icon: Home },
-    {
-      id: "about",
-      label: "About Us",
-      type: "Dropdown Parent",
-      url: "/about",
-      icon: FolderClosed,
-      children: [
-        { id: "about-expo", label: "About Expo", type: "Page", url: "/about", icon: FileText },
-        { id: "advisory-board", label: "Advisory Board Members", type: "Page", url: "/about/advisory_board_member", icon: UsersRound },
-        { id: "blogs", label: "Blogs & News", type: "Category", url: "/blog", icon: FileText },
-      ],
-    },
-    {
-      id: "participate",
-      label: "Participate",
-      type: "Dropdown Parent",
-      url: "/why-exhibit",
-      icon: FolderClosed,
-      children: [
-        { id: "why-exhibit", label: "Why Exhibit at ORGANIC EXPO?", type: "Page", url: "/why-exhibit", icon: FileText },
-        { id: "exhibitors", label: "Exhibitor List", type: "Page", url: "/exhibitors", icon: FileText },
-        { id: "why-visit", label: "Why Visit ORGANIC EXPO", type: "Page", url: "/why-visit", icon: FileText },
-        { id: "msme", label: "MSME PMS Scheme", type: "Page", url: "/participate/msme", icon: FileText },
-      ],
-    },
-    { id: "buyer-seller", label: "Buyer-Seller Meet", type: "Page", url: "/buyer-seller-meet", icon: FileText },
-    {
-      id: "opportunities",
-      label: "Opportunities",
-      type: "Dropdown Parent",
-      url: "/sponsorship",
-      icon: FolderClosed,
-      children: [
-        { id: "sponsorship", label: "Sponsorship Opportunities", type: "Page", url: "/sponsorship", icon: FileText },
-        { id: "epromotion", label: "E-Promotion Opportunity", type: "Page", url: "/e-promotion-web", icon: FileText },
-        { id: "partnership", label: "Partnership / Collaboration", type: "Page", url: "/partnership", icon: FileText },
-      ],
-    },
-    { id: "glimpses", label: "Glimpses & Media", type: "Page", url: "/gallery", icon: FileText },
-    { id: "conference", label: "Global Conference", type: "External Link", url: "https://arogya.namogange.org/", icon: ExternalLink },
-    { id: "awards", label: "Organic Awards", type: "Page", url: "/awards", icon: FileText },
+    { id: "about", label: "About Us", type: "Page", url: "/about", icon: FileText },
+    { id: "speakers", label: "Speakers", type: "Page", url: "/speakers", icon: UsersRound },
+    { id: "register", label: "Register Now", type: "Page", url: "/register-now", icon: FileText },
+    { id: "delegate", label: "Delegate Registration", type: "Page", url: "/delegate-registration", icon: FileText },
+    { id: "gallery", label: "Gallery", type: "Page", url: "/gallery", icon: FileText },
+    { id: "partners", label: "Partners", type: "Page", url: "/partners", icon: FileText },
+    { id: "paper-presentation", label: "Paper Presentation", type: "Page", url: "/paper-presentation", icon: FileText },
+    { id: "blogs", label: "Blogs", type: "Page", url: "/blogs", icon: FileText },
     { id: "contact", label: "Contact Us", type: "Page", url: "/contact", icon: Menu },
   ],
   2: [
-    { id: "book-stall", label: "BOOK A STALL", type: "Action CTA", url: "/registration/book-a-stand", icon: FileText },
-    { id: "reg-visitor", label: "REGISTER AS VISITOR", type: "Action CTA", url: "/registration/visitor-registration", icon: FileText },
-    { id: "reg-delegate", label: "DELEGATE REGISTRATION", type: "External Link", url: "https://arogya.namogange.org/", icon: ExternalLink },
-    { id: "reg-buyer", label: "REGISTER AS BUYER", type: "Action CTA", url: "/registration/buyer-registration", icon: FileText },
-    { id: "spon-opp", label: "SPONSORSHIP OPPORTUNITIES", type: "Action CTA", url: "/sponsorship", icon: FileText },
-    { id: "talk-advisor", label: "TALK TO EXPO ADVISOR", type: "Phone Link", url: "tel:+919654900525", icon: HelpCircle },
+    { id: "reg-now", label: "REGISTER NOW", type: "Action CTA", url: "/register-now", icon: FileText },
+    { id: "reg-delegate", label: "DELEGATE REGISTRATION", type: "Action CTA", url: "/delegate-registration", icon: FileText },
+    { id: "paper", label: "PAPER PRESENTATION", type: "Action CTA", url: "/paper-presentation", icon: FileText },
+    { id: "talk-advisor", label: "HELPLINE", type: "Phone Link", url: "tel:+919654900525", icon: HelpCircle },
   ],
   3: [
     { id: "f-home", label: "Home", type: "Footer Link", url: "/", icon: Home },
     { id: "f-about", label: "About Us", type: "Footer Link", url: "/about", icon: FileText },
-    { id: "f-exhibitor-reg", label: "Exhibitor Registration", type: "Footer Link", url: "/registration/book-a-stand", icon: FileText },
-    { id: "f-delegate-reg", label: "Delegate Registration", type: "External Link", url: "https://arogya.namogange.org/", icon: ExternalLink },
-    { id: "f-conference-tracks", label: "Conference Tracks", type: "External Link", url: "https://arogya.namogange.org/", icon: ExternalLink },
-    { id: "f-bs-meet", label: "Buyer Seller Meet", type: "Footer Link", url: "/buyer-seller-meet", icon: FileText },
-    { id: "f-exhibitors", label: "Exhibitor List", type: "Footer Link", url: "/exhibitors", icon: FileText },
-    { id: "f-blogs", label: "Blogs", type: "Category", url: "/blog", icon: FileText },
-    { id: "f-awards", label: "Awards", type: "Footer Link", url: "/awards", icon: FileText },
+    { id: "f-speakers", label: "Speakers", type: "Footer Link", url: "/speakers", icon: UsersRound },
+    { id: "f-register", label: "Register Now", type: "Footer Link", url: "/register-now", icon: FileText },
+    { id: "f-delegate", label: "Delegate Registration", type: "Footer Link", url: "/delegate-registration", icon: FileText },
+    { id: "f-gallery", label: "Gallery", type: "Footer Link", url: "/gallery", icon: FileText },
+    { id: "f-partners", label: "Partners", type: "Footer Link", url: "/partners", icon: FileText },
+    { id: "f-blogs", label: "Blogs", type: "Footer Link", url: "/blogs", icon: FileText },
     { id: "f-contact", label: "Contact Us", type: "Footer Link", url: "/contact", icon: Menu },
   ],
   4: [
-    { id: "f-privacy", label: "Privacy Policy", type: "Legal Policy", url: "/registration/privacy-policy", icon: FileText },
-    { id: "f-terms", label: "Terms & Conditions", type: "Legal Policy", url: "/registration/terms-and-conditions", icon: FileText },
-    { id: "f-refund", label: "Refund Policy", type: "Legal Policy", url: "/registration/refund-policy", icon: FileText },
+    { id: "f-privacy", label: "Privacy Policy", type: "Legal Policy", url: "/privacy-policy", icon: FileText },
+    { id: "f-terms", label: "Terms & Conditions", type: "Legal Policy", url: "/terms-and-conditions", icon: FileText },
+    { id: "f-refund", label: "Refund Policy", type: "Legal Policy", url: "/refund-policy", icon: FileText },
   ],
   5: [
     { id: "m-home", label: "Home", type: "Mobile Tab", url: "/", icon: Home },
-    {
-      id: "m-about",
-      label: "About Us",
-      type: "Accordion Parent",
-      url: "/about",
-      icon: FolderClosed,
-      children: [
-        { id: "m-about-expo", label: "About Expo", type: "Sub Menu", url: "/about", icon: FileText },
-        { id: "m-advisory", label: "Advisory Board Members", type: "Sub Menu", url: "/about/advisory_board_member", icon: UsersRound },
-        { id: "m-blogs", label: "Blogs", type: "Sub Menu", url: "/blog", icon: FileText },
-      ],
-    },
-    {
-      id: "m-participate",
-      label: "Participate",
-      type: "Accordion Parent",
-      url: "/why-exhibit",
-      icon: FolderClosed,
-      children: [
-        { id: "m-why-exhibit", label: "Why Exhibit", type: "Sub Menu", url: "/why-exhibit", icon: FileText },
-        { id: "m-exhibitors", label: "Exhibitor List", type: "Sub Menu", url: "/exhibitors", icon: FileText },
-        { id: "m-why-visit", label: "Why Visit", type: "Sub Menu", url: "/why-visit", icon: FileText },
-        { id: "m-msme", label: "MSME PMS Scheme", type: "Sub Menu", url: "/participate/msme", icon: FileText },
-      ],
-    },
-    { id: "m-bs-meet", label: "Buyer-Seller Meet", type: "Mobile Item", url: "/buyer-seller-meet", icon: FileText },
-    {
-      id: "m-opp",
-      label: "Opportunities",
-      type: "Accordion Parent",
-      url: "/sponsorship",
-      icon: FolderClosed,
-      children: [
-        { id: "m-sponsership", label: "Sponsorship", type: "Sub Menu", url: "/sponsorship", icon: FileText },
-        { id: "m-epromo", label: "E-Promotion", type: "Sub Menu", url: "/e-promotion-web", icon: FileText },
-        { id: "m-partner", label: "Partnership / Collaboration", type: "Sub Menu", url: "/partnership", icon: FileText },
-      ],
-    },
-    { id: "m-gallery", label: "Media / Gallery", type: "Mobile Item", url: "/gallery", icon: FileText },
-    { id: "m-conf", label: "Conference", type: "External Link", url: "https://arogya.namogange.org/", icon: ExternalLink },
-    { id: "m-awards", label: "Awards", type: "Mobile Item", url: "/awards", icon: FileText },
-    { id: "m-contact", label: "Contact", type: "Mobile Item", url: "/contact", icon: Menu },
+    { id: "m-about", label: "About Us", type: "Mobile Item", url: "/about", icon: FileText },
+    { id: "m-speakers", label: "Speakers", type: "Mobile Item", url: "/speakers", icon: UsersRound },
+    { id: "m-register", label: "Register Now", type: "Mobile Item", url: "/register-now", icon: FileText },
+    { id: "m-delegate", label: "Delegate Registration", type: "Mobile Item", url: "/delegate-registration", icon: FileText },
+    { id: "m-gallery", label: "Gallery", type: "Mobile Item", url: "/gallery", icon: FileText },
+    { id: "m-partners", label: "Partners", type: "Mobile Item", url: "/partners", icon: FileText },
+    { id: "m-paper", label: "Paper Presentation", type: "Mobile Item", url: "/paper-presentation", icon: FileText },
+    { id: "m-blogs", label: "Blogs", type: "Mobile Item", url: "/blogs", icon: FileText },
+    { id: "m-contact", label: "Contact Us", type: "Mobile Item", url: "/contact", icon: Menu },
   ],
   6: [
-    { id: "l-user", label: "User Login", type: "Portal Login", url: "https://admin.organicexpo.in/login", icon: ExternalLink },
-    { id: "l-exhibitor", label: "Exhibitor Login", type: "Portal Login", url: "/exhibitor-login", icon: FileText },
-    { id: "l-buyer", label: "Buyer Login", type: "Portal Login", url: "/buyer-login", icon: FileText },
-    { id: "l-delegates", label: "Delegates Login", type: "Portal Login", url: "/delegates-login", icon: FileText },
+    { id: "l-delegate", label: "Delegate Dashboard", type: "Portal Login", url: "/delegate-dashboard", icon: ExternalLink },
+    { id: "l-login", label: "Login", type: "Portal Login", url: "/login", icon: FileText },
   ],
   7: [
     { id: "t-email", label: "Email: info@namogangewellness.com", type: "Top Bar Email", url: "mailto:info@namogangewellness.com", icon: HelpCircle },
     { id: "t-phone", label: "Phone: +91 96549 00525", type: "Top Bar Phone", url: "tel:+919654900525", icon: HelpCircle },
-    { id: "t-marquee", label: "Ticker: 500+ SPEAKERS CONFIRMED • EARLY BIRD DISCOUNT ENDING SOON!", type: "Top Bar Ticker", url: "#", icon: Lightbulb },
+    { id: "t-marquee", label: "Ticker: EARLY BIRD DISCOUNT ENDING SOON!", type: "Top Bar Ticker", url: "#", icon: Lightbulb },
   ],
 };
 
@@ -654,17 +583,15 @@ export default function NavigationMenusPage() {
                         const cleanUrl = url.toLowerCase().trim();
 
                         if (cleanUrl === "/" || cleanUrl === "home") targetRoute = "home";
-                        else if (cleanUrl.includes("about")) targetRoute = "about-us";
-                        else if (cleanUrl.includes("advisory")) targetRoute = "advisory-board";
-                        else if (cleanUrl.includes("blog")) targetRoute = "blogs-and-news";
-                        else if (cleanUrl.includes("why-visit")) targetRoute = "why-visit";
-                        else if (cleanUrl.includes("why-exhibit")) targetRoute = "why-exhibit";
-                        else if (cleanUrl.includes("msme")) targetRoute = "msme-pms-scheme";
-                        else if (cleanUrl.includes("exhibitor")) targetRoute = "exhibitors-list";
-                        else if (cleanUrl.includes("buyer-seller")) targetRoute = "buyer-seller-meet";
-                        else if (cleanUrl.includes("gallery")) targetRoute = "glimpses-and-gallery";
-                        else if (cleanUrl.includes("service")) targetRoute = "our-services";
-                        else if (cleanUrl.includes("contact")) targetRoute = "contact-us";
+                        else if (cleanUrl.includes("about")) targetRoute = "about";
+                        else if (cleanUrl.includes("speakers")) targetRoute = "speakers";
+                        else if (cleanUrl.includes("register-now")) targetRoute = "register-now";
+                        else if (cleanUrl.includes("delegate-registration")) targetRoute = "delegate-registration";
+                        else if (cleanUrl.includes("gallery")) targetRoute = "gallery";
+                        else if (cleanUrl.includes("partners")) targetRoute = "partners";
+                        else if (cleanUrl.includes("paper-presentation")) targetRoute = "paper-presentation";
+                        else if (cleanUrl.includes("blog")) targetRoute = "blogs";
+                        else if (cleanUrl.includes("contact")) targetRoute = "contact";
 
                         router.push(`/pages/${targetRoute}/edit`);
                       }}
