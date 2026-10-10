@@ -8,6 +8,16 @@ import {
   type NavItem,
 } from "./navigation";
 
+// Sparkles around the logo — same positions/timing as the website footer logo
+const LOGO_SPARKLES: React.CSSProperties[] = [
+  { top: "-10px", left: "10%", animationDelay: "0s" },
+  { top: "20px", left: "-12px", animationDelay: "0.4s" },
+  { top: "-12px", right: "15%", animationDelay: "0.8s" },
+  { bottom: "8px", left: "5%", animationDelay: "0.2s" },
+  { bottom: "-10px", right: "20%", animationDelay: "0.6s" },
+  { top: "40%", right: "-14px", animationDelay: "0.3s" },
+];
+
 function isActive(pathname: string, href?: string) {
   if (!href) return false;
   if (href === "/") return pathname === "/";
@@ -253,21 +263,30 @@ export default function Sidebar({
             py-1
           "
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo1.webp"
-            alt="Logo"
-            className="
-              h-full
-              max-h-[70px]
-              w-auto
-              max-w-[196px]
-              object-contain
-              transition-transform
-              duration-200
-              group-hover:scale-[1.03]
-            "
-          />
+          <span className="relative inline-flex h-full items-center">
+            {LOGO_SPARKLES.map((style, i) => (
+              <span key={i} aria-hidden="true" className="logo-sparkle" style={style}>
+                ✦
+              </span>
+            ))}
+
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo1.webp"
+              alt="Logo"
+              className="
+                h-full
+                max-h-[70px]
+                w-auto
+                max-w-[196px]
+                object-contain
+                transition-transform
+                duration-200
+                group-hover:scale-[1.03]
+              "
+              style={{ filter: "drop-shadow(0 0 15px rgba(243,183,27,0.6))" }}
+            />
+          </span>
         </Link>
       </div>
 

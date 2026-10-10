@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import { AdminUser, AuthTokens } from "@/store/slices/authSlice";
+import type { AdminUser, AuthTokens } from "@/store/slices/authSlice";
 
 export type LoginResult = {
   user: AdminUser;
@@ -19,7 +19,7 @@ const defaultMockAdmin: AdminUser = {
 };
 
 export const authApi = {
-  login: async (identifier: string, password: string, totpCode?: string, tempToken?: string): Promise<LoginResult> => {
+  login: async (identifier: string, password: string, totpCode?: string): Promise<LoginResult> => {
     const res = await api.post<any>("/auth/login", { email: identifier, password, totpCode });
 
     if (res && res.requiresTwoFactor) {
