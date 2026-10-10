@@ -210,6 +210,8 @@ export function SectionItemsEditor({
               ([key, value]) =>
                 key !== "_id" &&
                 key !== "status" &&
+                // Skip auto-generated "<imageKey>Alt" fields — they render under their image field
+                !(/Alt$/.test(key) && IMAGE_KEY_PATTERN.test(key.replace(/Alt$/, ""))) &&
                 (typeof value === "string" ||
                   typeof value === "number" ||
                   typeof value === "boolean" ||
@@ -254,7 +256,7 @@ export function SectionItemsEditor({
               {isOpen && (
                 <div className="p-[12px] grid grid-cols-2 gap-[10px] bg-white">
                   {fieldEntries.map(([key, value]) => {
-                    const isImageKey = IMAGE_KEY_PATTERN.test(key);
+                    const isImageKey = IMAGE_KEY_PATTERN.test(key) && !/alt/i.test(key);
                     const isVideoKey = VIDEO_KEY_PATTERN.test(key);
                     const isMultiline = isMultilineItemField(sectionId, key);
                     const isLong = isMultiline || LONG_TEXT_KEY_PATTERN.test(key);
@@ -276,10 +278,21 @@ export function SectionItemsEditor({
                             onChange={(next) => onChangeItem(index, key, next)}
                           />
                         ) : isImageKey ? (
-                          <ImageUploadField
-                            value={String(value)}
-                            onChange={(next) => onChangeItem(index, key, next)}
-                          />
+                          <div className="flex flex-col gap-1.5">
+                            <ImageUploadField
+                              value={String(value)}
+                              onChange={(next) => onChangeItem(index, key, next)}
+                            />
+                            <div>
+                              <FieldLabel>Alt Text — {humanizeKey(key)}</FieldLabel>
+                              <TextInput
+                                value={String(item[`${key}Alt`] ?? "")}
+                                onChange={(next) => onChangeItem(index, `${key}Alt`, next)}
+                                placeholder="Describe this image for accessibility & SEO"
+                                hideLimit={true}
+                              />
+                            </div>
+                          </div>
                         ) : Array.isArray(value) ? (
                           <TextInput
                             value={value.join(", ")}
