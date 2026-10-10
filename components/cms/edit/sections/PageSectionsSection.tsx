@@ -8,6 +8,7 @@
    (items, slides, tracks, days, attendees, features, focusAreas).
 ========================================================= */
 
+import type { ReactNode } from "react";
 import {
   ChevronRight,
 } from "lucide-react";
@@ -17,6 +18,15 @@ import {
 } from "@/components/cms/editor/FormPrimitives";
 import { SectionFieldsEditor } from "@/components/cms/editor/SectionFieldsEditor";
 import { SectionItemsEditor } from "@/components/cms/editor/SectionItemsEditor";
+import { HeroCarouselEditor } from "@/components/cms/editor/HeroCarouselEditor";
+import { SupportedByEditor } from "@/components/cms/editor/SupportedByEditor";
+import { WhyArogyaEditor } from "@/components/cms/editor/WhyArogyaEditor";
+import { AboutConferenceEditor } from "@/components/cms/editor/AboutConferenceEditor";
+import { StatsBandEditor } from "@/components/cms/editor/StatsBandEditor";
+import { VisionMissionEditor } from "@/components/cms/editor/VisionMissionEditor";
+import { UpcomingEventEditor } from "@/components/cms/editor/UpcomingEventEditor";
+import { EventHighlightsEditor } from "@/components/cms/editor/EventHighlightsEditor";
+import { TestimonialsSectionEditor } from "@/components/cms/editor/TestimonialsSectionEditor";
 import { useCmsEdit } from "../CmsEditContext";
 
 /* Sections that own more than one repeatable list. */
@@ -28,6 +38,19 @@ const SECTION_LIST_KEYS: Record<string, string[]> = {
   "about-initiatives": ["items", "focusAreas"],
   "paper-important-dates": ["items", "reasons"],
   "paper-guidelines": ["items", "steps"],
+};
+
+/* Home sections whose content lives in backend-arogya — each has its own editor and Save button. */
+const BACKEND_SECTIONS: Record<string, ReactNode> = {
+  hero: <HeroCarouselEditor />,
+  "trusted-by": <SupportedByEditor />,
+  "why-arogya-tracks": <WhyArogyaEditor />,
+  "about-conference": <AboutConferenceEditor />,
+  "stats-band": <StatsBandEditor />,
+  "vision-mission": <VisionMissionEditor />,
+  "upcoming-event": <UpcomingEventEditor />,
+  "event-highlights": <EventHighlightsEditor />,
+  testimonials: <TestimonialsSectionEditor />,
 };
 
 function getListKeys(section: Record<string, any>): string[] {
@@ -157,7 +180,14 @@ export function PageSectionsSection() {
               </div>
 
               {/* SECTION BODY (ONLY RENDERED WHEN OPEN) */}
-              {isOpen && (
+              {isOpen && BACKEND_SECTIONS[section.key] && (
+                /* Saved straight to the backend (and the live website), not with the page sections */
+                <div className="flex flex-col gap-[12px] p-[14px] bg-[#fbfbfa]">
+                  {BACKEND_SECTIONS[section.key]}
+                </div>
+              )}
+
+              {isOpen && !BACKEND_SECTIONS[section.key] && (
                 <div className="flex flex-col gap-[12px] p-[14px] bg-[#fbfbfa]">
                   <SectionFieldsEditor
                     section={section}

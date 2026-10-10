@@ -45,6 +45,8 @@ import {
   type PageType,
 } from "@/lib/cmsPages";
 import { settingsApi } from "@/lib/settingsApi";
+import { sitePagesApi, SitePageState } from "@/lib/sitePagesApi";
+import { ApiRequestError } from "@/lib/api";
 import { dashboardApi } from "@/lib/dashboardApi";
 import { useAppSelector } from "@/store/hooks";
 
@@ -263,40 +265,38 @@ export default function PagesCmsPage() {
   const [toastMessage, setToastMessage] = useState<{ title: string; type: "success" | "error" } | null>(null);
 
   const handleToggleStatus = async (isActive: boolean) => {
-    if (!selectedPage || !selectedPage.configKey || !rawSettings) return;
+    if (!selectedPage || !selectedPage.configKey) return;
+    if (!isActive && selectedPage.type === "home") {
+      setToastMessage({ title: "The Home page cannot be unpublished.", type: "error" });
+      setTimeout(() => setToastMessage(null), 4000);
+      return;
+    }
     const newStatus = isActive ? "Published" : "Draft";
-    
-    // Update local state for immediate feedback
-    setPages((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, status: newStatus } : p)));
-    setSelectedPage((prev: CmsPage | null) => (prev ? { ...prev, status: newStatus } : null));
+    const oldStatus = isActive ? "Draft" : "Published";
+    const applyStatus = (status: "Published" | "Draft", extra: Partial<CmsPage> = {}) => {
+      setPages((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, status, ...extra } : p)));
+      setSelectedPage((prev: CmsPage | null) => (prev ? { ...prev, status, ...extra } : null));
+    };
+
+    // Immediate feedback, then save to the backend — the website shows a 404 for Draft pages
+    // and drops them from its navbar / footer links.
+    applyStatus(newStatus);
 
     try {
-      const pageConfig = rawSettings[selectedPage.configKey] || {};
-      const updatedPageConfig = { ...pageConfig, enabled: isActive };
-      const newSettings = { ...rawSettings, [selectedPage.configKey]: updatedPageConfig };
-      
-      setRawSettings(newSettings);
-      await settingsApi.update({ [selectedPage.configKey]: updatedPageConfig });
-
-      if (isActive) {
-        setToastMessage({
-          title: "Success! The page has been published and is now live.",
-          type: "success"
-        });
-      } else {
-        setToastMessage({
-          title: "Notice: The page has been unpublished and moved to drafts.",
-          type: "error"
-        });
-      }
+      const saved = await sitePagesApi.setPublished(selectedPage.configKey, isActive);
+      applyStatus(newStatus, saved.updatedBy ? { updatedBy: saved.updatedBy, author: saved.updatedBy } : {});
+      setToastMessage({
+        title: isActive
+          ? "Success! The page is published and live on the website (within 30 seconds)."
+          : "Notice: The page is unpublished — the website hides it and its menu link (within 30 seconds).",
+        type: isActive ? "success" : "error",
+      });
     } catch (error) {
       console.error("Failed to update page status:", error);
-      // Revert on failure
-      setPages((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, status: isActive ? "Draft" : "Published" } : p)));
-      setSelectedPage((prev: CmsPage | null) => (prev ? { ...prev, status: isActive ? "Draft" : "Published" } : null));
+      applyStatus(oldStatus);
       setToastMessage({
-        title: "Error: Failed to save changes.",
-        type: "error"
+        title: `Error: ${error instanceof ApiRequestError ? error.message : "Failed to save changes."}`,
+        type: "error",
       });
     }
 
@@ -312,6 +312,18 @@ export default function PagesCmsPage() {
       const realPages = cmsPagesFromSettings(raw);
       setPages(realPages);
       setSelectedPage(realPages[0] ?? null);
+
+      // Published / Draft comes from the backend (that is what the website follows)
+      sitePagesApi.list().then((states) => {
+        if (!active || !Array.isArray(states)) return;
+        const byKey = new Map<string, SitePageState>(states.map((state) => [state.key, state]));
+        const withState = (page: CmsPage): CmsPage => {
+          const state = page.configKey ? byKey.get(page.configKey) : undefined;
+          return state ? { ...page, status: state.isPublished ? "Published" : "Draft" } : page;
+        };
+        setPages((prev) => prev.map(withState));
+        setSelectedPage((prev: CmsPage | null) => (prev ? withState(prev) : prev));
+      }).catch(() => undefined);
       const sections = Object.entries(raw).reduce((count, [key, value]) => {
         if (!key.toLowerCase().endsWith("page") || !value || typeof value !== "object") return count;
         const page = value as { sections?: unknown[] };
@@ -346,8 +358,8 @@ export default function PagesCmsPage() {
   const selectedPageConfig = selectedPage?.configKey && rawSettings ? rawSettings[selectedPage.configKey] : undefined;
 
   const selectedPageIsPublished = selectedPage?.status === "Published";
-  const selectedPageIsActive =
-    selectedPageIsPublished && selectedPageConfig?.enabled !== false;
+  // Live on the website = published in the backend (the old local `enabled` flag is no longer used)
+  const selectedPageIsActive = selectedPageIsPublished;
 
   const selectedPagePublicUrl = selectedPage
     ? `${PUBLIC_SITE_URL.replace(/\/+$/, "")}${selectedPage.slug === "/"

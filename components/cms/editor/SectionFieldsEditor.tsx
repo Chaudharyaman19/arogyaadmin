@@ -42,19 +42,20 @@ export function SectionFieldsEditor({
     return <FooterFieldsEditor section={section} onFieldChange={onFieldChange} />;
   }
 
-  // The topbar's email & phone are edited as lists saved to the backend (TopbarContactEditor),
-  // so its old single phone/email text fields are not shown.
-  const isTopbar = section.key === "topbar" || section.name === "Topbar & Header Contact";
+  // The website topbar only shows emails & phones, edited as lists saved to the backend.
+  // Its old title / marquee / single phone & email fields are not shown on the website, so they are hidden.
+  if (section.key === "topbar" || section.name === "Topbar & Header Contact") {
+    return <TopbarContactEditor />;
+  }
 
   const entries = Object.entries(section).filter(
     ([key, value]) => {
       if (SECTION_SKIP_KEYS.has(key)) return false;
-      if (isTopbar && (key === "phoneNumber" || key === "contactEmail")) return false;
       return typeof value === "string" || typeof value === "boolean";
     },
   );
 
-  if (!entries.length && !isTopbar) {
+  if (!entries.length) {
     return null;
   }
 
@@ -137,8 +138,6 @@ export function SectionFieldsEditor({
           </div>
         );
       })}
-
-      {isTopbar && <TopbarContactEditor />}
     </div>
   );
 }
