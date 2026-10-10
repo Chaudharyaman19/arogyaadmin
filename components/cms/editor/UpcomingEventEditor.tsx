@@ -152,7 +152,7 @@ export function UpcomingEventEditor() {
             <TextInput value={data.eyebrow} onChange={(v) => set("eyebrow", v)} maxLength={30} />
           </div>
           <div>
-            <FieldLabel required>Title</FieldLabel>
+            <FieldLabel required>Title (H1)</FieldLabel>
             <TextInput value={data.title} onChange={(v) => set("title", v)} maxLength={45} />
           </div>
         </div>

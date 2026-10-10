@@ -27,6 +27,9 @@ import { VisionMissionEditor } from "@/components/cms/editor/VisionMissionEditor
 import { UpcomingEventEditor } from "@/components/cms/editor/UpcomingEventEditor";
 import { EventHighlightsEditor } from "@/components/cms/editor/EventHighlightsEditor";
 import { TestimonialsSectionEditor } from "@/components/cms/editor/TestimonialsSectionEditor";
+import { FooterEditor } from "@/components/cms/editor/FooterEditor";
+import { AboutHeroEditor } from "@/components/cms/editor/AboutHeroEditor";
+import { AboutFounderEditor } from "@/components/cms/editor/AboutFounderEditor";
 import { useCmsEdit } from "../CmsEditContext";
 
 /* Sections that own more than one repeatable list. */
@@ -51,6 +54,9 @@ const BACKEND_SECTIONS: Record<string, ReactNode> = {
   "upcoming-event": <UpcomingEventEditor />,
   "event-highlights": <EventHighlightsEditor />,
   testimonials: <TestimonialsSectionEditor />,
+  footer: <FooterEditor />,
+  "about-hero": <AboutHeroEditor />,
+  "about-founder": <AboutFounderEditor />,
 };
 
 function getListKeys(section: Record<string, any>): string[] {

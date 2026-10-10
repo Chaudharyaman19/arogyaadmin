@@ -1,4 +1,8 @@
-export const PUBLIC_SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001").replace(/\/$/, "");
+// The website — "View Page" links and URL previews
+export const PUBLIC_SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.NODE_ENV === "production" ? "https://arogya.namogange.org" : "http://localhost:3000")
+).replace(/\/$/, "");
 
 export type PageStatus = "Published" | "Draft";
 

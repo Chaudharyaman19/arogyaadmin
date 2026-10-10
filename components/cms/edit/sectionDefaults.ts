@@ -5,7 +5,7 @@
    Extracted from pages/[id]/edit/page.tsx
 ========================================================= */
 
-import { api } from "@/lib/api";
+import { pageSeoApi } from "@/lib/pageSeoApi";
 import { defaultLandingSections } from "@/lib/landingContent";
 import { defaultAboutSections } from "@/lib/aboutContent";
 import { defaultPaperPresentationSections } from "@/lib/paperPresentationContent";
@@ -188,46 +188,35 @@ export function buildSectionsDraft(
   });
 }
 
+/**
+ * Fills the SEO form from backend-arogya (/api/v1/page-seo). When nothing is
+ * saved yet the backend answers with generated defaults, so the canonical (and
+ * every other field) is always filled in automatically.
+ */
 export function loadPageSeo(
   page: any,
   setForm: React.Dispatch<React.SetStateAction<Record<string, any>>>,
   canonicalEditorRef: React.RefObject<HTMLDivElement | null>,
 ): void {
-  const pageKey = page.slug === "/" ? "home" : (page.slug ? page.slug.replace(/^\//, "") : "home");
-  const isLocalEnv = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-  api.get(`/seo/${pageKey}?envType=${isLocalEnv ? "local" : "live"}`)
-    .then((res: any) => {
-      const seoData = res?.data?.data || res?.data || res;
-      if (seoData) {
-        const defaultSiteUrl = isLocalEnv ? "http://localhost:3001" : "https://arogyabharat.org";
-        const pagePath = page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "");
-        const defaultTag = `<link rel="canonical" href="${defaultSiteUrl}${pagePath}" />`;
-
-        const canonicalVal = (seoData.canonicalTag || seoData.canonicalUrl || defaultTag).trim();
-        const match = canonicalVal.match(/href=["']([^"']+)["']/i);
-        const cleanUrl = match ? match[1] : canonicalVal.replace(/<[^>]*>/g, "").trim() || `${defaultSiteUrl}${pagePath}`;
-
-        setForm((prev) => ({
-          ...prev,
-          metaTitle: seoData.metaTitle || prev.metaTitle,
-          metaDescription: seoData.metaDescription || prev.metaDescription,
-          metaKeywords: seoData.metaKeywords || prev.metaKeywords,
-          canonicalUrl: cleanUrl,
-          canonicalTag: canonicalVal,
-          openGraphTags: seoData.openGraphTags || prev.openGraphTags,
-          schemaMarkup: seoData.schemaMarkup || prev.schemaMarkup,
-          ogTitle: seoData.ogTitle || prev.ogTitle,
-          ogDescription: seoData.ogDescription || prev.ogDescription,
-          ogImage: seoData.ogImage || prev.ogImage,
-          robotsIndex: seoData.robotsIndex !== undefined ? seoData.robotsIndex : prev.robotsIndex,
-          robotsFollow: seoData.robotsFollow !== undefined ? seoData.robotsFollow : prev.robotsFollow,
-          isActive: seoData.isActive !== undefined ? seoData.isActive : prev.isActive,
-        }));
-
-        if (canonicalEditorRef.current) {
-          canonicalEditorRef.current.innerText = canonicalVal;
-        }
-      }
+  pageSeoApi
+    .get(page.slug)
+    .then((seo) => {
+      if (!seo) return;
+      setForm((prev) => ({
+        ...prev,
+        metaTitle: seo.metaTitle ?? "",
+        metaDescription: seo.metaDescription ?? "",
+        metaKeywords: seo.metaKeywords ?? "",
+        canonicalUrl: seo.canonicalUrl,
+        canonicalTag: seo.canonicalTag,
+        openGraphTags: seo.openGraphTags ?? "",
+        schemaMarkup: seo.schemaMarkup ?? "",
+        ogImage: seo.ogImage ?? "",
+        robotsIndex: seo.robotsIndex !== false,
+        robotsFollow: seo.robotsFollow !== false,
+        isActive: seo.isActive !== false,
+      }));
+      if (canonicalEditorRef.current) canonicalEditorRef.current.innerText = seo.canonicalTag;
     })
-    .catch(() => {});
+    .catch((err) => console.error("Could not load the page SEO", err));
 }

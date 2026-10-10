@@ -1,740 +1,630 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import {
+  ArrowRight,
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
   Clock3,
+  ExternalLink,
   Eye,
   EyeOff,
-  Filter,
+  Loader2,
   MessageCircleMore,
-  MoreVertical,
+  MessageSquareQuote,
   Pencil,
   Plus,
   RefreshCw,
   Search,
   Settings,
-  Star,
-  Tag,
+  Trash2,
 } from "lucide-react";
+import typography from "../pages/PagesTypography.module.css";
+import Modal from "@/components/ui/Modal";
+import { Input, Select, Textarea } from "@/components/ui/Input";
+import { CloudImageField } from "@/components/cms/editor/CloudImageField";
+import { showError, showSuccess, lazySwal } from "@/lib/toast";
+import { ApiRequestError } from "@/lib/api";
+import {
+  testimonialItemsApi,
+  TestimonialItem,
+  TestimonialItemInput,
+  TestimonialStatus,
+} from "@/lib/testimonialItemsApi";
 
-type TestimonialStatus = "Published" | "Pending Review" | "Hidden";
-type TestimonialCategory =
-  | "Exhibitor"
-  | "B2B Buyer"
-  | "Trade Visitor"
-  | "Sponsor"
-  | "Agro Partner";
+/* =========================================================
+   TESTIMONIALS MANAGEMENT — the testimonial cards of the website
+   home page. Saved to backend-arogya; only "Published" cards show
+   on the website. No photo = the website shows the initials.
+   Layout follows the Bharat admin; colours follow Roles & Permissions.
+========================================================= */
 
-type Testimonial = {
-  id: number;
-  name: string;
-  role: string;
-  message: string;
-  category: TestimonialCategory;
-  rating: number;
-  status: TestimonialStatus;
-  date: string;
-  author: string;
-  avatar: string;
-};
+const WEBSITE_URL = process.env.NEXT_PUBLIC_WEBSITE_URL ?? "http://localhost:3000";
+const PAGE_SIZE = 8;
+const STATUSES: TestimonialStatus[] = ["Published", "Pending Review", "Hidden"];
 
-const TESTIMONIALS: Testimonial[] = [
-  {
-    id: 1,
-    name: "Dr. Meera Sharma",
-    role: "Exhibitor",
-    message:
-      "Arogya Expo provided incredible exposure for our organic spice brand. We secured 15+ international trade contracts!",
-    category: "Exhibitor",
-    rating: 5,
-    status: "Published",
-    date: "30 May 2026",
-    author: "Admin User",
-    avatar: "https://i.pravatar.cc/100?img=47",
-  },
-  {
-    id: 2,
-    name: "Ramesh Patel",
-    role: "B2B Buyer",
-    message:
-      "Exceptional platform for sourcing certified organic produce directly from Indian farmers and exporters.",
-    category: "B2B Buyer",
-    rating: 5,
-    status: "Published",
-    date: "29 May 2026",
-    author: "Expo Team",
-    avatar: "https://i.pravatar.cc/100?img=12",
-  },
-  {
-    id: 3,
-    name: "Vikram Singh",
-    role: "Trade Visitor",
-    message:
-      "World-class facilities at Yashobhoomi, Delhi. The B2B matchmaking lounge and pavilion organization were top notch.",
-    category: "Trade Visitor",
-    rating: 4.5,
-    status: "Published",
-    date: "28 May 2026",
-    author: "Admin User",
-    avatar: "https://i.pravatar.cc/100?img=14",
-  },
-  {
-    id: 4,
-    name: "Anjali Jain",
-    role: "Exhibitor",
-    message:
-      "Outstanding visitor footfall and genuine trade buyers. Looking forward to booking a bigger stall for 2027!",
-    category: "Exhibitor",
-    rating: 5,
-    status: "Published",
-    date: "27 May 2026",
-    author: "Expo Team",
-    avatar: "https://i.pravatar.cc/100?img=32",
-  },
-  {
-    id: 5,
-    name: "Dr. Arvind Kumar",
-    role: "Sponsor",
-    message:
-      "Proud to sponsor Arogya Expo. High-quality delegates, trade visitors and great brand visibility!",
-    category: "Sponsor",
-    rating: 4.5,
-    status: "Pending Review",
-    date: "26 May 2026",
-    author: "Admin User",
-    avatar: "https://i.pravatar.cc/100?img=53",
-  },
-  {
-    id: 6,
-    name: "Neha Agarwal",
-    role: "Agro Partner",
-    message:
-      "Professional organization, seamless stall setup and excellent support from the organizing committee.",
-    category: "Agro Partner",
-    rating: 4,
-    status: "Pending Review",
-    date: "25 May 2026",
-    author: "Expo Team",
-    avatar: "https://i.pravatar.cc/100?img=45",
-  },
-  {
-    id: 7,
-    name: "Suresh Gupta",
-    role: "B2B Buyer",
-    message:
-      "Connected with top herbal producers and organic tea growers in one place. Highly productive event.",
-    category: "B2B Buyer",
-    rating: 5,
-    status: "Published",
-    date: "24 May 2026",
-    author: "Admin User",
-    avatar: "https://i.pravatar.cc/100?img=11",
-  },
-  {
-    id: 8,
-    name: "Pooja Verma",
-    role: "Trade Visitor",
-    message:
-      "Insightful organic farming seminars and innovation showcases. Must-visit event for agricultural trade.",
-    category: "Trade Visitor",
-    rating: 4.5,
-    status: "Hidden",
-    date: "23 May 2026",
-    author: "Admin User",
-    avatar: "https://i.pravatar.cc/100?img=44",
-  },
+const COLOR_PRESETS = [
+  { label: "Forest Green", value: "#1b5e20" },
+  { label: "Burgundy", value: "#4B1426" },
+  { label: "Navy", value: "#111844" },
+  { label: "Ocean Blue", value: "#0284c7" },
+  { label: "Saffron", value: "#d26019" },
+  { label: "Gold", value: "#a07b30" },
+  { label: "Teal", value: "#0f766e" },
+  { label: "Royal Purple", value: "#7c3aed" },
 ];
 
-const categoryStyle: Record<TestimonialCategory, string> = {
-  Exhibitor: "bg-emerald-50 text-emerald-700",
-  "B2B Buyer": "bg-blue-50 text-blue-700",
-  "Trade Visitor": "bg-violet-50 text-violet-700",
-  Sponsor: "bg-orange-50 text-orange-700",
-  "Agro Partner": "bg-rose-50 text-rose-700",
+const STATUS_STYLE: Record<TestimonialStatus, string> = {
+  Published: "bg-[#e8f5e9] text-[#23714a] border border-[#a5d6a7]",
+  "Pending Review": "bg-[#fff8e1] text-[#b78103] border border-[#ffe082]",
+  Hidden: "bg-[#ffebee] text-[#c62828] border border-[#ef9a9a]",
 };
 
-const statusStyle: Record<TestimonialStatus, string> = {
-  Published: "bg-emerald-50 text-emerald-700",
-  "Pending Review": "bg-amber-50 text-amber-700",
-  Hidden: "bg-slate-100 text-slate-600",
+const EMPTY_FORM: TestimonialItemInput = {
+  name: "",
+  designation: "",
+  organization: "",
+  feedback: "",
+  status: "Published",
+  image: "",
+  imageAlt: "",
+  color: "#1b5e20",
 };
 
-const categoryData = [
-  { label: "Family Member", value: 22, percent: "39.3%", color: "#0f766e" },
-  { label: "Beneficiary Family", value: 14, percent: "25.0%", color: "#f59e0b" },
-  { label: "Volunteer", value: 8, percent: "14.3%", color: "#7c3aed" },
-  { label: "Community Partner", value: 6, percent: "10.7%", color: "#2563eb" },
-  { label: "Donor", value: 6, percent: "10.7%", color: "#fb7185" },
-];
+/** Same rule as the website: "Dr. Nitin Kumar" → "NK" */
+const getInitials = (name = "") => {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  const named = words.filter((w) => !["dr.", "dr", "mr.", "mr", "mrs.", "mrs", "ms.", "ms", "prof.", "prof"].includes(w.toLowerCase()));
+  const target = named.length ? named : words;
+  if (!target.length) return "";
+  if (target.length === 1) return target[0].slice(0, 2).toUpperCase();
+  return (target[0][0] + target[target.length - 1][0]).toUpperCase();
+};
 
-const ratingData = [
-  { label: "5 Stars", stars: 5, count: 32, percent: "57.1%", width: "70%" },
-  { label: "4 Stars", stars: 4, count: 16, percent: "28.6%", width: "44%" },
-  { label: "3 Stars", stars: 3, count: 5, percent: "8.9%", width: "17%" },
-  { label: "2 Stars", stars: 2, count: 2, percent: "3.6%", width: "8%" },
-  { label: "1 Star", stars: 1, count: 1, percent: "1.8%", width: "4%" },
-];
+const formatDate = (value?: string) =>
+  value ? new Date(value).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—";
 
-function RatingStars({ value, size = 12 }: { value: number; size?: number }) {
-  const rounded = Math.round(value);
-
+function Avatar({ item, size = 32, textSize = 10.5 }: { item: Pick<TestimonialItem, "name" | "image" | "imageAlt" | "color">; size?: number; textSize?: number }) {
+  if (item.image) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={item.image} alt={item.imageAlt || item.name} className="shrink-0 rounded-full border border-[#e4e7eb] object-cover"
+        style={{ width: size, height: size }} />
+    );
+  }
+  const tone = item.color || "#1b5e20";
   return (
-    <div className="flex items-center gap-[2px]">
-      {Array.from({ length: 5 }, (_, index) => (
-        <Star
-          key={index}
-          size={size}
-          strokeWidth={1.6}
-          className={
-            index < rounded
-              ? "fill-amber-400 text-amber-400"
-              : "fill-slate-200 text-slate-300"
-          }
-        />
-      ))}
+    <div
+      className="flex shrink-0 items-center justify-center rounded-full border-[2px] border-white font-bold uppercase tracking-wider"
+      style={{
+        width: size,
+        height: size,
+        fontSize: textSize,
+        color: tone,
+        background: `linear-gradient(135deg, #ffffff 0%, ${tone}22 100%)`,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.08), 0 0 0 1.5px #e2e8f0",
+      }}
+    >
+      {getInitials(item.name) || "?"}
     </div>
   );
 }
 
-function MetricCard({
-  icon,
-  iconClass,
-  label,
-  value,
-  note,
-  stars,
-}: {
-  icon: React.ReactNode;
-  iconClass: string;
-  label: string;
-  value: string;
-  note: string;
-  stars?: boolean;
-}) {
-  return (
-    <div className="relative flex h-[56px] min-w-0 items-center gap-[10px] overflow-hidden rounded-[7px] border border-[#e7e9ec] bg-white px-[12px] py-[7px] shadow-[0_1px_2px_rgba(15,23,42,0.02)]">
-      <div className={`grid h-[34px] w-[34px] shrink-0 place-items-center rounded-full ${iconClass}`}>
-        {icon}
-      </div>
+const STAT_TONES = {
+  green: { ring: "bg-emerald-50 text-emerald-700 ring-emerald-200", gradient: "linear-gradient(135deg,#ffffff 0%,#ffffff 42%,#bbf7d0 100%)", num: "#15803d" },
+  violet: { ring: "bg-violet-50 text-violet-700 ring-violet-200", gradient: "linear-gradient(135deg,#ffffff 0%,#ffffff 42%,#ddd6fe 100%)", num: "#6d28d9" },
+  amber: { ring: "bg-amber-50 text-amber-700 ring-amber-200", gradient: "linear-gradient(135deg,#ffffff 0%,#ffffff 42%,#fed7aa 100%)", num: "#c2410c" },
+  rose: { ring: "bg-rose-50 text-rose-700 ring-rose-200", gradient: "linear-gradient(135deg,#ffffff 0%,#ffffff 42%,#fecdd3 100%)", num: "#be123c" },
+} as const;
 
-      <div className="min-w-0 flex-1 overflow-hidden">
-        <p className="break-words text-[9px] font-semibold leading-[11px] text-[#34435e]">{label}</p>
-        <div className="mt-[2px] flex items-baseline gap-[6px]">
-          <span className="text-[17px] font-semibold leading-none tracking-[-0.03em] text-[#10204a]">
-            {value}
-          </span>
-          {stars ? (
-            <RatingStars value={5} size={11} />
-          ) : (
-            <span className="truncate text-[8.5px] font-semibold text-[#66738b]">
-              {note}
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
+export default function TestimonialsPage() {
+  const [items, setItems] = useState<TestimonialItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-export default function TestimonialsManagementPage() {
-  const router = useRouter();
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState("All Status");
-  const [category, setCategory] = useState("All Categories");
-  const [rating, setRating] = useState("All Ratings");
+  const [statusFilter, setStatusFilter] = useState<"All" | TestimonialStatus>("All");
+  const [page, setPage] = useState(1);
 
-  const rows = useMemo(() => {
-    return TESTIMONIALS.filter((item) => {
-      const searchMatch =
-        !query ||
-        `${item.name} ${item.role} ${item.message}`
-          .toLowerCase()
-          .includes(query.toLowerCase());
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<TestimonialItemInput>(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const openedFromUrl = useRef(false);
 
-      const statusMatch = status === "All Status" || item.status === status;
-      const categoryMatch =
-        category === "All Categories" || item.category === category;
+  const load = () => {
+    setLoading(true);
+    testimonialItemsApi
+      .list()
+      .then((data) => {
+        const list = Array.isArray(data) ? data : [];
+        setItems(list);
+        setSelectedId((prev) => (prev && list.some((t) => t._id === prev) ? prev : list[0]?._id ?? null));
+      })
+      .catch((err) => showError(err instanceof ApiRequestError ? err.message : "Failed to load testimonials."))
+      .finally(() => setLoading(false));
+  };
 
-      const ratingMatch =
-        rating === "All Ratings" ||
-        Math.round(item.rating) === Number(rating.replace(" Stars", ""));
+  useEffect(() => {
+    load();
+  }, []);
 
-      return searchMatch && statusMatch && categoryMatch && ratingMatch;
+  /* /testimonials?add=1 (the old "Add New Testimonial" page) opens the add form */
+  useEffect(() => {
+    if (!openedFromUrl.current && new URLSearchParams(window.location.search).get("add") === "1") {
+      openedFromUrl.current = true;
+      openAdd();
+    }
+  }, []);
+
+  const counts = useMemo(() => {
+    const by = (s: TestimonialStatus) => items.filter((t) => t.status === s).length;
+    return { total: items.length, published: by("Published"), pending: by("Pending Review"), hidden: by("Hidden") };
+  }, [items]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return items.filter((t) => {
+      if (statusFilter !== "All" && t.status !== statusFilter) return false;
+      if (!q) return true;
+      return [t.name, t.designation, t.organization, t.feedback].some((v) => (v || "").toLowerCase().includes(q));
     });
-  }, [query, status, category, rating]);
+  }, [items, query, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const start = (safePage - 1) * PAGE_SIZE;
+  const rows = filtered.slice(start, start + PAGE_SIZE);
+  const selected = items.find((t) => t._id === selectedId) ?? null;
 
   const clearFilters = () => {
     setQuery("");
-    setStatus("All Status");
-    setCategory("All Categories");
-    setRating("All Ratings");
+    setStatusFilter("All");
+    setPage(1);
   };
 
+  const openAdd = () => {
+    setEditingId(null);
+    setForm(EMPTY_FORM);
+    setError("");
+    setModalOpen(true);
+  };
+
+  const openEdit = (item: TestimonialItem) => {
+    setEditingId(item._id);
+    setForm({
+      name: item.name.trim(),
+      designation: item.designation || "",
+      organization: item.organization || "",
+      feedback: item.feedback || "",
+      status: item.status || "Published",
+      image: item.image || "",
+      imageAlt: item.imageAlt || "",
+      color: item.color || "#1b5e20",
+    });
+    setError("");
+    setModalOpen(true);
+  };
+
+  const handleSave = async () => {
+    const input: TestimonialItemInput = {
+      ...form,
+      name: form.name.trim(),
+      designation: form.designation.trim(),
+      organization: form.organization.trim(),
+      feedback: form.feedback.trim(),
+      imageAlt: form.image ? form.imageAlt.trim() : "",
+    };
+    if (!input.name) return setError("Name is required.");
+    if (input.feedback.length < 10) return setError("Testimonial text must be at least 10 characters.");
+    if (input.image && !input.imageAlt) return setError("Enter the photo alt text.");
+
+    setSaving(true);
+    setError("");
+    try {
+      if (editingId) {
+        await testimonialItemsApi.update(editingId, input);
+        showSuccess(`Testimonial by "${input.name}" updated.`);
+      } else {
+        const created = await testimonialItemsApi.create(input);
+        setSelectedId(created._id);
+        showSuccess(`Testimonial by "${input.name}" added.`);
+      }
+      setModalOpen(false);
+      load();
+    } catch (err) {
+      const msg = err instanceof ApiRequestError ? err.message : "Could not save this testimonial.";
+      setError(msg);
+      showError(msg);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleStatusChange = async (item: TestimonialItem, status: TestimonialStatus) => {
+    setItems((prev) => prev.map((t) => (t._id === item._id ? { ...t, status } : t)));
+    try {
+      await testimonialItemsApi.update(item._id, { status });
+      showSuccess(`"${item.name.trim()}" is now ${status}.`);
+    } catch (err) {
+      showError(err instanceof ApiRequestError ? err.message : "Failed to update the status.");
+      load();
+    }
+  };
+
+  const handleDelete = async (item: TestimonialItem) => {
+    const confirm = await lazySwal.fire({
+      title: `Delete testimonial by "${item.name.trim()}"?`,
+      text: "It will be removed from the website. This cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#64748b",
+      confirmButtonText: "Yes, Delete",
+      cancelButtonText: "Cancel",
+      background: "#1e2433",
+      color: "#e2e8f0",
+    });
+    if (!confirm.isConfirmed) return;
+    try {
+      await testimonialItemsApi.remove(item._id);
+      showSuccess("Testimonial deleted.");
+      if (selectedId === item._id) setSelectedId(null);
+      load();
+    } catch (err) {
+      showError(err instanceof ApiRequestError ? err.message : "Could not delete this testimonial.");
+    }
+  };
+
+  const statCards = [
+    { title: "TOTAL TESTIMONIALS", value: String(counts.total), icon: MessageSquareQuote, tone: STAT_TONES.green, footer: "View all", onClick: () => { clearFilters(); } },
+    { title: "PUBLISHED", value: String(counts.published), icon: CheckCircle2, tone: STAT_TONES.violet,
+      footer: counts.total ? `${((counts.published / counts.total) * 100).toFixed(1)}% of total` : "View published", onClick: () => { setStatusFilter("Published"); setPage(1); } },
+    { title: "PENDING REVIEW", value: String(counts.pending), icon: Clock3, tone: STAT_TONES.amber, footer: "Review pending", onClick: () => { setStatusFilter("Pending Review"); setPage(1); } },
+    { title: "HIDDEN", value: String(counts.hidden), icon: EyeOff, tone: STAT_TONES.rose, footer: "View hidden", onClick: () => { setStatusFilter("Hidden"); setPage(1); } },
+  ];
+
   return (
-    <main
-      style={{
-        fontFamily:
-          'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-      }}
-      className="h-full min-h-0 w-full overflow-y-auto overflow-x-hidden bg-[#fffefb] px-[18px] py-[14px] text-[#142347] [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300"
-    >
-      <div className="min-h-full w-full">
-        {/* HEADER */}
-        <header className="flex items-start justify-between gap-[16px]">
+    <div className={`${typography.pages} min-h-[calc(100vh-100px)] w-full bg-white text-[#18233b]`}>
+      <div className="flex min-h-full flex-col px-[18px] pb-[16px] pt-[14px]">
+        {/* TOP HEADING — Roles & Permissions colours */}
+        <div className="mb-[14px] flex shrink-0 items-center justify-between border-b-[2px] border-[#293681] pb-[8px]">
           <div>
-            <h1 className="text-[24px] font-semibold leading-none tracking-[-0.02em] text-[#075b33]">
+            <h1 className="text-[19px] font-bold leading-[1.15] tracking-[-0.018em] text-[#4B1426]" style={{ color: "#4B1426" }}>
               Testimonials Management
             </h1>
-
-            <nav className="mt-[9px] flex items-center gap-[8px] text-[10.5px] font-semibold text-[#1d2b58]">
-              <span>Dashboard</span>
-              <span className="text-[#7b8597]">›</span>
-              <span>Testimonials Management</span>
-            </nav>
+            <p className="mt-0.5 text-[9px] font-medium text-[#6c7587]">
+              Manage what delegates and healthcare leaders say — only Published testimonials appear on the website.
+            </p>
           </div>
-
-          <div className="flex items-center gap-[12px]">
-            <button
-              type="button"
-              onClick={() => router.push("/testimonials/new")}
-              className="inline-flex h-[40px] items-center gap-[8px] rounded-[6px] bg-[linear-gradient(180deg,#076636_0%,#03542c_100%)] px-[20px] text-[10.5px] font-semibold text-white shadow-[0_7px_16px_rgba(5,94,49,.12)] transition hover:opacity-95"
-            >
-              <Plus className="h-[15px] w-[15px]" />
-              Add New Testimonial
-            </button>
-
-            <button
-              type="button"
-              onClick={() => router.push("/testimonials/settings")}
-              className="inline-flex h-[40px] items-center gap-[8px] rounded-[6px] border border-[#dfe3e7] bg-white px-[18px] text-[10.5px] font-semibold text-[#273655] transition hover:bg-slate-50"
-            >
-              <Settings className="h-[15px] w-[15px]" />
-              Testimonial Settings
+          <div className="flex items-center gap-[10px]">
+            <a href={WEBSITE_URL} target="_blank" rel="noreferrer"
+              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] border border-[#fed7aa] bg-[#fff7ed] px-[14px] text-[8.5px] font-semibold text-[#ea580c] shadow-sm transition hover:bg-[#ffedd5]">
+              <ExternalLink className="h-[12px] w-[12px]" strokeWidth={1.7} /> View on Website
+            </a>
+            <Link href="/pages/home/edit"
+              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] border border-[#d8dce2] bg-white px-[14px] text-[8.5px] font-semibold text-[#334155] shadow-sm transition hover:bg-slate-50">
+              <Settings className="h-[12px] w-[12px]" strokeWidth={1.7} /> Section Settings
+            </Link>
+            <button type="button" onClick={openAdd}
+              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] bg-[#1b5e20] px-[14px] text-[8.5px] font-semibold text-white shadow-[0_5px_12px_rgba(27,94,32,0.25)] transition hover:bg-[#14491a]">
+              <Plus className="h-[12px] w-[12px]" strokeWidth={1.7} /> Add New Testimonial
             </button>
           </div>
-        </header>
+        </div>
 
-        {/* TOP STATS */}
-        <section className="mt-[18px] grid grid-cols-5 gap-[14px]">
-          <MetricCard
-            icon={<MessageCircleMore className="h-[16px] w-[16px]" strokeWidth={1.8} />}
-            iconClass="bg-emerald-50 text-emerald-700"
-            label="Total Testimonials"
-            value="56"
-            note="Published: 48"
-          />
-
-          <MetricCard
-            icon={<Star className="h-[16px] w-[16px]" strokeWidth={1.8} />}
-            iconClass="bg-violet-50 text-violet-600"
-            label="Published"
-            value="48"
-            note="85.7% of total"
-          />
-
-          <MetricCard
-            icon={<Clock3 className="h-[16px] w-[16px]" strokeWidth={1.8} />}
-            iconClass="bg-orange-50 text-orange-500"
-            label="Pending Review"
-            value="5"
-            note="8.9% of total"
-          />
-
-          <MetricCard
-            icon={<EyeOff className="h-[16px] w-[16px]" strokeWidth={1.8} />}
-            iconClass="bg-blue-50 text-blue-600"
-            label="Hidden"
-            value="3"
-            note="5.4% of total"
-          />
-
-          <MetricCard
-            icon={<Star className="h-[16px] w-[16px]" strokeWidth={1.8} />}
-            iconClass="bg-emerald-50 text-emerald-700"
-            label="Average Rating"
-            value="4.8 / 5"
-            note=""
-            stars
-          />
-        </section>
-
-        {/* MAIN GRID */}
-        <section className="mt-[16px] grid items-start gap-[14px] xl:grid-cols-[minmax(0,1fr)_320px]">
-          {/* LEFT */}
-          <div className="min-w-0 overflow-hidden">
-            {/* FILTERS */}
-            <div className="flex flex-wrap items-center gap-[10px]">
-              <label className="relative min-w-[180px] flex-1">
-                <Search className="absolute right-[13px] top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-[#5d6b84]" />
-                <input
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Search testimonials by name, role or keyword..."
-                  className="h-[40px] w-full rounded-[6px] border border-[#dfe4e8] bg-white px-[14px] pr-[40px] text-[10.5px] font-semibold text-[#273655] outline-none placeholder:text-[#8b95a7]"
-                />
-              </label>
-
-              <select
-                value={status}
-                onChange={(event) => setStatus(event.target.value)}
-                className="h-[40px] min-w-[115px] rounded-[6px] border border-[#dfe4e8] bg-white px-[10px] text-[10px] font-semibold text-[#2a3855] outline-none"
-              >
-                <option>All Status</option>
-                <option>Published</option>
-                <option>Pending Review</option>
-                <option>Hidden</option>
-              </select>
-
-              <select
-                value={category}
-                onChange={(event) => setCategory(event.target.value)}
-                className="h-[40px] min-w-[125px] rounded-[6px] border border-[#dfe4e8] bg-white px-[10px] text-[10px] font-semibold text-[#2a3855] outline-none"
-              >
-                <option>All Categories</option>
-                <option>Family Member</option>
-                <option>Beneficiary Family</option>
-                <option>Volunteer</option>
-                <option>Community Partner</option>
-                <option>Donor</option>
-              </select>
-
-              <select
-                value={rating}
-                onChange={(event) => setRating(event.target.value)}
-                className="h-[40px] min-w-[110px] rounded-[6px] border border-[#dfe4e8] bg-white px-[10px] text-[10px] font-semibold text-[#2a3855] outline-none"
-              >
-                <option>All Ratings</option>
-                <option>5 Stars</option>
-                <option>4 Stars</option>
-                <option>3 Stars</option>
-                <option>2 Stars</option>
-                <option>1 Star</option>
-              </select>
-
-              <button
-                type="button"
-                className="inline-flex h-[40px] items-center justify-center gap-[6px] rounded-[6px] border border-[#cfe4d7] bg-white px-[12px] text-[10px] font-semibold text-[#146a3f] shrink-0"
-              >
-                <Filter className="h-[14px] w-[14px]" />
-                More Filters
+        {/* STAT CARDS */}
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+          {statCards.map(({ title, value, icon: Icon, tone, footer, onClick }) => (
+            <div key={title} className="relative flex h-[92px] flex-col overflow-hidden rounded-[11px] border border-[#e5e7e6] bg-white p-2"
+              style={{ background: tone.gradient, boxShadow: "rgba(0,0,0,0.02) 0px 1px 3px 0px, rgba(27,31,35,0.15) 0px 0px 0px 1px" }}>
+              <div className="flex items-start gap-1.5">
+                <div className={`grid h-[30px] w-[30px] shrink-0 place-items-center rounded-full bg-white/80 ring-1 ${tone.ring}`}>
+                  <Icon className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[8.5px] font-semibold tracking-[0.01em] text-slate-900">{title}</p>
+                  <div className="mt-1.5 flex items-end gap-1">
+                    <span className="text-[21px] font-semibold leading-none tracking-[-0.04em]" style={{ color: tone.num }}>{loading ? "…" : value}</span>
+                  </div>
+                </div>
+              </div>
+              <button type="button" onClick={onClick}
+                className="absolute bottom-1.5 left-2 right-2 flex items-center justify-center gap-1 text-[8px] font-semibold text-[#293957] transition hover:text-blue-600">
+                {footer} <ArrowRight className="h-3 w-3" />
               </button>
+            </div>
+          ))}
+        </div>
 
-              <button
-                type="button"
-                onClick={clearFilters}
-                className="inline-flex h-[40px] items-center justify-center gap-[6px] rounded-[6px] border border-[#dfe4e8] bg-white px-[12px] text-[10px] font-semibold text-[#35445f] shrink-0"
-              >
-                <RefreshCw className="h-[14px] w-[14px]" />
-                Clear
+        {/* MAIN SPLIT */}
+        <section className="mt-[14px] grid items-start gap-[14px] xl:grid-cols-[minmax(0,1fr)_300px]">
+          {/* LEFT: FILTERS + TABLE */}
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-[8px]">
+              <label className="relative min-w-[200px] flex-1">
+                <Search className="absolute right-[12px] top-1/2 h-[14px] w-[14px] -translate-y-1/2 text-[#5d6b84]" />
+                <input value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }}
+                  placeholder="Search testimonials by name, role or keyword..."
+                  className="h-[34px] w-full rounded-[6px] border border-[#dfe4e8] bg-white px-[12px] pr-[36px] text-[10px] font-semibold text-[#273655] outline-none placeholder:text-[#8b95a7] focus:border-[#293681]" />
+              </label>
+              <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value as typeof statusFilter); setPage(1); }}
+                className="h-[34px] min-w-[120px] cursor-pointer rounded-[6px] border border-[#dfe4e8] bg-white px-[10px] text-[10px] font-semibold text-[#2a3855] outline-none">
+                <option value="All">All Status</option>
+                {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <button type="button" onClick={clearFilters}
+                className="inline-flex h-[34px] items-center gap-[6px] rounded-[6px] border border-[#dfe4e8] bg-white px-[12px] text-[10px] font-semibold text-[#35445f] hover:bg-slate-50">
+                <RefreshCw className="h-[13px] w-[13px]" /> Clear
               </button>
             </div>
 
-            {/* TABLE */}
-            <div className="mt-[12px] overflow-hidden rounded-[8px] border border-[#e7e9ec] bg-white shadow-[0_1px_3px_rgba(15,23,42,0.025)]">
+            <div className="mt-[10px] flex flex-col overflow-hidden rounded-[7px] border border-[#e8e5df] bg-white">
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[980px] border-collapse text-left">
+                <table className="w-full min-w-[820px] border-collapse text-left">
                   <thead>
-                    <tr className="h-[42px] border-b border-[#e7e9ec] bg-[#fafbfc] text-[8.5px] font-semibold uppercase tracking-[0.04em] text-[#44516a]">
-                      <th className="w-[42px] px-[12px] text-center">
-                        <input type="checkbox" />
-                      </th>
-                      <th className="px-[8px]">Testimonial</th>
-                      <th className="px-[8px]">Category</th>
-                      <th className="px-[8px]">Rating</th>
-                      <th className="px-[8px]">Status</th>
-                      <th className="px-[8px]">Added On</th>
-                      <th className="px-[8px] text-center">Actions</th>
+                    <tr className="h-[32px] border-b border-[#e8e5df] bg-[#111844]">
+                      {["#", "Testimonial", "Status", "Added On", "Actions"].map((h, i, all) => (
+                        <th key={h} className={`px-[12px] py-[6px] text-[8.5px] font-bold uppercase tracking-wider text-white ${i === 0 ? "rounded-tl-[6px]" : ""} ${i === all.length - 1 ? "rounded-tr-[6px] text-right" : ""}`}>
+                          {h}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
-
-                  <tbody>
-                    {rows.map((item) => (
-                      <tr
-                        key={item.id}
-                        className="h-[70px] border-b border-[#eef0f2] align-middle last:border-b-0 hover:bg-slate-50/60"
-                      >
-                        <td className="px-[12px] text-center">
-                          <input type="checkbox" />
-                        </td>
-
-                        <td className="px-[8px]">
-                          <div className="flex min-w-[300px] items-center gap-[12px]">
-                            <img
-                              src={item.avatar}
-                              alt=""
-                              className="h-[44px] w-[44px] shrink-0 rounded-full border border-[#e0e4e8] object-cover"
-                            />
-
-                            <div className="min-w-0 overflow-hidden">
-                              <p className="text-[10.5px] font-semibold text-[#19274a]">
-                                {item.name}
-                              </p>
-                              <p className="mt-[4px] max-w-[335px] text-[8.8px] font-semibold leading-[1.4] text-[#53627c]">
-                                {item.message}
-                              </p>
+                  <tbody className="divide-y divide-[#f0f0ec]">
+                    {loading ? (
+                      <tr><td colSpan={5} className="py-12 text-center">
+                        <div className="flex items-center justify-center gap-2 text-[11px] text-[#6c7587]">
+                          <Loader2 className="h-4 w-4 animate-spin text-[#293681]" /> Loading testimonials...
+                        </div>
+                      </td></tr>
+                    ) : rows.length === 0 ? (
+                      <tr><td colSpan={5} className="py-12 text-center text-[10px] text-[#6c7587]">
+                        {items.length ? "No testimonials match your filters." : 'No testimonials yet. Click "Add New Testimonial" to create one.'}
+                      </td></tr>
+                    ) : (
+                      rows.map((item, idx) => (
+                        <tr key={item._id} onClick={() => setSelectedId(item._id)}
+                          className={`cursor-pointer transition hover:bg-slate-50/80 ${selectedId === item._id ? "bg-[#f4faf6]" : ""}`}>
+                          <td className="px-[12px] py-[8px] text-[8.5px] font-semibold text-[#293681]">{start + idx + 1}</td>
+                          <td className="px-[12px] py-[8px]">
+                            <div className="flex min-w-[260px] items-start gap-[10px]">
+                              <Avatar item={item} />
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-[10.5px] font-bold" style={{ color: "#4B1426" }}>{item.name}</p>
+                                <p className="truncate text-[8px] font-semibold text-[#0A7C6E]">
+                                  {[item.designation, item.organization].filter(Boolean).join(" · ") || "—"}
+                                </p>
+                                <p className="mt-[2px] line-clamp-1 max-w-[360px] text-[8.5px] text-[#475569]">{item.feedback}</p>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-
-                        <td className="px-[8px]">
-                          <span
-                            className={`inline-flex whitespace-nowrap rounded-[5px] px-[8px] py-[4px] text-[8px] font-semibold ${categoryStyle[item.category]}`}
-                          >
-                            {item.category}
-                          </span>
-                        </td>
-
-                        <td className="px-[8px]">
-                          <div className="flex items-center gap-[8px] whitespace-nowrap">
-                            <RatingStars value={item.rating} />
-                            <span className="text-[9px] font-semibold text-[#33425c]">
-                              {item.rating.toFixed(1)}
-                            </span>
-                          </div>
-                        </td>
-
-                        <td className="px-[8px]">
-                          <span
-                            className={`inline-flex items-center gap-[5px] whitespace-nowrap rounded-[5px] px-[8px] py-[4px] text-[8px] font-semibold ${statusStyle[item.status]}`}
-                          >
-                            <span
-                              className={`h-[5px] w-[5px] rounded-full ${item.status === "Published"
-                                ? "bg-emerald-500"
-                                : item.status === "Pending Review"
-                                  ? "bg-amber-500"
-                                  : "bg-slate-400"
-                                }`}
-                            />
-                            {item.status}
-                          </span>
-                        </td>
-
-                        <td className="px-[8px]">
-                          <p className="whitespace-nowrap text-[9px] font-semibold text-[#2c3a58]">
-                            {item.date}
-                          </p>
-                          <p className="mt-[4px] whitespace-nowrap text-[8px] font-semibold text-[#68758d]">
-                            By {item.author}
-                          </p>
-                        </td>
-
-                        <td className="px-[8px]">
-                          <div className="flex items-center justify-center gap-[8px]">
-                            <button
-                              type="button"
-                              onClick={() => router.push("/testimonials/new")}
-                              className="grid h-[30px] w-[30px] place-items-center rounded-[5px] border border-[#e1e5e9] bg-white text-[#4b5871] hover:bg-slate-50"
-                            >
-                              <Eye className="h-[12px] w-[12px]" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => router.push("/testimonials/new")}
-                              className="grid h-[30px] w-[30px] place-items-center rounded-[5px] border border-[#e1e5e9] bg-white text-[#4b5871] hover:bg-slate-50"
-                            >
-                              <Pencil className="h-[12px] w-[12px]" />
-                            </button>
-                            <button
-                              type="button"
-                              className="grid h-[30px] w-[30px] place-items-center rounded-[5px] border border-[#e1e5e9] bg-white text-[#4b5871] hover:bg-slate-50"
-                            >
-                              <MoreVertical className="h-[12px] w-[12px]" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td className="px-[12px] py-[8px]">
+                            <select key={`${item._id}-${item.status}`} value={item.status}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => handleStatusChange(item, e.target.value as TestimonialStatus)}
+                              className={`h-[24px] cursor-pointer appearance-none rounded-[4px] bg-[right_6px_center] bg-no-repeat px-[8px] pr-[22px] text-[8px] font-bold shadow-xs outline-none ${STATUS_STYLE[item.status]}`}
+                              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")` }}>
+                              {STATUSES.map((s) => <option key={s} value={s} className="bg-white font-bold text-slate-800">{s}</option>)}
+                            </select>
+                          </td>
+                          <td className="whitespace-nowrap px-[12px] py-[8px]">
+                            <div className="flex flex-col leading-tight">
+                              <span className="text-[9px] font-semibold text-[#334155]">{formatDate(item.createdAt)}</span>
+                              <span className="mt-0.5 text-[8px] font-medium text-[#dc2626]">{item.updatedBy && item.updatedBy !== "seed" ? `By ${item.updatedBy}` : "By Admin"}</span>
+                            </div>
+                          </td>
+                          <td className="px-[12px] py-[8px] text-right">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button type="button" title="View Details" onClick={(e) => { e.stopPropagation(); setSelectedId(item._id); }}
+                                className="flex h-[25px] w-[25px] items-center justify-center rounded-[6px] border border-orange-400/30 bg-orange-500/10 text-orange-600 transition hover:scale-105 hover:bg-orange-500/20">
+                                <Eye className="h-[12px] w-[12px]" />
+                              </button>
+                              <button type="button" title="Edit" onClick={(e) => { e.stopPropagation(); openEdit(item); }}
+                                className="flex h-[25px] w-[25px] items-center justify-center rounded-[6px] border border-blue-400/30 bg-blue-500/10 text-blue-600 transition hover:scale-105 hover:bg-blue-500/20">
+                                <Pencil className="h-[12px] w-[12px]" />
+                              </button>
+                              <button type="button" title="Delete" onClick={(e) => { e.stopPropagation(); handleDelete(item); }}
+                                className="flex h-[25px] w-[25px] items-center justify-center rounded-[6px] border border-red-400/30 bg-red-500/10 text-red-600 transition hover:scale-105 hover:bg-red-500/20">
+                                <Trash2 className="h-[12px] w-[12px]" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
 
-              {/* PAGINATION */}
-              <div className="flex min-h-[58px] items-center justify-between gap-[12px] border-t border-[#e7e9ec] px-[12px]">
-                <p className="text-[9px] font-semibold text-[#47546c]">
-                  Showing 1 to {rows.length} of 56 testimonials
-                </p>
-
-                <div className="flex items-center gap-[6px]">
-                  <button type="button" className="grid h-[32px] w-[32px] place-items-center rounded-[5px] border border-[#dfe3e7] bg-white">
-                    <ChevronLeft className="h-[13px] w-[13px]" />
-                  </button>
-
-                  {[1, 2, 3, 4, 5, 6].map((page) => (
-                    <button
-                      type="button"
-                      key={page}
-                      className={`grid h-[32px] min-w-[32px] place-items-center rounded-[5px] px-[6px] text-[9px] font-semibold ${page === 1
-                        ? "bg-[#075b33] text-white"
-                        : "border border-[#dfe3e7] bg-white text-[#35445f]"
-                        }`}
-                    >
-                      {page}
+              {!loading && filtered.length > 0 && (
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#e8e5df] bg-[#fafafa] px-[12px] py-[6px] text-[8px]">
+                  <span className="text-[#475569]">
+                    Showing <strong>{start + 1}</strong> to <strong>{Math.min(start + PAGE_SIZE, filtered.length)}</strong> of <strong>{filtered.length}</strong> testimonials
+                  </span>
+                  <div className="flex items-center gap-[4px]">
+                    <button type="button" disabled={safePage <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      className="flex h-[22px] w-[22px] items-center justify-center rounded-[4px] border border-[#d8dce2] bg-white text-[#334155] hover:bg-slate-50 disabled:opacity-30">
+                      <ChevronLeft className="h-3 w-3" />
                     </button>
-                  ))}
-
-                  <button type="button" className="grid h-[32px] w-[32px] place-items-center rounded-[5px] border border-[#dfe3e7] bg-white">
-                    <ChevronRight className="h-[13px] w-[13px]" />
-                  </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                      <button key={n} type="button" onClick={() => setPage(n)}
+                        className={`flex h-[22px] min-w-[22px] items-center justify-center rounded-[4px] border px-1.5 text-[8px] font-bold ${
+                          safePage === n ? "border-[#00291b] bg-[#00291b] text-white" : "border-[#d8dce2] bg-white text-[#334155] hover:bg-slate-50"}`}>
+                        {n}
+                      </button>
+                    ))}
+                    <button type="button" disabled={safePage >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      className="flex h-[22px] w-[22px] items-center justify-center rounded-[4px] border border-[#d8dce2] bg-white text-[#334155] hover:bg-slate-50 disabled:opacity-30">
+                      <ChevronRight className="h-3 w-3" />
+                    </button>
+                  </div>
                 </div>
-
-                <select className="h-[32px] rounded-[5px] border border-[#dfe3e7] bg-white px-[10px] text-[9px] font-semibold text-[#35445f]">
-                  <option>10 / page</option>
-                </select>
-              </div>
+              )}
             </div>
           </div>
 
           {/* RIGHT SIDEBAR */}
           <aside className="space-y-[12px]">
-            {/* CATEGORY */}
-            <section className="rounded-[8px] border border-[#e7e9ec] bg-white px-[14px] py-[13px] shadow-[0_1px_3px_rgba(15,23,42,0.025)]">
-              <h2 className="text-[12px] font-semibold text-[#19274a]">
-                Testimonials by Category
-              </h2>
-
-              <div className="mt-[12px] flex items-center gap-[15px]">
-                <div
-                  className="grid h-[110px] w-[110px] shrink-0 place-items-center rounded-full"
-                  style={{
-                    background:
-                      "conic-gradient(#0f766e 0 39.3%, #f59e0b 39.3% 64.3%, #7c3aed 64.3% 78.6%, #2563eb 78.6% 89.3%, #fb7185 89.3% 100%)",
-                  }}
-                >
-                  <div className="grid h-[70px] w-[70px] place-items-center rounded-full bg-white text-center">
-                    <div>
-                      <p className="text-[18px] font-semibold leading-none text-[#10204a]">56</p>
-                      <p className="mt-[4px] text-[8px] font-semibold text-[#61708c]">Total</p>
-                    </div>
+            {/* Details */}
+            <section className="rounded-[8px] border border-[#e2e8f0] bg-white px-[14px] py-[13px]">
+              <h2 className="text-[12px] font-bold text-[#4B1426]">Testimonial Details</h2>
+              {selected ? (
+                <div className="mt-[10px]">
+                  <div className="flex flex-col items-center rounded-[8px] border border-[#e4e7eb] bg-[#fafbfc] p-4">
+                    <Avatar item={selected} size={54} textSize={18} />
+                    <p className="mt-2.5 text-center text-[12px] font-bold text-[#4B1426]">{selected.name}</p>
+                    <p className="text-center text-[9px] font-semibold text-[#0A7C6E]">{selected.designation || "—"}</p>
+                    {selected.organization && <p className="text-center text-[8.5px] font-medium text-[#64748b]">{selected.organization}</p>}
+                  </div>
+                  <div className="mt-[10px] rounded-[6px] border border-[#e2e8f0] bg-[#f8fafc] p-2.5 text-[8.5px] font-medium italic leading-[1.5] text-[#334155]">
+                    &ldquo;{selected.feedback}&rdquo;
+                  </div>
+                  <div className="mt-[10px] space-y-[6px] text-[9px]">
+                    <p className="flex items-center justify-between">
+                      <span className="font-semibold text-[#69758c]">Status:</span>
+                      <span className={`rounded-[4px] px-[8px] py-[2px] text-[8.5px] font-bold ${STATUS_STYLE[selected.status]}`}>{selected.status}</span>
+                    </p>
+                    <p className="flex items-center justify-between">
+                      <span className="font-semibold text-[#69758c]">On website:</span>
+                      <span className="font-bold">{selected.image ? "Photo" : `Initials (${getInitials(selected.name)})`}</span>
+                    </p>
+                    <p className="flex items-center justify-between">
+                      <span className="font-semibold text-[#69758c]">Added on:</span>
+                      <span className="font-semibold text-[#4B1426]">{formatDate(selected.createdAt)}</span>
+                    </p>
+                  </div>
+                  <div className="mt-[12px] flex items-center gap-2 border-t border-[#f0f2f5] pt-3">
+                    <button type="button" onClick={() => openEdit(selected)}
+                      className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-[4px] border border-[#d8dce2] bg-white py-1.5 text-[8.5px] font-bold text-[#334155] hover:bg-slate-50">
+                      <Pencil className="h-3 w-3 text-blue-600" /> Edit
+                    </button>
+                    <button type="button" onClick={() => handleStatusChange(selected, selected.status === "Published" ? "Hidden" : "Published")}
+                      className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-[4px] border border-[#d8dce2] bg-white py-1.5 text-[8.5px] font-bold text-[#334155] hover:bg-slate-50">
+                      <RefreshCw className="h-3 w-3 text-emerald-600" /> {selected.status === "Published" ? "Hide" : "Publish"}
+                    </button>
+                    <button type="button" onClick={() => handleDelete(selected)}
+                      className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-[4px] border border-rose-200 bg-rose-50 py-1.5 text-[8.5px] font-bold text-rose-700 hover:bg-rose-100">
+                      <Trash2 className="h-3 w-3" /> Delete
+                    </button>
                   </div>
                 </div>
-
-                <div className="min-w-0 flex-1 space-y-[7px]">
-                  {categoryData.map((item) => (
-                    <div
-                      key={item.label}
-                      className="grid grid-cols-[8px_1fr_auto] items-center gap-[7px]"
-                    >
-                      <span
-                        className="h-[8px] w-[8px] rounded-full"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <span className="truncate text-[8.5px] font-semibold text-[#34425e]">
-                        {item.label}
-                      </span>
-                      <span className="whitespace-nowrap text-[8.3px] font-semibold text-[#34425e]">
-                        {item.value} ({item.percent})
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* RATING */}
-            <section className="rounded-[8px] border border-[#e7e9ec] bg-white px-[14px] py-[13px] shadow-[0_1px_3px_rgba(15,23,42,0.025)]">
-              <h2 className="text-[12px] font-semibold text-[#19274a]">
-                Rating Distribution
-              </h2>
-
-              <div className="mt-[12px] space-y-[10px]">
-                {ratingData.map((item) => (
-                  <div
-                    key={item.label}
-                    className="grid grid-cols-[40px_70px_1fr_58px] items-center gap-[6px]"
-                  >
-                    <span className="text-[8.5px] font-semibold text-[#47546b]">
-                      {item.label}
-                    </span>
-
-                    <RatingStars value={item.stars} size={9} />
-
-                    <div className="h-[6px] overflow-hidden rounded-full bg-[#edf0f2]">
-                      <div
-                        className="h-full rounded-full bg-amber-400"
-                        style={{ width: item.width }}
-                      />
-                    </div>
-
-                    <span className="text-right text-[8.3px] font-semibold text-[#4b5870]">
-                      {item.count} ({item.percent})
-                    </span>
+              ) : (
+                <div className="flex flex-col items-center py-10 text-center">
+                  <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                    <MessageCircleMore className="h-5 w-5" />
                   </div>
-                ))}
+                  <p className="text-[11px] font-bold text-[#19274a]">No Testimonial Selected</p>
+                  <p className="mt-1 max-w-[210px] text-[8.5px] leading-relaxed text-[#69758c]">Select a testimonial from the table to see its details.</p>
+                </div>
+              )}
+            </section>
+
+            {/* Quick actions */}
+            <section className="rounded-[8px] border border-[#e2e8f0] bg-white px-[14px] py-[13px]">
+              <h2 className="text-[12px] font-bold text-[#4B1426]">Quick Actions</h2>
+              <div className="mt-[10px] flex flex-col gap-[6px]">
+                <button type="button" onClick={openAdd} className="flex items-center justify-between rounded-[5px] border border-[#e2e8f0] px-[10px] py-[7px] text-[9.5px] font-semibold text-[#334155] hover:bg-slate-50">
+                  <span className="flex items-center gap-2"><Plus className="h-3.5 w-3.5 text-[#1b5e20]" /> Add New Testimonial</span><ArrowRight className="h-3 w-3" />
+                </button>
+                <button type="button" onClick={() => { setStatusFilter("Pending Review"); setPage(1); }} className="flex items-center justify-between rounded-[5px] border border-[#e2e8f0] px-[10px] py-[7px] text-[9.5px] font-semibold text-[#334155] hover:bg-slate-50">
+                  <span className="flex items-center gap-2"><Clock3 className="h-3.5 w-3.5 text-amber-600" /> Review Pending ({counts.pending})</span><ArrowRight className="h-3 w-3" />
+                </button>
+                <Link href="/pages/home/edit" className="flex items-center justify-between rounded-[5px] border border-[#e2e8f0] px-[10px] py-[7px] text-[9.5px] font-semibold text-[#334155] hover:bg-slate-50">
+                  <span className="flex items-center gap-2"><Settings className="h-3.5 w-3.5 text-[#111844]" /> Section Headings & Stats</span><ArrowRight className="h-3 w-3" />
+                </Link>
               </div>
             </section>
 
-            {/* QUICK ACTIONS */}
-            <section className="rounded-[8px] border border-[#e7e9ec] bg-white px-[14px] py-[13px] shadow-[0_1px_3px_rgba(15,23,42,0.025)]">
-              <h2 className="text-[12px] font-semibold text-[#19274a]">
-                Quick Actions
-              </h2>
-
-              <div className="mt-[10px] space-y-[7px]">
-                <button
-                  type="button"
-                  onClick={() => router.push("/testimonials/new")}
-                  className="flex h-[36px] w-full items-center gap-[9px] rounded-[5px] border border-[#e2e6ea] bg-white px-[10px] text-[9px] font-semibold text-[#293854] transition hover:bg-slate-50"
-                >
-                  <Plus className="h-[13px] w-[13px]" />
-                  Add New Testimonial
-                </button>
-
-                <button
-                  type="button"
-                  className="flex h-[36px] w-full items-center gap-[9px] rounded-[5px] border border-[#e2e6ea] bg-white px-[10px] text-[9px] font-semibold text-[#293854] transition hover:bg-slate-50"
-                >
-                  <Clock3 className="h-[13px] w-[13px]" />
-                  Review Pending (5)
-                </button>
-
-                <button
-                  type="button"
-                  className="flex h-[36px] w-full items-center gap-[9px] rounded-[5px] border border-[#e2e6ea] bg-white px-[10px] text-[9px] font-semibold text-[#293854] transition hover:bg-slate-50"
-                >
-                  <Tag className="h-[13px] w-[13px]" />
-                  Manage Categories
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => router.push("/testimonials/settings")}
-                  className="flex h-[36px] w-full items-center gap-[9px] rounded-[5px] border border-[#e2e6ea] bg-white px-[10px] text-[9px] font-semibold text-[#293854] transition hover:bg-slate-50"
-                >
-                  <Settings className="h-[13px] w-[13px]" />
-                  Testimonial Settings
-                </button>
-              </div>
-            </section>
-
-            {/* CTA */}
-            <section className="relative overflow-hidden rounded-[8px] bg-[linear-gradient(135deg,#08643a_0%,#07542f_100%)] px-[18px] py-[18px] text-white shadow-[0_7px_18px_rgba(5,94,49,.12)]">
-              <div className="relative z-10 max-w-[205px]">
-                <p className="text-[12px] font-semibold leading-[1.4]">
-                  Real stories. Real impact.
-                </p>
-                <p className="mt-[9px] text-[10px] font-semibold leading-[1.55] text-white/90">
-                  Share the voices that inspire trust and compassion.
-                </p>
-
-                <button
-                  type="button"
-                  onClick={() => router.push("/testimonials/new")}
-                  className="mt-[16px] inline-flex h-[36px] items-center gap-[8px] rounded-[5px] bg-white px-[14px] text-[9px] font-semibold text-[#075b33] transition hover:bg-slate-100"
-                >
-                  Add New Testimonial
-                  <ChevronRight className="h-[12px] w-[12px]" />
-                </button>
-              </div>
-
-              <MessageCircleMore className="absolute bottom-[-16px] right-[8px] h-[92px] w-[92px] text-emerald-200/25" strokeWidth={1.2} />
+            {/* CTA card */}
+            <section className="rounded-[8px] bg-gradient-to-br from-[#111844] to-[#1b5e20] px-[14px] py-[14px] text-white">
+              <p className="text-[12px] font-bold">Real stories. Real impact.</p>
+              <p className="mt-1 text-[9px] text-white/80">Share the voices that inspire trust in Arogya Sangoshthi.</p>
+              <button type="button" onClick={openAdd} className="mt-3 inline-flex items-center gap-1.5 rounded-[5px] bg-white px-[10px] py-[6px] text-[9px] font-bold text-[#1b5e20] hover:bg-white/90">
+                <Plus className="h-3 w-3" /> Add New Testimonial
+              </button>
             </section>
           </aside>
         </section>
       </div>
-    </main>
+
+      {/* ADD / EDIT MODAL */}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editingId ? "Edit Testimonial" : "Add New Testimonial"}
+        size="lg"
+        footer={
+          <>
+            <button type="button" onClick={() => setModalOpen(false)}
+              className="inline-flex h-[32px] items-center px-[14px] text-[12px] font-semibold text-red-600 hover:bg-red-100"
+              style={{ background: "#fff1f2", borderRadius: "4px", boxShadow: "rgba(220,38,38,0.15) 0px 0px 0px 1px" }}>
+              Cancel
+            </button>
+            <button type="button" onClick={handleSave} disabled={saving}
+              className="inline-flex h-[32px] items-center gap-1.5 px-[14px] text-[12px] font-semibold text-white hover:opacity-90 disabled:opacity-60"
+              style={{ background: "#1b5e20", borderRadius: "4px" }}>
+              {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+              {editingId ? "Save Changes" : "Add Testimonial"}
+            </button>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <Input label="Name" required placeholder="Dr. Nitin Kumar" maxLength={60}
+              value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <Input label="Designation" placeholder="Sr. Web Developer" maxLength={60}
+              value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Input label="Organisation" placeholder="Optional" maxLength={80}
+              value={form.organization} onChange={(e) => setForm({ ...form, organization: e.target.value })} />
+            <Select label="Status" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as TestimonialStatus })}>
+              <option value="Published">Published (shown on website)</option>
+              <option value="Pending Review">Pending Review</option>
+              <option value="Hidden">Hidden</option>
+            </Select>
+          </div>
+
+          {/* Photo (optional) + initials badge */}
+          <div className="rounded-[6px] border border-[#e2e8f0] bg-slate-50/50 p-3">
+            <div className="mb-2 flex items-center gap-3">
+              <Avatar item={form} size={46} textSize={15} />
+              <p className="text-[10px] leading-relaxed text-[#475569]">
+                <strong>Photo is optional.</strong> Without a photo the website shows the initials
+                {form.name.trim() ? <> (<strong>{getInitials(form.name)}</strong>)</> : null} in the badge colour.
+              </p>
+            </div>
+            {!form.image && (
+              <div className="mb-3 flex flex-wrap items-center gap-[6px]">
+                <span className="text-[10px] font-semibold text-[#334155]">Badge colour:</span>
+                {COLOR_PRESETS.map((c) => (
+                  <button key={c.value} type="button" title={c.label} onClick={() => setForm({ ...form, color: c.value })}
+                    className={`h-[20px] w-[20px] rounded-full border-2 ${form.color === c.value ? "border-[#111844] ring-2 ring-offset-1 ring-[#111844]/30" : "border-white"}`}
+                    style={{ background: c.value, boxShadow: "0 0 0 1px #cbd5e1" }} />
+                ))}
+              </div>
+            )}
+            <div className="grid grid-cols-[1.4fr_1fr] gap-3">
+              <CloudImageField upload={testimonialItemsApi.upload} label="Photo (optional)" value={form.image}
+                onChange={(v) => setForm({ ...form, image: v })} hint="Square photo works best" previewClass="h-[56px] w-[56px]" />
+              <Input label="Photo Alt Text" required={Boolean(form.image)} placeholder="Describe the photo" maxLength={150}
+                disabled={!form.image} value={form.imageAlt} onChange={(e) => setForm({ ...form, imageAlt: e.target.value })} />
+            </div>
+          </div>
+
+          <Textarea label="Testimonial" required rows={4} maxLength={400}
+            placeholder="What did they say about Arogya Sangoshthi?"
+            value={form.feedback} onChange={(e) => setForm({ ...form, feedback: e.target.value })}
+            hint={`${form.feedback.length} / 400 characters`} />
+
+          {error && <p className="text-[10px] font-semibold text-red-500">{error}</p>}
+        </div>
+      </Modal>
+    </div>
   );
 }

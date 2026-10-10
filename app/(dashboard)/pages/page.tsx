@@ -591,7 +591,10 @@ export default function PagesCmsPage() {
 
         <div className="mb-[20px] flex shrink-0 items-start justify-between border-b-[2px] border-[#293681] pb-[8px]">
           <div>
-            <h1 className="text-[19px] font-bold leading-[1.15] tracking-[-0.018em] text-[#18233b]">
+            <h1
+              className="text-[19px] font-bold leading-[1.15] tracking-[-0.018em] text-[#4B1426]"
+              style={{ color: "#4B1426" }}
+            >
               Pages &amp; CMS
             </h1>
 
@@ -616,7 +619,7 @@ export default function PagesCmsPage() {
             <button
               type="button"
               onClick={() => router.push("/pages/new")}
-              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] bg-[#293681] px-[14px] text-[8.5px] font-semibold text-white shadow-[0_5px_12px_rgba(41,54,129,0.15)] transition hover:bg-[#1f2963]"
+              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] bg-[#1b5e20] px-[14px] text-[8.5px] font-semibold text-white shadow-[0_5px_12px_rgba(27,94,32,0.25)] transition hover:bg-[#14491a]"
             >
               <Plus
                 className="h-[12px] w-[12px]"

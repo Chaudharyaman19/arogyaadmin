@@ -8,7 +8,6 @@ import React, {
   useRef,
   type ReactNode,
 } from "react";
-import { api } from "@/lib/api";
 
 import Link from "next/link";
 import {
@@ -56,7 +55,6 @@ import {
   Video,
   X,
 } from "lucide-react";
-import { uploadApi } from "@/lib/uploadApi";
 
 import {
   cmsPages,
@@ -66,7 +64,17 @@ import {
 } from "@/lib/cmsPages";
 import { settingsApi } from "@/lib/settingsApi";
 import typography from "../../PagesTypography.module.css";
-import { lazySwal } from "@/lib/toast";
+import { lazySwal, showError, showSuccess } from "@/lib/toast";
+import { ApiRequestError } from "@/lib/api";
+import {
+  pageSeoApi,
+  pagePathOf,
+  canonicalUrlFor,
+  canonicalTagFor,
+  currentSeoEnv,
+  LOCAL_SITE_URL,
+  LIVE_SITE_URL,
+} from "@/lib/pageSeoApi";
 
 import { FieldLabel, TextInput, SelectField, SectionTitle, Toggle, EditorToolbar } from "@/components/cms/editor/FormPrimitives";
 import { SeoScoreCircle, SeoRow } from "@/components/cms/editor/SeoFields";
@@ -187,26 +195,12 @@ export default function CmsEditPage() {
             ? "— No Parent (Top Level) —"
             : "Home",
 
-        metaTitle:
-          page.type === "home"
-            ? "Arogya Expo – International Trade Fair on Organic Products"
-            : `${page.title} – Arogya Expo`,
-
+        // SEO fields are filled from backend-arogya by loadPageSeo()
+        metaTitle: "",
         metaDescription: page.seo?.metaDescription ?? "",
         metaKeywords: page.seo?.metaKeywords ?? "",
-        canonicalUrl:
-          page.seo?.canonicalUrl ||
-          (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-            ? `http://localhost:3001${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
-            : `https://arogyabharat.org${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`),
-        canonicalTag:
-          page.seo?.canonicalTag ||
-          `<link rel="canonical" href="${
-            page.seo?.canonicalUrl ||
-            (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-              ? `http://localhost:3001${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
-              : `https://arogyabharat.org${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`)
-          }" />`,
+        canonicalUrl: canonicalUrlFor(page.slug, currentSeoEnv()),
+        canonicalTag: canonicalTagFor(canonicalUrlFor(page.slug, currentSeoEnv())),
         openGraphTags: page.seo?.openGraphTags ?? "",
         ogTitle: page.seo?.ogTitle ?? "",
         ogDescription: page.seo?.ogDescription ?? "",
@@ -290,19 +284,8 @@ export default function CmsEditPage() {
       metaTitle: page.seo?.metaTitle ?? "",
       metaDescription: page.seo?.metaDescription ?? "",
       metaKeywords: page.seo?.metaKeywords ?? "",
-      canonicalUrl:
-        page.seo?.canonicalUrl ||
-        (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-          ? `http://localhost:3001${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
-          : `https://arogyabharat.org${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`),
-      canonicalTag:
-        page.seo?.canonicalTag ||
-        `<link rel="canonical" href="${
-          page.seo?.canonicalUrl ||
-          (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-            ? `http://localhost:3001${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`
-            : `https://arogyabharat.org${page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "")}`)
-        }" />`,
+      canonicalUrl: canonicalUrlFor(page.slug, currentSeoEnv()),
+      canonicalTag: canonicalTagFor(canonicalUrlFor(page.slug, currentSeoEnv())),
       openGraphTags: page.seo?.openGraphTags ?? "",
       ogTitle: page.seo?.ogTitle ?? "",
       ogDescription: page.seo?.ogDescription ?? "",
@@ -330,10 +313,7 @@ export default function CmsEditPage() {
 
   useEffect(() => {
     if (canonicalEditorRef.current) {
-      const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-      const defaultSiteUrl = isLocal ? "http://localhost:3001" : "https://arogyabharat.org";
-      const pagePath = page.slug === "/" ? "" : (page.slug ? (page.slug.startsWith("/") ? page.slug : `/${page.slug}`) : "");
-      const defaultTag = `<link rel="canonical" href="${defaultSiteUrl}${pagePath}" />`;
+      const defaultTag = canonicalTagFor(canonicalUrlFor(page.slug, currentSeoEnv()));
 
       const target = (form.canonicalTag || form.canonicalUrl || defaultTag).trim();
       const currentText = canonicalEditorRef.current.innerText.trim();
@@ -384,15 +364,15 @@ export default function CmsEditPage() {
     setOgPreview(URL.createObjectURL(file));
     setOgUploading(true);
     try {
-      const res: any = await uploadApi.file(file, "bharat-organic/seo");
-      const url = res?.url || res?.data?.url;
-      if (url) {
-        updateField("ogImage", url);
-      }
+      const { url } = await pageSeoApi.uploadOgImage(file);
+      updateField("ogImage", url);
+      showSuccess("OG image uploaded. Save the page to put it on the website.");
     } catch (err) {
-      console.error("Failed to upload OG image", err);
+      setOgPreview(null);
+      showError(err instanceof ApiRequestError ? err.message : "Could not upload the OG image.");
     } finally {
       setOgUploading(false);
+      e.target.value = "";
     }
   };
 
@@ -402,39 +382,32 @@ export default function CmsEditPage() {
   };
 
   const autoGenerateSeo = async (envType: "local" | "live") => {
-    const pageKey = page.slug === "/" ? "home" : (page.slug ? page.slug.replace(/^\//, "") : "home");
     try {
-      const res: any = await api.post("/seo/generate", {
-        page: pageKey,
+      const gen = await pageSeoApi.generate({
+        path: pagePathOf(page.slug),
         envType,
         metaTitle: form.metaTitle || undefined,
         metaDescription: form.metaDescription || undefined,
+        ogImage: form.ogImage || undefined,
       });
-      const gen = res?.data?.data || res?.data || res;
-      if (gen) {
-        updateField("canonicalUrl", gen.canonicalUrl || "");
-        updateField("canonicalTag", gen.canonicalTag || "");
-        updateField("openGraphTags", gen.openGraphTags || "");
-        updateField("schemaMarkup", gen.schemaMarkup || "");
-        if (!form.metaTitle && gen.metaTitle) updateField("metaTitle", gen.metaTitle);
-        if (!form.metaDescription && gen.metaDescription) updateField("metaDescription", gen.metaDescription);
-        if (!form.metaKeywords && gen.metaKeywords) updateField("metaKeywords", gen.metaKeywords);
-        if (!form.ogImage && gen.ogImage) updateField("ogImage", gen.ogImage);
+      updateField("canonicalUrl", gen.canonicalUrl);
+      updateField("canonicalTag", gen.canonicalTag);
+      updateField("openGraphTags", gen.openGraphTags);
+      updateField("schemaMarkup", gen.schemaMarkup);
+      if (!form.metaTitle) updateField("metaTitle", gen.metaTitle);
+      if (!form.metaDescription) updateField("metaDescription", gen.metaDescription);
+      if (!form.metaKeywords) updateField("metaKeywords", gen.metaKeywords);
+      if (canonicalEditorRef.current) canonicalEditorRef.current.innerText = gen.canonicalTag;
 
-        if (canonicalEditorRef.current) {
-          canonicalEditorRef.current.innerText = gen.canonicalTag || gen.canonicalUrl || "";
-        }
-
-        lazySwal.fire({
-          title: `Auto-Generated for ${envType.toUpperCase()}`,
-          text: `Canonical, OG Tags & Schema markup generated for ${
-            envType === "local" ? "http://localhost:3001" : "https://arogyabharat.org"
-          }. You can edit any field manually anytime!`,
-          icon: "success",
-          timer: 2500,
-          confirmButtonColor: "#134698",
-        });
-      }
+      lazySwal.fire({
+        title: `Auto-Generated for ${envType.toUpperCase()}`,
+        text: `Canonical, OG Tags & Schema markup generated for ${
+          envType === "local" ? LOCAL_SITE_URL : LIVE_SITE_URL
+        }. You can edit any field manually anytime!`,
+        icon: "success",
+        timer: 2500,
+        confirmButtonColor: "#134698",
+      });
     } catch (err: any) {
       lazySwal.fire({
         title: "Generation Failed",

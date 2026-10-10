@@ -745,8 +745,8 @@ async function request<T>(path: string, options?: ApiRequestOptions, isRetry = f
   // A write can change any list, so cached GET responses are dropped before it runs.
   if (options?.method && options.method !== "GET") getCache.clear();
 
-  // Auth, Staff, Roles, Contact Enquiry, Partner logos, Delegate passes, Delegate categories, Coupons, Website topbar contact, Home hero, Supported By, Site page visibility, Why Arogya, About Conference, Stats Band, Vision/Mission, Upcoming Event, Event Highlights, Testimonials section and Careers are served by backend-arogya; every other module still runs on mock data.
-  const isRealBackendPath = ["/auth/", "/users/admin/", "/roles/", "/contact-enquiry", "/partner-logos/", "/delegate-passes", "/delegate-categories", "/coupons", "/site-settings/", "/home-hero", "/supported-by", "/site-pages", "/why-arogya", "/about-conference", "/stats-band", "/vision-mission", "/upcoming-event", "/event-highlights", "/testimonials-section", "/careers/"].some((prefix) => path.startsWith(prefix));
+  // Auth, Staff, Roles, Contact Enquiry, Partner logos, Delegate passes, Delegate categories, Coupons, Website topbar contact, Home hero, Supported By, Site page visibility, Why Arogya, About Conference, Stats Band, Vision/Mission, Upcoming Event, Event Highlights, Testimonials section, Testimonial cards, Video testimonials, Global Voices and Careers are served by backend-arogya; every other module still runs on mock data.
+  const isRealBackendPath = ["/auth/", "/users/admin/", "/roles/", "/contact-enquiry", "/partner-logos/", "/delegate-passes", "/delegate-categories", "/coupons", "/site-settings/", "/home-hero", "/supported-by", "/site-pages", "/why-arogya", "/about-conference", "/stats-band", "/vision-mission", "/upcoming-event", "/event-highlights", "/testimonials-section", "/testimonial-items", "/video-testimonials", "/global-voices/", "/careers/", "/page-seo", "/about-hero", "/about-founder"].some((prefix) => path.startsWith(prefix));
 
   // In standalone/mock mode, return mock data instantly (0ms latency) without blocking navigation on failed network timeouts
   if (!isRealBackendPath) {

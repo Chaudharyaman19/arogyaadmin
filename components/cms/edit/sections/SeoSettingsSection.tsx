@@ -16,9 +16,19 @@ import {
   Toggle,
 } from "@/components/cms/editor/FormPrimitives";
 import { useCmsEdit } from "../CmsEditContext";
+import { canonicalTagFor, canonicalUrlFor, LIVE_SITE_URL, LOCAL_SITE_URL } from "@/lib/pageSeoApi";
 
 export function SeoSettingsSection() {
   const { autoGenerateSeo, canonicalEditorRef, execCommand, form, handleCanonicalInput, handleCanonicalPaste, handleOgImageUpload, ogPreview, ogUploading, page, removeOgImage, updateField } = useCmsEdit();
+
+  // Canonical is generated from the page URL — Local (website on localhost) or Live
+  const setCanonical = (env: "local" | "live") => {
+    const url = canonicalUrlFor(page.slug, env);
+    const tag = canonicalTagFor(url);
+    updateField("canonicalTag", tag);
+    updateField("canonicalUrl", url);
+    if (canonicalEditorRef.current) canonicalEditorRef.current.innerText = tag;
+  };
 
   return (
     <>
@@ -47,7 +57,7 @@ export function SeoSettingsSection() {
             type="button"
             onClick={() => autoGenerateSeo("local")}
             className="px-2.5 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
-            title="Auto-generate tags for Local environment (http://localhost:3001)"
+            title={`Auto-generate tags for Local environment (${LOCAL_SITE_URL})`}
           >
             <Sparkles className="w-3.5 h-3.5 text-blue-600" />
             Auto Generate (Local)
@@ -56,7 +66,7 @@ export function SeoSettingsSection() {
             type="button"
             onClick={() => autoGenerateSeo("live")}
             className="px-2.5 py-1.5 bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
-            title="Auto-generate tags for Live environment (https://arogyabharat.org)"
+            title={`Auto-generate tags for Live environment (${LIVE_SITE_URL})`}
           >
             <Globe className="w-3.5 h-3.5 text-green-600" />
             Auto Generate (Live)
@@ -194,26 +204,14 @@ export function SeoSettingsSection() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => {
-                  const p = page.slug === "/" ? "" : (page.slug?.startsWith("/") ? page.slug : `/${page.slug || ""}`);
-                  const tag = `<link rel="canonical" href="http://localhost:3001${p}" />`;
-                  updateField("canonicalTag", tag);
-                  updateField("canonicalUrl", `http://localhost:3001${p}`);
-                  if (canonicalEditorRef.current) canonicalEditorRef.current.innerText = tag;
-                }}
+                onClick={() => setCanonical("local")}
                 className="text-[11px] px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded hover:bg-blue-100 cursor-pointer font-medium"
               >
-                Set Local (3001)
+                Set Local (3000)
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  const p = page.slug === "/" ? "" : (page.slug?.startsWith("/") ? page.slug : `/${page.slug || ""}`);
-                  const tag = `<link rel="canonical" href="https://arogyabharat.org${p}" />`;
-                  updateField("canonicalTag", tag);
-                  updateField("canonicalUrl", `https://arogyabharat.org${p}`);
-                  if (canonicalEditorRef.current) canonicalEditorRef.current.innerText = tag;
-                }}
+                onClick={() => setCanonical("live")}
                 className="text-[11px] px-2 py-0.5 bg-green-50 text-green-700 border border-green-200 rounded hover:bg-green-100 cursor-pointer font-medium"
               >
                 Set Live
@@ -234,7 +232,7 @@ export function SeoSettingsSection() {
             />
           </div>
           <p className="text-[11px] text-gray-500">
-            Auto-generated based on current environment (Local / Live). You can also edit or paste manually anytime.
+            Auto-generated from the page URL ({LOCAL_SITE_URL} locally, {LIVE_SITE_URL} live). You can also edit or paste manually anytime — a canonical on localhost is switched to the live domain on the live website automatically.
           </p>
         </div>
 
