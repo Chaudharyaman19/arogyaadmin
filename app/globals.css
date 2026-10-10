@@ -212,3 +212,25 @@ div:where(.swal2-container) .swal-toast-popup {
 .topbar-enter { animation: topbar-fade-down 0.5s ease-out both; }
 .topbar-pop { animation: topbar-pop-in 0.2s ease-out both; }
 .topbar-badge-throb { animation: topbar-badge-throb 2s ease-in-out infinite; }
+
+/* Sidebar logo sparkles — same effect as the website footer logo */
+@keyframes logo-sparkle {
+  0%   { opacity: 0; transform: scale(0.5) translateY(0); }
+  40%  { opacity: 1; transform: scale(1.2) translateY(-4px); }
+  80%  { opacity: 0.6; transform: scale(0.9) translateY(-6px); }
+  100% { opacity: 0; transform: scale(0.5) translateY(-8px); }
+}
+.logo-sparkle {
+  position: absolute;
+  pointer-events: none;
+  z-index: 20;
+  font-size: 16px;
+  line-height: 1;
+  color: #f3b71b;
+  text-shadow: 0 0 8px #f3b71b, 0 0 16px #f3b71b, 0 0 24px #f3b71b;
+  opacity: 0;
+  animation: logo-sparkle 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-sparkle { animation: none; }
+}
