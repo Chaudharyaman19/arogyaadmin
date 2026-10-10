@@ -1,5 +1,13 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5001/api/v1";
 const REQUEST_TIMEOUT_MS = 150;
+
+/** Base URL of the admin API (…/api/v1). Used by feature clients that need a raw fetch
+ * (e.g. binary downloads) instead of the shared JSON `api` client. */
+export const getApiBaseUrl = (): string => API_BASE_URL;
+
+/** Origin of the backend (no /api suffix) — for building absolute URLs to server-hosted files. */
+export const getBackendUrl = (): string => API_BASE_URL.replace(/\/api\/v\d+\/?$/, "");
+
 /** Real backend calls (auth) talk to MongoDB + bcrypt, so they need a realistic timeout. */
 const REAL_BACKEND_TIMEOUT_MS = 20_000;
 /** Public auth endpoints: a 401 here means bad credentials, not an expired session. */
@@ -44,6 +52,10 @@ function syncTokensFromStorage(): void {
     // A malformed persisted session is handled by StoreProvider/logout; requests simply proceed
     // without a token and receive the normal 401 response.
   }
+}
+
+export function getAccessToken(): string | null {
+  return accessToken;
 }
 
 export function setTokens(tokens: { accessToken: string | null; refreshToken: string | null }): void {
@@ -733,8 +745,8 @@ async function request<T>(path: string, options?: ApiRequestOptions, isRetry = f
   // A write can change any list, so cached GET responses are dropped before it runs.
   if (options?.method && options.method !== "GET") getCache.clear();
 
-  // Auth, Staff, Roles, Contact Enquiry, Partner logos, Delegate passes, Delegate categories, Coupons, Website topbar contact, Home hero, Supported By, Site page visibility, Why Arogya, About Conference, Stats Band, Vision/Mission, Upcoming Event, Event Highlights and Testimonials section are served by backend-arogya; every other module still runs on mock data.
-  const isRealBackendPath = ["/auth/", "/users/admin/", "/roles/", "/contact-enquiry", "/partner-logos/", "/delegate-passes", "/delegate-categories", "/coupons", "/site-settings/", "/home-hero", "/supported-by", "/site-pages", "/why-arogya", "/about-conference", "/stats-band", "/vision-mission", "/upcoming-event", "/event-highlights", "/testimonials-section"].some((prefix) => path.startsWith(prefix));
+  // Auth, Staff, Roles, Contact Enquiry, Partner logos, Delegate passes, Delegate categories, Coupons, Website topbar contact, Home hero, Supported By, Site page visibility, Why Arogya, About Conference, Stats Band, Vision/Mission, Upcoming Event, Event Highlights, Testimonials section and Careers are served by backend-arogya; every other module still runs on mock data.
+  const isRealBackendPath = ["/auth/", "/users/admin/", "/roles/", "/contact-enquiry", "/partner-logos/", "/delegate-passes", "/delegate-categories", "/coupons", "/site-settings/", "/home-hero", "/supported-by", "/site-pages", "/why-arogya", "/about-conference", "/stats-band", "/vision-mission", "/upcoming-event", "/event-highlights", "/testimonials-section", "/careers/"].some((prefix) => path.startsWith(prefix));
 
   // In standalone/mock mode, return mock data instantly (0ms latency) without blocking navigation on failed network timeouts
   if (!isRealBackendPath) {
