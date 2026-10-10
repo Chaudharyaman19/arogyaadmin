@@ -42,11 +42,13 @@ import { defaultAwardsSections, defaultAwardsNominationSections } from "@/lib/aw
 import { defaultContactSections } from "@/lib/contactContent";
 import { defaultSponsorshipSections, defaultEPromotionSections, defaultPartnershipPageSections, defaultSubPartnershipSections } from "@/lib/opportunityContent";
 import { defaultSupportServicesSections } from "@/lib/extraPagesContent";
+import { defaultCareersSections } from "@/lib/careersContent";
 
 export function getDefaultSectionsForPage(page: any): Array<Record<string, any>> {
   const key = (page.configKey || "").toLowerCase();
   const title = (page.title || "").toLowerCase();
   const slug = (page.slug || "").toLowerCase();
+  if (key === "careerspage" || slug === "/careers") return defaultCareersSections;
   if (key === "msmeeligibilitycheckpage" || slug.includes("eligibility-check")) return defaultMsmeEligibilityCheckSections;
   if (key === "msmeapplypaymentpage" || slug.includes("participate/msme/apply/payment")) return defaultMsmeApplyPaymentSections;
   if (key === "msmeapplyparticipationdetailspage" || slug.includes("participation-details")) return defaultMsmeParticipationDetailsSections;
@@ -98,6 +100,7 @@ export function getDefaultSectionsForTemplateName(
   if (!name) return null;
   const n = name.toLowerCase().trim();
   if (!n || n === "— no parent (top level) —" || n === "blank template" || n === "standard page") return null;
+  if (n.includes("career")) return defaultCareersSections;
   if (n.includes("nominate advisory")) return defaultNominateAdvisorySections;
   if (n.includes("support services")) return defaultSupportServicesSections;
   if (n.includes("eligibility check")) return defaultMsmeEligibilityCheckSections;

@@ -1,0 +1,1036 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  ArrowRight,
+  Ban,
+  Briefcase,
+  CheckCircle2,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardList,
+  Copy,
+  ExternalLink,
+  Eye,
+  Filter,
+  FileClock,
+  FilePenLine,
+  FormInput,
+  Headphones,
+  Loader2,
+  Pencil,
+  Plus,
+  Search,
+  Send,
+  Settings2,
+  Sprout,
+  Trash2,
+  Users,
+  XCircle,
+  type LucideIcon,
+} from "lucide-react";
+import Swal from "sweetalert2";
+import typography from "../pages/PagesTypography.module.css";
+import Link from "next/link"
+import { jobsApi, toAdminStatus, toBackendStatus, type AdminJobStatus, type JobPosting as BackendJobPosting } from "@/lib/careersApi";
+/* =========================================================
+   TYPES
+   Backed by the real careers API (lib/careersApi.ts). The
+   table row shape below adapts the backend job document to
+   what this page's UI already expects.
+========================================================= */
+
+type JobStatus = AdminJobStatus;
+
+interface JobPosting {
+  id: string;
+  title: string;
+  department: string;
+  location: string;
+  type: string;
+  openings: number;
+  views: number;
+  applications: number;
+  status: JobStatus;
+  closingDate: string;
+}
+
+function formatClosingDate(value?: string): string {
+  if (!value) return "";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function toRow(job: BackendJobPosting): JobPosting {
+  return {
+    id: job._id,
+    title: job.title,
+    department: job.department,
+    location: job.location,
+    type: job.employmentType,
+    openings: job.totalOpenings ?? 1,
+    views: job.views ?? 0,
+    applications: job.applicationsCount ?? 0,
+    status: toAdminStatus(job.status),
+    closingDate: formatClosingDate(job.applicationClosingDate),
+  };
+}
+
+const STATUS_STYLES: Record<JobStatus, string> = {
+  Active: "bg-[#e8f5e9] text-[#23714a] border border-[#a5d6a7]",
+  Draft: "bg-[#fff8e1] text-[#b78103] border border-[#ffe082]",
+  Closed: "bg-[#ffebee] text-[#c62828] border border-[#ef9a9a]",
+};
+
+const TABS: { key: "all" | "active" | "draft" | "closed"; label: string }[] = [
+  { key: "all", label: "All Jobs" },
+  { key: "active", label: "Active" },
+  { key: "draft", label: "Draft" },
+  { key: "closed", label: "Closed" },
+];
+
+const QUICK_ACTIONS: { label: string; icon: LucideIcon }[] = [
+  { label: "Add New Job", icon: Plus },
+  { label: "Edit Job Content", icon: FilePenLine },
+  { label: "Publish / Unpublish", icon: Send },
+  { label: "Duplicate Job", icon: Copy },
+  { label: "Close Vacancy", icon: Ban },
+  { label: "Manage Application Form", icon: FormInput },
+  { label: "View Applications", icon: Users },
+  { label: "Career Settings", icon: Settings2 },
+];
+
+const PAGE_SIZE = 10;
+
+/* =========================================================
+   LIVE SITE
+   The public careers page the Preview / View Live buttons open.
+========================================================= */
+function liveCareersUrl(): string {
+  const host = typeof window !== "undefined" ? window.location.hostname : "localhost";
+  const isLocal = host === "localhost" || host === "127.0.0.1";
+  return isLocal ? "http://localhost:3001/careers" : "https://arogyabharat.org/careers";
+}
+
+/* =========================================================
+   TOAST HELPER
+========================================================= */
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 2200,
+  timerProgressBar: true,
+  background: "#1e2433",
+  color: "#e2e8f0",
+});
+
+function notImplemented(action: string) {
+  Toast.fire({ icon: "info", iconColor: "#38bdf8", title: `${action} — coming soon` });
+}
+
+/* =========================================================
+   STAT CARDS (matching the Media Library / Testimonials / Feedback
+   & Reviews pages' metric-card style)
+========================================================= */
+
+const toneClass = {
+  slate: "bg-slate-50 text-slate-700 ring-slate-200",
+  emerald: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  violet: "bg-violet-50 text-violet-700 ring-violet-200",
+  amber: "bg-amber-50 text-amber-700 ring-amber-200",
+  blue: "bg-sky-50 text-sky-700 ring-sky-200",
+  rose: "bg-rose-50 text-rose-700 ring-rose-200",
+  teal: "bg-teal-50 text-teal-700 ring-teal-200",
+} as const;
+
+interface StatCardItem {
+  title: string;
+  value: string | number;
+  suffix?: string;
+  icon: LucideIcon;
+  tone: keyof typeof toneClass;
+  gradient: string;
+  borderColor: string;
+  numColor: string;
+  trend?: string;
+  footer: string;
+  onClick: () => void;
+}
+
+function AnimatedCounter({ value, duration = 1200 }: { value: string | number; duration?: number }) {
+  const [displayValue, setDisplayValue] = useState<string>("0");
+  const spanRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const strVal = String(value);
+    const numericMatch = strVal.match(/^([^0-9]*)([0-9.,]+)([^0-9]*)$/);
+
+    if (!numericMatch) {
+      setDisplayValue(strVal);
+      return;
+    }
+
+    const prefix = numericMatch[1];
+    const rawNumberStr = numericMatch[2].replace(/,/g, "");
+    const targetNum = parseFloat(rawNumberStr);
+    const suffix = numericMatch[3];
+
+    if (isNaN(targetNum)) {
+      setDisplayValue(strVal);
+      return;
+    }
+
+    if (targetNum === 0) {
+      setDisplayValue(`${prefix}0${suffix}`);
+      return;
+    }
+
+    const hasComma = numericMatch[2].includes(",");
+    const decimalPlaces = (rawNumberStr.split(".")[1] || "").length;
+
+    let animationFrameId: number | null = null;
+
+    const startCounting = () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      let startTime: number | null = null;
+
+      const step = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const currentNum = targetNum * easeProgress;
+        let formattedNum = currentNum.toFixed(decimalPlaces);
+
+        if (hasComma) {
+          const parts = formattedNum.split(".");
+          parts[0] = parseInt(parts[0], 10).toLocaleString();
+          formattedNum = parts.join(".");
+        }
+
+        setDisplayValue(`${prefix}${formattedNum}${suffix}`);
+
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(step);
+        }
+      };
+
+      animationFrameId = requestAnimationFrame(step);
+    };
+
+    if (typeof IntersectionObserver !== "undefined") {
+      const el = spanRef.current;
+      if (!el) {
+        startCounting();
+        return;
+      }
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              startCounting();
+            } else {
+              setDisplayValue(`${prefix}0${suffix}`);
+            }
+          });
+        },
+        { threshold: 0.15 }
+      );
+
+      observer.observe(el);
+
+      return () => {
+        observer.disconnect();
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      };
+    } else {
+      startCounting();
+      return () => {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      };
+    }
+  }, [value, duration]);
+
+  return <span ref={spanRef}>{displayValue}</span>;
+}
+
+/* =========================================================
+   JOB POSTINGS PAGE
+========================================================= */
+
+export default function JobPostingsPage() {
+  const [jobs, setJobs] = useState<JobPosting[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [tab, setTab] = useState<"all" | "active" | "draft" | "closed">("all");
+  const [search, setSearch] = useState("");
+  const [department, setDepartment] = useState("All Departments");
+  const [location, setLocation] = useState("All Locations");
+  const [page, setPage] = useState(1);
+  const [selectedJob, setSelectedJob] = useState<JobPosting | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+
+  const loadJobs = async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const data = await jobsApi.list();
+      setJobs(data.map(toRow));
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Failed to load job postings.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadJobs();
+  }, []);
+
+  const handleStatusChange = async (id: string, nextStatus: JobStatus) => {
+    const previousJobs = jobs;
+    setJobs((prev) =>
+      prev.map((job) =>
+        job.id === id
+          ? { ...job, status: nextStatus, closingDate: nextStatus === "Draft" ? "" : job.closingDate }
+          : job
+      )
+    );
+    try {
+      await jobsApi.update(id, { status: toBackendStatus(nextStatus) });
+      Toast.fire({ icon: "success", iconColor: "#34d399", title: `Status updated to "${nextStatus}"` });
+    } catch (err) {
+      setJobs(previousJobs);
+      Toast.fire({ icon: "error", iconColor: "#f87171", title: err instanceof Error ? err.message : "Failed to update status" });
+    }
+  };
+
+  const handleDelete = async (job: JobPosting) => {
+    const confirmed = await Swal.fire({
+      title: `Delete "${job.title}"?`,
+      text: "This cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      confirmButtonColor: "#dc2626",
+      background: "#1e2433",
+      color: "#e2e8f0",
+    });
+    if (!confirmed.isConfirmed) return;
+
+    const previousJobs = jobs;
+    setJobs((prev) => prev.filter((j) => j.id !== job.id));
+    try {
+      await jobsApi.remove(job.id);
+      Toast.fire({ icon: "success", iconColor: "#34d399", title: "Job deleted" });
+    } catch (err) {
+      setJobs(previousJobs);
+      Toast.fire({ icon: "error", iconColor: "#f87171", title: err instanceof Error ? err.message : "Failed to delete job" });
+    }
+  };
+
+  const handleDownloadDocx = async (job: JobPosting) => {
+    try {
+      await jobsApi.downloadDocx(job.id, job.title);
+      Toast.fire({ icon: "success", iconColor: "#34d399", title: "Job description downloaded" });
+    } catch (err) {
+      Toast.fire({ icon: "error", iconColor: "#f87171", title: err instanceof Error ? err.message : "Failed to generate document" });
+    }
+  };
+
+  const counts = useMemo(
+    () => ({
+      all: jobs.length,
+      active: jobs.filter((j) => j.status === "Active").length,
+      draft: jobs.filter((j) => j.status === "Draft").length,
+      closed: jobs.filter((j) => j.status === "Closed").length,
+    }),
+    [jobs]
+  );
+
+  const departments = useMemo(
+    () => ["All Departments", ...Array.from(new Set(jobs.map((j) => j.department))).sort()],
+    [jobs]
+  );
+  const locations = useMemo(
+    () => ["All Locations", ...Array.from(new Set(jobs.map((j) => j.location))).sort()],
+    [jobs]
+  );
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return jobs.filter((job) => {
+      if (tab !== "all" && job.status.toLowerCase() !== tab) return false;
+      if (department !== "All Departments" && job.department !== department) return false;
+      if (location !== "All Locations" && job.location !== location) return false;
+      if (q && !job.title.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [jobs, tab, department, location, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const startIndex = (safePage - 1) * PAGE_SIZE;
+  const endIndex = Math.min(startIndex + PAGE_SIZE, filtered.length);
+  const paginatedJobs = filtered.slice(startIndex, endIndex);
+
+  const changeTab = (next: typeof tab) => {
+    setTab(next);
+    setPage(1);
+  };
+
+  const statCards: StatCardItem[] = useMemo(
+    () => [
+      {
+        title: "TOTAL JOBS",
+        value: counts.all,
+        icon: Briefcase,
+        tone: "slate",
+        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #e2e8f0 100%)",
+        borderColor: "#e2e8f0",
+        numColor: "#334155",
+        footer: "View all jobs",
+        onClick: () => changeTab("all"),
+      },
+      {
+        title: "ACTIVE JOBS",
+        value: counts.active,
+        icon: CheckCircle2,
+        tone: "emerald",
+        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #bbf7d0 100%)",
+        borderColor: "#bbf7d0",
+        numColor: "#15803d",
+        footer: "View active jobs",
+        onClick: () => changeTab("active"),
+      },
+      {
+        title: "DRAFT JOBS",
+        value: counts.draft,
+        icon: FileClock,
+        tone: "amber",
+        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #fed7aa 100%)",
+        borderColor: "#fed7aa",
+        numColor: "#c2410c",
+        footer: "View drafts",
+        onClick: () => changeTab("draft"),
+      },
+      {
+        title: "CLOSED JOBS",
+        value: counts.closed,
+        icon: XCircle,
+        tone: "rose",
+        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #fecdd3 100%)",
+        borderColor: "#fecdd3",
+        numColor: "#be123c",
+        footer: "View closed jobs",
+        onClick: () => changeTab("closed"),
+      },
+      {
+        title: "TOTAL PAGE VIEWS",
+        value: jobs.reduce((sum, j) => sum + j.views, 0).toLocaleString(),
+        icon: Eye,
+        tone: "blue",
+        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #bae6fd 100%)",
+        borderColor: "#bae6fd",
+        numColor: "#0284c7",
+        footer: "View page analytics",
+        onClick: () => window.open("https://analytics.google.com/", "_blank"),
+      },
+      {
+        title: "TOTAL APPLICATIONS",
+        value: jobs.reduce((sum, j) => sum + j.applications, 0).toLocaleString(),
+        icon: ClipboardList,
+        tone: "teal",
+        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #99f6e4 100%)",
+        borderColor: "#99f6e4",
+        numColor: "#0f766e",
+        footer: "View applications",
+        onClick: () => { window.location.href = "/applications-ai-response"; },
+      },
+    ],
+    [counts, jobs]
+  );
+
+  if (loading) {
+    return (
+      <div className="flex h-[calc(100vh-100px)] w-full items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+          <p className="text-[11px] font-semibold text-slate-500">Loading Job Postings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${typography.pages} min-h-[calc(100vh-100px)] w-full bg-white text-[#18233b] animate-in fade-in duration-500`}>
+      <div className="flex min-h-full flex-col px-[18px] pb-[16px] pt-[14px]">
+        {/* =================================================
+            HEADER
+        ================================================= */}
+        <div className="mb-[14px] flex flex-wrap items-start justify-between gap-[10px] border-b-[2px] border-[#293681] pb-[10px]">
+          <div>
+            <h1 className="text-[19px] font-bold leading-[1.15] tracking-[-0.018em] text-[#23471d]">
+              Job Postings
+            </h1>
+            <p className="mt-0.5 text-[9px] font-medium text-[#6c7587]">
+              Create, manage and publish job openings on your website.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-[10px]">
+            {/* ADD NEW JOB */}
+            <Link
+              href="/job-postings/create"
+              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] bg-[#4B1426] px-[14px] text-[8.5px] font-semibold text-white shadow-[0_5px_12px_rgba(75,20,38,0.25)] transition hover:bg-[#3a0f1d] active:scale-95"
+            >
+              <Plus className="h-[12px] w-[12px]" strokeWidth={1.7} />
+              Add New Job
+            </Link>
+          </div>
+        </div>
+
+        {/* =================================================
+            STATS ROW
+        ================================================= */}
+        <div className="mb-[12px] grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
+          {statCards.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.title}
+                className="relative flex h-[82px] flex-col overflow-hidden rounded-[10px] border border-[#e5e7e6] bg-white p-1.5 !pb-4.5 transition-all hover:translate-y-[-1px]"
+                style={{
+                  background: item.gradient,
+                  borderColor: item.borderColor || undefined,
+                  boxShadow:
+                    "rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px",
+                }}
+              >
+                <div className="flex items-start gap-1.5">
+                  <div
+                    className={`grid h-[24px] w-[24px] shrink-0 place-items-center rounded-full ring-1 bg-white/80 shadow-xs ${toneClass[item.tone]
+                      }`}
+                  >
+                    <Icon className="h-3 w-3" />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className="truncate text-[7px] !font-semibold tracking-[0.01em] text-slate-900"
+                      style={{ fontWeight: 600, color: "#0f172a" }}
+                    >
+                      {item.title}
+                    </p>
+
+                    <div className="mt-1 flex items-end justify-between">
+                      <div className="flex items-end gap-1">
+                        <span
+                          className="text-[16px] !font-semibold leading-none tracking-[-0.04em]"
+                          style={{ color: item.numColor, fontWeight: 600 }}
+                        >
+                          <AnimatedCounter value={item.value} />
+                        </span>
+
+                        {item.suffix && (
+                          <span className="mb-0.5 text-[8px] font-bold text-[#64748b]">
+                            {item.suffix}
+                          </span>
+                        )}
+                      </div>
+
+                      {item.trend && (
+                        <span
+                          className={`mb-0.5 text-[6.5px] font-bold flex items-center gap-0.5 ${item.trend.startsWith("↓") ? "text-[#dc2626]" : "text-[#16a34a]"
+                            }`}
+                        >
+                          {item.trend.split(" ")[0]} {item.trend.split(" ")[1]}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  onClick={item.onClick}
+                  className="absolute bottom-1 left-1.5 right-1.5 flex cursor-pointer items-center justify-center gap-1 text-[7px] font-semibold text-[#293957] transition hover:text-blue-600"
+                >
+                  {item.footer}
+                  <ArrowRight className="h-2.5 w-2.5" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* =================================================
+            MAIN GRID
+        ================================================= */}
+        <div className="grid flex-1 grid-cols-1 items-start gap-[10px] xl:grid-cols-[minmax(0,2.6fr)_minmax(260px,1fr)]">
+          {/* =============================================
+              LEFT: TABLE CARD
+          ============================================= */}
+          <div className="flex min-w-0 flex-col overflow-hidden border border-[#e8e5df] bg-white">
+            {/* TABS */}
+            <div className="flex flex-wrap items-center gap-[20px] border-b border-[#e8e5df] px-[16px] pt-[11px]">
+              {TABS.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => changeTab(t.key)}
+                  className={`relative pb-[9px] text-[10px] font-bold transition-colors ${tab === t.key ? "text-[#166b40]" : "text-[#6c7587] hover:text-[#18233b]"
+                    }`}
+                >
+                  {t.label} ({counts[t.key]})
+                  {tab === t.key && (
+                    <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[#166b40]" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* FILTER BAR */}
+            <div className="flex flex-wrap items-center gap-[8px] border-b border-[#f0f0ec] px-[16px] py-[10px]">
+              <div className="relative min-w-[200px] flex-1">
+                <Search className="pointer-events-none absolute left-[9px] top-1/2 h-[12px] w-[12px] -translate-y-1/2 text-[#9aa0aa]" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                  placeholder="Search by job title or keyword..."
+                  className="h-[30px] w-full rounded-[5px] border border-[#e5e6e2] bg-white pl-[26px] pr-[9px] text-[9.5px] font-medium text-[#414b5e] outline-none placeholder:text-[#9aa0aa] focus:border-[#8fa98e]"
+                />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={department}
+                  onChange={(e) => {
+                    setDepartment(e.target.value);
+                    setPage(1);
+                  }}
+                  className="h-[30px] cursor-pointer appearance-none rounded-[5px] border border-[#e5e6e2] bg-white pl-[9px] pr-[24px] text-[9.5px] font-medium text-[#414b5e] outline-none focus:border-[#8fa98e]"
+                >
+                  {departments.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-[7px] top-1/2 h-[11px] w-[11px] -translate-y-1/2 text-[#64748b]" />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={location}
+                  onChange={(e) => {
+                    setLocation(e.target.value);
+                    setPage(1);
+                  }}
+                  className="h-[30px] cursor-pointer appearance-none rounded-[5px] border border-[#e5e6e2] bg-white pl-[9px] pr-[24px] text-[9.5px] font-medium text-[#414b5e] outline-none focus:border-[#8fa98e]"
+                >
+                  {locations.map((l) => (
+                    <option key={l} value={l}>{l}</option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-[7px] top-1/2 h-[11px] w-[11px] -translate-y-1/2 text-[#64748b]" />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => notImplemented("Advanced filters")}
+                className="flex h-[30px] items-center gap-[5px] rounded-[5px] border border-[#e5e6e2] bg-white px-[10px] text-[9.5px] font-semibold text-[#414b5e] hover:bg-slate-50"
+              >
+                <Filter className="h-[11px] w-[11px]" />
+                Filter
+              </button>
+            </div>
+
+            {/* TABLE */}
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[980px] border-collapse text-left table-fixed">
+                <thead>
+                  <tr className="h-[28px] border-b border-[#e8e5df] bg-[#233D4D]">
+                    <th className="w-[26px] px-[8px] py-[5px]">
+                      <input type="checkbox" className="h-[10px] w-[10px] cursor-pointer" />
+                    </th>
+                    <th className="w-[26px] overflow-hidden truncate px-[6px] py-[5px] text-[7px] font-bold text-white uppercase">#</th>
+                    <th className="w-[180px] overflow-hidden truncate px-[6px] py-[5px] text-[7px] font-bold text-white uppercase">Job Title</th>
+                    <th className="w-[88px] overflow-hidden truncate px-[6px] py-[5px] text-[7px] font-bold text-white uppercase">Dept.</th>
+                    <th className="w-[80px] overflow-hidden truncate px-[6px] py-[5px] text-[7px] font-bold text-white uppercase">Location</th>
+                    <th className="w-[68px] overflow-hidden truncate px-[6px] py-[5px] text-[7px] font-bold text-white uppercase">Type</th>
+                    <th className="w-[62px] overflow-hidden truncate px-[6px] py-[5px] text-[7px] font-bold text-white uppercase">Open.</th>
+                    <th className="w-[56px] overflow-hidden truncate px-[6px] py-[5px] text-[7px] font-bold text-white uppercase">Views</th>
+                    <th className="w-[76px] overflow-hidden truncate px-[6px] py-[5px] text-[7px] font-bold text-white uppercase">Apps</th>
+                    <th className="w-[96px] overflow-hidden truncate px-[6px] py-[5px] text-[7px] font-bold text-white uppercase">Status</th>
+                    <th className="w-[84px] overflow-hidden truncate px-[6px] py-[5px] text-[7px] font-bold text-white uppercase">Closing</th>
+                    <th className="w-[104px] overflow-hidden truncate px-[6px] py-[5px] text-right text-[7px] font-bold text-white uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#f0f0ec]">
+                  {loadError ? (
+                    <tr>
+                      <td colSpan={12} className="py-12 text-center text-[10px] font-semibold text-red-600">
+                        {loadError}
+                      </td>
+                    </tr>
+                  ) : paginatedJobs.length === 0 ? (
+                    <tr>
+                      <td colSpan={12} className="py-12 text-center text-[10px] text-[#6c7587]">
+                        No jobs match your filters.
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedJobs.map((job, rowIndex) => (
+                      <tr key={job.id} className="transition hover:bg-slate-50/80">
+                        <td className="px-[8px] py-[6px]">
+                          <input type="checkbox" className="h-[10px] w-[10px] cursor-pointer" />
+                        </td>
+                        <td className="px-[6px] py-[6px] text-[7px] font-semibold text-[#6c7587]">{startIndex + rowIndex + 1}</td>
+                        <td className="px-[6px] py-[6px]">
+                          <button
+                            type="button"
+                            title={job.title}
+                            onClick={() => window.open(liveCareersUrl(), "_blank")}
+                            className="block w-full truncate text-left text-[7px] font-bold text-[#4B1426] hover:underline"
+                          >
+                            {job.title}
+                          </button>
+                        </td>
+                        <td className="px-[6px] py-[6px] truncate text-[7px] font-medium text-[#334155]">{job.department}</td>
+                        <td className="px-[6px] py-[6px] truncate text-[7px] font-bold text-[#166534]">{job.location}</td>
+                        <td className="px-[6px] py-[6px] truncate text-[7px] font-medium text-[#334155]">{job.type}</td>
+                        <td className="px-[6px] py-[6px] text-[7px] font-medium text-[#334155]">{job.openings}</td>
+                        <td className="px-[6px] py-[6px] text-[7px] font-bold text-[#2563eb]">{job.views.toLocaleString()}</td>
+                        <td className="px-[6px] py-[6px] text-[7px] font-medium text-[#334155]">{job.applications}</td>
+                        <td className="px-[6px] py-[6px]">
+                          <select
+                            value={job.status}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => handleStatusChange(job.id, e.target.value as JobStatus)}
+                            className={`h-[22px] w-full cursor-pointer appearance-none rounded-[4px] px-[6px] pr-[16px] text-[7px] font-bold outline-none bg-no-repeat bg-[right_5px_center] shadow-xs transition ${STATUS_STYLES[job.status]}`}
+                            style={{
+                              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+                            }}
+                          >
+                            <option value="Active" className="bg-white font-bold text-[#23714a]">Active</option>
+                            <option value="Draft" className="bg-white font-bold text-[#b78103]">Draft</option>
+                            <option value="Closed" className="bg-white font-bold text-[#c62828]">Closed</option>
+                          </select>
+                        </td>
+                        <td className="px-[6px] py-[6px] truncate text-[7px] font-medium text-[#334155]">{job.closingDate || "—"}</td>
+                        <td className="px-[6px] py-[6px]">
+                          <div className="flex items-center justify-end gap-1">
+                            {/* View (Orange Glassmorphism) */}
+                            <button
+                              type="button"
+                              title="View Job Details"
+                              onClick={() => {
+                                setSelectedJob(job);
+                                setIsViewModalOpen(true);
+                              }}
+                              className="flex h-[25px] w-[25px] items-center justify-center rounded-[6px] bg-orange-500/10 text-orange-600 backdrop-blur-md border border-orange-400/30 shadow-[0_2px_6px_rgba(249,115,22,0.12)] transition-all hover:bg-orange-500/20 hover:border-orange-400/50 hover:shadow-[0_3px_10px_rgba(249,115,22,0.25)] hover:scale-105 active:scale-95"
+                            >
+                              <Eye className="h-[12px] w-[12px] text-orange-600" />
+                            </button>
+
+                            {/* Edit (Blue Glassmorphism) */}
+                            <Link
+                              href={`/job-postings/create?id=${job.id}`}
+                              title="Edit Job"
+                              className="flex h-[25px] w-[25px] items-center justify-center rounded-[6px] bg-blue-500/10 text-blue-600 backdrop-blur-md border border-blue-400/30 shadow-[0_2px_6px_rgba(37,99,235,0.12)] transition-all hover:bg-blue-500/20 hover:border-blue-400/50 hover:shadow-[0_3px_10px_rgba(37,99,235,0.25)] hover:scale-105 active:scale-95"
+                            >
+                              <Pencil className="h-[12px] w-[12px] text-blue-600" />
+                            </Link>
+
+                            {/* Delete (Red Glassmorphism) */}
+                            <button
+                              type="button"
+                              title="Delete Job"
+                              onClick={() => handleDelete(job)}
+                              className="flex h-[25px] w-[25px] items-center justify-center rounded-[6px] bg-red-500/10 text-red-600 backdrop-blur-md border border-red-400/30 shadow-[0_2px_6px_rgba(220,38,38,0.12)] transition-all hover:bg-red-500/20 hover:border-red-400/50 hover:shadow-[0_3px_10px_rgba(220,38,38,0.25)] hover:scale-105 active:scale-95"
+                            >
+                              <Trash2 className="h-[12px] w-[12px] text-red-600" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* PAGINATION FOOTER */}
+            {filtered.length > 0 && (
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#e8e5df] bg-[#fafafa] px-[12px] py-[8px] text-[8px]">
+                <span className="font-semibold text-[#5f6a7c]">
+                  Showing {startIndex + 1} to {endIndex} of {filtered.length} jobs
+                </span>
+
+                <div className="flex items-center gap-[10px]">
+                  <div className="flex items-center gap-[4px]">
+                    <button
+                      type="button"
+                      disabled={safePage <= 1}
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      className="flex h-[22px] w-[22px] items-center justify-center rounded-[4px] border border-[#d8dce2] bg-white text-[#334155] transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
+                    >
+                      <ChevronLeft className="h-3 w-3" />
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                      <button
+                        key={pageNum}
+                        type="button"
+                        onClick={() => setPage(pageNum)}
+                        className={`flex h-[22px] min-w-[22px] items-center justify-center rounded-[4px] border px-1.5 text-[8px] font-bold transition ${safePage === pageNum
+                            ? "border-[#233D4D] bg-[#233D4D] text-white shadow-xs"
+                            : "border-[#d8dce2] bg-white text-[#334155] hover:bg-slate-50"
+                          }`}
+                      >
+                        {pageNum}
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      disabled={safePage >= totalPages}
+                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      className="flex h-[22px] w-[22px] items-center justify-center rounded-[4px] border border-[#d8dce2] bg-white text-[#334155] transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
+                    >
+                      <ChevronRight className="h-3 w-3" />
+                    </button>
+                  </div>
+
+                  <span className="font-semibold text-[#5f6a7c]">10 per page</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* =============================================
+              RIGHT: SIDEBAR
+          ============================================= */}
+          <div className="flex flex-col gap-[10px]">
+            {/* PREVIEW JOB PAGE */}
+            <div className="border border-[#e7e7e3] bg-white p-[12px]">
+              <div className="mb-[8px] flex items-center justify-between">
+                <h2 className="text-[11px] font-bold text-[#263148]">Preview Job Page</h2>
+                <button
+                  type="button"
+                  onClick={() => window.open(liveCareersUrl(), "_blank")}
+                  className="text-[#293681] hover:text-[#4B1426]"
+                >
+                  <ExternalLink className="h-[13px] w-[13px]" />
+                </button>
+              </div>
+
+              <div className="relative flex h-[92px] flex-col items-center justify-center overflow-hidden rounded-[6px] bg-gradient-to-br from-[#1f6f4a] to-[#2f9e63] px-[10px] text-center">
+                <Sprout className="mb-1 h-[18px] w-[18px] text-white" />
+                <p className="text-[10px] font-bold leading-tight text-white">Join Our Team</p>
+                <p className="text-[8px] font-medium leading-tight text-white/90">Be a Part of a Greener Tomorrow</p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => window.open(liveCareersUrl(), "_blank")}
+                className="mt-[9px] flex h-[28px] w-full items-center justify-center rounded-[5px] border border-[#dedfdb] text-[9px] font-bold text-[#334155] hover:bg-slate-50"
+              >
+                View Live Page
+              </button>
+            </div>
+
+            {/* QUICK ACTIONS */}
+            <div className="border border-[#e7e7e3] bg-white p-[12px]">
+              <h2 className="mb-[8px] text-[11px] font-bold text-[#263148]">Quick Actions</h2>
+              <div className="flex flex-col gap-[2px]">
+                {QUICK_ACTIONS.map(({ label, icon: Icon }) => {
+                  if (label === "Add New Job") {
+                    return (
+                      <Link
+                        key={label}
+                        href="/job-postings/create"
+                        className="flex items-center gap-[8px] rounded-[4px] px-[6px] py-[7px] text-left text-[9.5px] font-semibold text-[#334155] transition hover:bg-slate-50"
+                      >
+                        <Icon className="h-[13px] w-[13px] text-[#218DAE]" />
+                        {label}
+                      </Link>
+                    );
+                  }
+
+                  if (label === "Career Settings" || label === "Manage Application Form") {
+                    return (
+                      <Link
+                        key={label}
+                        href="/career-settings"
+                        className="flex items-center gap-[8px] rounded-[4px] px-[6px] py-[7px] text-left text-[9.5px] font-semibold text-[#334155] transition hover:bg-slate-50"
+                      >
+                        <Icon className="h-[13px] w-[13px] text-[#218DAE]" />
+                        {label}
+                      </Link>
+                    );
+                  }
+
+                  if (label === "View Applications") {
+                    return (
+                      <Link
+                        key={label}
+                        href="/applications-ai-response"
+                        className="flex items-center gap-[8px] rounded-[4px] px-[6px] py-[7px] text-left text-[9.5px] font-semibold text-[#334155] transition hover:bg-slate-50"
+                      >
+                        <Icon className="h-[13px] w-[13px] text-[#218DAE]" />
+                        {label}
+                      </Link>
+                    );
+                  }
+
+                  let handler = () => notImplemented(label);
+                  if (label === "Edit Job Content") {
+                    handler = () => Toast.fire({ icon: 'info', title: 'Click the edit icon on a job row to edit' });
+                  } else if (label === "Publish / Unpublish") {
+                    handler = () => Toast.fire({ icon: 'info', title: 'Change the status dropdown in the table to Active/Draft' });
+                  } else if (label === "Close Vacancy") {
+                    handler = () => Toast.fire({ icon: 'info', title: 'Change the status dropdown in the table to Closed' });
+                  } else if (label === "Duplicate Job") {
+                    handler = () => Toast.fire({ icon: 'info', title: 'Duplicate job coming soon!' });
+                  }
+
+                  return (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={handler}
+                      className="flex items-center gap-[8px] rounded-[4px] px-[6px] py-[7px] text-left text-[9.5px] font-semibold text-[#334155] transition hover:bg-slate-50"
+                    >
+                      <Icon className="h-[13px] w-[13px] text-[#218DAE]" />
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* NEED HELP */}
+            <div className="flex items-start gap-[9px] rounded-[6px] bg-[#eef6f1] p-[11px]">
+              <span className="grid h-[26px] w-[26px] shrink-0 place-items-center rounded-full bg-white text-[#23714a] shadow-2xs">
+                <Headphones className="h-[13px] w-[13px]" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[9.5px] font-bold text-[#23471d]">Need Help?</p>
+                <p className="mt-0.5 text-[8px] font-medium leading-snug text-[#3f5a4a]">
+                  For support, contact IT Team
+                </p>
+                <a
+                  href="mailto:it.support@bharatorganicexpo.com"
+                  className="text-[8px] font-bold text-[#166b40] hover:underline"
+                >
+                  it.support@bharatorganicexpo.com
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* =================================================
+          VIEW JOB MODAL
+      ================================================= */}
+      {isViewModalOpen && selectedJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-slate-800">Job Details</h2>
+              <button onClick={() => setIsViewModalOpen(false)} className="text-slate-500 hover:text-slate-700 transition">
+                <XCircle className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Job Title</p>
+                <p className="text-sm font-bold text-slate-900">{selectedJob.title}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-lg bg-slate-50 p-3 border border-slate-100">
+                  <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Department</p>
+                  <p className="text-xs font-semibold text-slate-800 mt-0.5">{selectedJob.department}</p>
+                </div>
+                <div className="rounded-lg bg-slate-50 p-3 border border-slate-100">
+                  <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Location</p>
+                  <p className="text-xs font-semibold text-slate-800 mt-0.5">{selectedJob.location}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-lg bg-slate-50 p-3 border border-slate-100">
+                  <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Employment Type</p>
+                  <p className="text-xs font-semibold text-slate-800 mt-0.5">{selectedJob.type}</p>
+                </div>
+                <div className="rounded-lg bg-slate-50 p-3 border border-slate-100">
+                  <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Total Openings</p>
+                  <p className="text-xs font-semibold text-slate-800 mt-0.5">{selectedJob.openings}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-lg bg-slate-50 p-3 border border-slate-100">
+                  <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Status</p>
+                  <div className={`mt-1 inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded shadow-xs ${STATUS_STYLES[selectedJob.status]}`}>
+                    {selectedJob.status}
+                  </div>
+                </div>
+                <div className="rounded-lg bg-slate-50 p-3 border border-slate-100">
+                  <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Closing Date</p>
+                  <p className="text-xs font-semibold text-slate-800 mt-0.5">{selectedJob.closingDate || "—"}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 pt-2">
+                <div className="rounded-lg bg-blue-50/50 p-3 border border-blue-100">
+                  <p className="text-[10px] text-blue-600/70 font-semibold uppercase tracking-wider">Total Views</p>
+                  <p className="text-sm font-bold text-blue-600 mt-0.5 flex items-center gap-1">
+                    <Eye className="h-3.5 w-3.5" />
+                    {selectedJob.views}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-teal-50/50 p-3 border border-teal-100">
+                  <p className="text-[10px] text-teal-600/70 font-semibold uppercase tracking-wider">Applications</p>
+                  <p className="text-sm font-bold text-teal-600 mt-0.5 flex items-center gap-1">
+                    <ClipboardList className="h-3.5 w-3.5" />
+                    {selectedJob.applications}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2 border-t pt-4 border-slate-100">
+              <button
+                onClick={() => handleDownloadDocx(selectedJob)}
+                className="rounded-md border border-slate-300 px-4 py-2 text-[11px] font-bold text-slate-700 transition hover:bg-slate-50 shadow-xs"
+              >
+                Download JD
+              </button>
+              <button
+                onClick={() => setIsViewModalOpen(false)}
+                className="rounded-md border border-slate-300 px-4 py-2 text-[11px] font-bold text-slate-700 transition hover:bg-slate-50 shadow-xs"
+              >
+                Close
+              </button>
+              <Link
+                href={`/job-postings/create?id=${selectedJob.id}`}
+                className="flex items-center gap-1.5 rounded-md bg-[#4B1426] px-4 py-2 text-[11px] font-bold text-white transition hover:bg-[#3a0f1d] shadow-sm hover:shadow-md"
+              >
+                <Pencil className="h-3 w-3" />
+                Edit Job
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
