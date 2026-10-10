@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { api } from "@/lib/api";
-import HRWorkflowTab from "./HRWorkflowTab";
+import type { RegisterTabActions } from "./page";
 
 type MessageType = "eligible" | "partial" | "notEligible" | "incomplete";
 type Channel = "Web Page Message" | "Email Template" | "SMS Template" | "WhatsApp Template";
@@ -204,8 +204,10 @@ function MessageCard({
   );
 }
 
-export default function ResultMessagesTab() {
-  const [showNextPage, setShowNextPage] = useState(false);
+export default function ResultMessagesTab({ registerActions, onNavigate }: {
+  registerActions?: RegisterTabActions;
+  onNavigate?: (tab: string) => void;
+}) {
   const [messages, setMessages] = useState<Messages | null>(null);
   const [loadError, setLoadError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -250,9 +252,10 @@ export default function ResultMessagesTab() {
     }
   };
 
-  if (showNextPage) {
-    return <HRWorkflowTab />;
-  }
+  useEffect(() => {
+    if (!registerActions) return;
+    return registerActions(() => ({ save, saving }));
+  });
 
   const preview = messages?.[previewType];
   const previewColor = TYPES.find((t) => t.key === previewType)?.color || "#148943";
@@ -291,8 +294,8 @@ export default function ResultMessagesTab() {
             </div>
           </div>
           <button
-            onClick={() => setShowNextPage(true)}
-            title="Next Message Settings"
+            onClick={() => onNavigate?.("HR & Workflow")}
+            title="Next: HR & Workflow Settings"
             className="absolute top-[8px] right-[10px] bg-[#2563EB] text-white p-[6px] rounded-[6px] shadow-sm z-20 hover:bg-[#1d4ed8] transition-colors flex items-center justify-center"
           >
             <ArrowRight size={14} />
