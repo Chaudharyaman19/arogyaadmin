@@ -86,6 +86,58 @@ export function getDefaultSectionsForPage(page: any): Array<Record<string, any>>
   return defaultLandingSections;
 }
 
+/* =========================================================
+   SHARED NAME → SECTIONS RESOLVER
+   Used by BOTH "Select Template" and "Page Parent" dropdowns
+   so they always load the exact same sections for a page name.
+   Returns null when the name has no section set (no change).
+========================================================= */
+export function getDefaultSectionsForTemplateName(
+  name?: string | null,
+): Array<Record<string, any>> | null {
+  if (!name) return null;
+  const n = name.toLowerCase().trim();
+  if (!n || n === "— no parent (top level) —" || n === "blank template" || n === "standard page") return null;
+  if (n.includes("nominate advisory")) return defaultNominateAdvisorySections;
+  if (n.includes("support services")) return defaultSupportServicesSections;
+  if (n.includes("eligibility check")) return defaultMsmeEligibilityCheckSections;
+  if (n.includes("apply for pms")) return defaultMsmeApplySections;
+  if (n.includes("participation details")) return defaultMsmeParticipationDetailsSections;
+  if (n.includes("payment details")) return defaultMsmeApplyPaymentSections;
+  if (n.includes("exhibitor login")) return defaultExhibitorLoginSections;
+  if (n.includes("buyer login")) return defaultBuyerLoginSections;
+  if (n.includes("delegates login")) return defaultDelegatesLoginSections;
+  if (n.includes("user login")) return defaultUserLoginSections;
+  if (n.includes("partner") && !n.includes("collaboration")) return defaultSubPartnershipSections;
+  if (n.includes("awards nomination")) return defaultAwardsNominationSections;
+  if (n.includes("about")) return defaultAboutSections;
+  if (n.includes("paper")) return defaultPaperPresentationSections;
+  if (n.includes("advisory")) return defaultAdvisorySections;
+  if (n.includes("blog")) return defaultBlogSections;
+  if (n.includes("participate as exhibitor")) return defaultParticipateAsExhibitorSections;
+  if (n.includes("exhibition categories")) return defaultExhibitionCategoriesSections;
+  if (n.includes("book a stall") || n.includes("book a stand")) return defaultBookAStandSections;
+  if (n.includes("visitor")) return defaultVisitorRegistrationSections;
+  if (n.includes("delegate")) return defaultDelegateRegistrationSections;
+  if (n.includes("buyer") && !n.includes("buyer-seller")) return defaultBuyerRegistrationSections;
+  if (n.includes("terms")) return defaultTermsAndConditionsSections;
+  if (n.includes("privacy")) return defaultPrivacyPolicySections;
+  if (n.includes("refund")) return defaultRefundPolicySections;
+  if (n.includes("why visit")) return defaultWhyVisitSections;
+  if (n.includes("why exhibit")) return defaultWhyExhibitSections;
+  if (n.includes("msme")) return defaultMsmeSections;
+  if (n.includes("exhibitor")) return defaultExhibitorsSections;
+  if (n.includes("buyer-seller")) return defaultBuyerSellerMeetSections;
+  if (n.includes("gallery")) return defaultGallerySections;
+  if (n.includes("award")) return defaultAwardsSections;
+  if (n.includes("sponsor")) return defaultSponsorshipSections;
+  if (n.includes("e-promotion")) return defaultEPromotionSections;
+  if (n.includes("partnership")) return defaultPartnershipPageSections;
+  if (n.includes("contact") || n.includes("advisor")) return defaultContactSections;
+  if (n.includes("home") || n.includes("landing")) return defaultLandingSections;
+  return null;
+}
+
 export function buildSectionsDraft(
   page: any,
   settings: Record<string, any> | null,
