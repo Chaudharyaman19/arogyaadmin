@@ -56,6 +56,14 @@ const LIST_META: Record<string, ListMeta> = {
   "about-initiatives:focusAreas": { heading: "Key Focus Areas", add: "Add Focus Area", fallback: "Focus Area" },
   "about-faq:items": { heading: "FAQ Entries", add: "Add FAQ", fallback: "FAQ" },
   "our-impact:items": { heading: "Impact Stats", add: "Add Impact Stat", fallback: "Impact Stat" },
+  "paper-hero:items": { heading: "Hero Stats", add: "Add Stat", fallback: "Stat" },
+  "paper-important-dates:items": { heading: "Important Dates", add: "Add Date", fallback: "Date" },
+  "paper-important-dates:reasons": { heading: "Why Present Reasons", add: "Add Reason", fallback: "Reason" },
+  "paper-topics:items": { heading: "Topic Cards", add: "Add Topic", fallback: "Topic" },
+  "paper-guidelines:items": { heading: "Author Guidelines", add: "Add Guideline", fallback: "Guideline" },
+  "paper-guidelines:steps": { heading: "Submission Steps", add: "Add Step", fallback: "Step" },
+  "paper-awards:items": { heading: "Award Cards", add: "Add Award", fallback: "Award" },
+  "paper-why-choose:items": { heading: "Why Choose Features", add: "Add Feature", fallback: "Feature" },
 };
 
 const ICON_OPTIONS = [
@@ -202,6 +210,8 @@ export function SectionItemsEditor({
               ([key, value]) =>
                 key !== "_id" &&
                 key !== "status" &&
+                // Skip auto-generated "<imageKey>Alt" fields — they render under their image field
+                !(/Alt$/.test(key) && IMAGE_KEY_PATTERN.test(key.replace(/Alt$/, ""))) &&
                 (typeof value === "string" ||
                   typeof value === "number" ||
                   typeof value === "boolean" ||
@@ -246,7 +256,7 @@ export function SectionItemsEditor({
               {isOpen && (
                 <div className="p-[12px] grid grid-cols-2 gap-[10px] bg-white">
                   {fieldEntries.map(([key, value]) => {
-                    const isImageKey = IMAGE_KEY_PATTERN.test(key);
+                    const isImageKey = IMAGE_KEY_PATTERN.test(key) && !/alt/i.test(key);
                     const isVideoKey = VIDEO_KEY_PATTERN.test(key);
                     const isMultiline = isMultilineItemField(sectionId, key);
                     const isLong = isMultiline || LONG_TEXT_KEY_PATTERN.test(key);
@@ -268,10 +278,21 @@ export function SectionItemsEditor({
                             onChange={(next) => onChangeItem(index, key, next)}
                           />
                         ) : isImageKey ? (
-                          <ImageUploadField
-                            value={String(value)}
-                            onChange={(next) => onChangeItem(index, key, next)}
-                          />
+                          <div className="flex flex-col gap-1.5">
+                            <ImageUploadField
+                              value={String(value)}
+                              onChange={(next) => onChangeItem(index, key, next)}
+                            />
+                            <div>
+                              <FieldLabel>Alt Text — {humanizeKey(key)}</FieldLabel>
+                              <TextInput
+                                value={String(item[`${key}Alt`] ?? "")}
+                                onChange={(next) => onChangeItem(index, `${key}Alt`, next)}
+                                placeholder="Describe this image for accessibility & SEO"
+                                hideLimit={true}
+                              />
+                            </div>
+                          </div>
                         ) : Array.isArray(value) ? (
                           <TextInput
                             value={value.join(", ")}

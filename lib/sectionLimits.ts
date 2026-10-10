@@ -40,8 +40,7 @@ export const SECTION_FIELD_LIMITS: Record<string, FieldLimits> = {
   },
   "about-conference": {
     eyebrow: 15,
-    headingLine1: 20,
-    headingLine2: 35,
+    heading: 55,
     subtitle: 80,
     paragraph1: 260,
     paragraph2: 300,
@@ -162,6 +161,41 @@ export const SECTION_FIELD_LIMITS: Record<string, FieldLimits> = {
   "our-impact": {
     bandTitle: 30,
   },
+  "paper-hero": {
+    eyebrow: 45,
+    title: 50,
+    badgeText: 70,
+  },
+  "paper-important-dates": {
+    heading: 30,
+    whyHeading: 20,
+  },
+  "paper-topics": {
+    heading: 30,
+  },
+  "paper-guidelines": {
+    guidelinesHeading: 35,
+    submissionHeading: 30,
+    downloadLabel: 30,
+    downloadHref: 160,
+    submitLabel: 30,
+    submitHref: 160,
+  },
+  "paper-awards": {
+    heading: 30,
+  },
+  "paper-why-choose": {
+    heading: 75,
+    footnote: 130,
+    ctaText: 95,
+    ctaHeading: 60,
+  },
+  "paper-need-help": {
+    heading: 20,
+    description: 120,
+    contactEmail: 100,
+    phoneNumber: 24,
+  },
 };
 
 /* ---------- repeatable item fields (all lists of a section) ---------- */
@@ -175,8 +209,7 @@ export const SECTION_ITEM_LIMITS: Record<string, FieldLimits> = {
     alt: 80,
   },
   "trusted-by": {
-    label: 25,
-    label2: 30,
+    label: 55,
   },
   "why-arogya-tracks": {
     title: 30,
@@ -241,18 +274,41 @@ export const SECTION_ITEM_LIMITS: Record<string, FieldLimits> = {
     suffix: 5,
     label: 45,
   },
+  "paper-important-dates": {
+    label: 65,
+    date: 25,
+  },
+  "paper-topics": {
+    title: 30,
+    desc: 90,
+  },
+  "paper-guidelines": {
+    text: 95,
+    num: 3,
+    title: 12,
+    desc: 95,
+  },
+  "paper-awards": {
+    title: 75,
+  },
+  "paper-why-choose": {
+    title: 32,
+  },
 };
 
 /* ---------- fields that must render as a multi-line textarea ---------- */
 const MULTILINE_FIELDS: Record<string, string[]> = {
   hero: [],
-  "about-conference": ["dateBadge", "venueBadge", "delegatesBadge"],
+  "about-conference": ["heading", "dateBadge", "venueBadge", "delegatesBadge"],
   "vision-mission": ["visionText", "chairmanMessage"],
   "upcoming-event": ["description", "dateInfo", "venueInfo", "delegatesInfo", "countriesInfo"],
   "event-highlights": ["mapEmbedUrl"],
   "about-hero": ["headline", "paragraph"],
   "about-namo-gange": ["paragraph", "missionText"],
   "about-initiatives": ["focusTitle"],
+  "paper-hero": ["title", "description", "badgeText"],
+  "paper-why-choose": ["heading", "footnote", "ctaText", "ctaHeading"],
+  "paper-need-help": ["description"],
 };
 
 const MULTILINE_ITEM_FIELDS: Record<string, string[]> = {
@@ -263,6 +319,12 @@ const MULTILINE_ITEM_FIELDS: Record<string, string[]> = {
   "about-initiatives": ["desc", "text"],
   "about-faq": ["answer"],
   "our-impact": ["label"],
+  "trusted-by": ["label"],
+  "paper-topics": ["desc"],
+  "paper-guidelines": ["text", "desc"],
+  "paper-why-choose": ["title"],
+  "paper-important-dates": ["label"],
+  "paper-awards": ["title"],
 };
 
 export function isMultilineField(sectionKey: string | undefined, fieldKey: string): boolean {

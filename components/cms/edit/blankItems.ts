@@ -19,6 +19,22 @@ const BLANK_ITEMS: Record<string, Record<string, any>> = {
     designation: "",
     image: "",
   },
+  "paper-important-dates:items": {
+    label: "",
+    date: "",
+    image: "",
+  },
+  "paper-important-dates:reasons": {
+    text: "",
+  },
+  "paper-guidelines:items": {
+    text: "",
+  },
+  "paper-guidelines:steps": {
+    num: "",
+    title: "STEP",
+    desc: "",
+  },
 };
 
 export function blankItemFor(

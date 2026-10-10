@@ -86,10 +86,21 @@ export function SectionFieldsEditor({
                 onChange={(next: string) => onFieldChange(key, next)}
               />
             ) : isImage ? (
-              <ImageUploadField
-                value={String(value)}
-                onChange={(next: string) => onFieldChange(key, next)}
-              />
+              <div className="flex flex-col gap-1.5">
+                <ImageUploadField
+                  value={String(value)}
+                  onChange={(next: string) => onFieldChange(key, next)}
+                />
+                <div>
+                  <FieldLabel>Alt Text — {humanizeKey(key)}</FieldLabel>
+                  <TextInput
+                    value={String(section[`${key}Alt`] ?? "")}
+                    onChange={(next: string) => onFieldChange(`${key}Alt`, next)}
+                    placeholder="Describe this image for accessibility & SEO"
+                    hideLimit={true}
+                  />
+                </div>
+              </div>
             ) : isPdf ? (
               <PdfUploadField
                 value={String(value)}
