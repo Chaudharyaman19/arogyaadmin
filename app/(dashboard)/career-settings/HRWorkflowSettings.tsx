@@ -12,6 +12,7 @@ import {
 import { staffApi } from '@/lib/staffApi';
 import { rolesApi } from '@/lib/rolesApi';
 import type { Role, StaffMember } from '@/lib/types';
+import type { RegisterTabActions } from './page';
 
 const Toggle = ({ checked, disabled, onChange, label }: { checked?: boolean, disabled?: boolean, onChange?: (next: boolean) => void, label?: string }) => (
   <button
@@ -59,11 +60,13 @@ const validate = (recipients: HrRecipient[]): { list: HrRecipient[] } | { error:
   return { list };
 };
 
-export default function HRWorkflowSettings() {
+export default function HRWorkflowSettings({ registerActions }: { registerActions?: RegisterTabActions }) {
   const [settings, setSettings] = useState<HrSettings | null>(null);
   const [loadError, setLoadError] = useState('');
   const [saving, setSaving] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  // Display preferences for the Status Sync section (local to this screen).
+  const [visibility, setVisibility] = useState({ showStatus: true, showRemark: true, showUpdatedBy: true });
   // Name comes from Staff Management, Designation from Users & Roles.
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
@@ -139,6 +142,11 @@ export default function HRWorkflowSettings() {
       setSaving(false);
     }
   };
+
+  useEffect(() => {
+    if (!registerActions) return;
+    return registerActions(() => ({ save, saving }));
+  });
 
   const activeByType = (type: RecipientType) =>
     (settings?.recipients || []).filter((r) => r.active && r.type === type && r.email.trim()).map((r) => r.name.trim() || r.email.trim());
@@ -436,7 +444,13 @@ export default function HRWorkflowSettings() {
           <div>
             <h3 className="text-[11px] font-bold text-[#172762] mb-[10px]">Show HR Status</h3>
             <div className="flex gap-[12px]">
-              <div className="mt-[2px]"><Toggle checked={true} /></div>
+              <div className="mt-[2px]">
+                <Toggle
+                  checked={visibility.showStatus}
+                  label="Show HR status"
+                  onChange={(showStatus) => setVisibility((v) => ({ ...v, showStatus }))}
+                />
+              </div>
               <div>
                 <p className="text-[9.5px] font-medium text-[#506083] leading-[1.3]">
                   Display latest HR status in applications list and candidate details page.
@@ -449,7 +463,13 @@ export default function HRWorkflowSettings() {
           <div>
             <h3 className="text-[11px] font-bold text-[#172762] mb-[10px]">Show Latest HR Remark</h3>
             <div className="flex gap-[12px]">
-              <div className="mt-[2px]"><Toggle checked={true} /></div>
+              <div className="mt-[2px]">
+                <Toggle
+                  checked={visibility.showRemark}
+                  label="Show latest HR remark"
+                  onChange={(showRemark) => setVisibility((v) => ({ ...v, showRemark }))}
+                />
+              </div>
               <div>
                 <p className="text-[9.5px] font-medium text-[#506083] leading-[1.3]">
                   Display latest remark / comment from HR.
@@ -462,7 +482,13 @@ export default function HRWorkflowSettings() {
           <div>
             <h3 className="text-[11px] font-bold text-[#172762] mb-[10px]">Show Updated By & Date/Time</h3>
             <div className="flex gap-[12px]">
-              <div className="mt-[2px]"><Toggle checked={true} /></div>
+              <div className="mt-[2px]">
+                <Toggle
+                  checked={visibility.showUpdatedBy}
+                  label="Show updated by and date"
+                  onChange={(showUpdatedBy) => setVisibility((v) => ({ ...v, showUpdatedBy }))}
+                />
+              </div>
               <div>
                 <p className="text-[9.5px] font-medium text-[#506083] leading-[1.3]">
                   Display name of HR member and last updated date & time.
