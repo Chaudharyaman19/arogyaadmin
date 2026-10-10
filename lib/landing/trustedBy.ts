@@ -6,11 +6,11 @@ export const trustedBySection: LandingSectionContent = {
   enabled: true,
   eyebrow: "SUPPORTED BY",
   items: [
-    { label: "HEALTHCARE", label2: "LEADERS" },
-    { label: "GOVERNMENT", label2: "BODIES" },
-    { label: "AYUSH", label2: "INDUSTRY" },
-    { label: "INTERNATIONAL", label2: "BUYERS" },
-    { label: "HOSPITAL & CLINIC", label2: "PROCUREMENT TEAMS" },
-    { label: "UNIVERSITY/", label2: "ACADEMIC PARTNERS" },
+    { label: "HEALTHCARE\nLEADERS" },
+    { label: "GOVERNMENT\nBODIES" },
+    { label: "AYUSH\nINDUSTRY" },
+    { label: "INTERNATIONAL\nBUYERS" },
+    { label: "HOSPITAL & CLINIC\nPROCUREMENT TEAMS" },
+    { label: "UNIVERSITY/\nACADEMIC PARTNERS" },
   ],
 };

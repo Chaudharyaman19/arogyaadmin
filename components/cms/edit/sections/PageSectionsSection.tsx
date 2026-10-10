@@ -26,6 +26,8 @@ const SECTION_LIST_KEYS: Record<string, string[]> = {
   "event-highlights": ["items", "days", "attendees"],
   "global-voices": ["items", "features"],
   "about-initiatives": ["items", "focusAreas"],
+  "paper-important-dates": ["items", "reasons"],
+  "paper-guidelines": ["items", "steps"],
 };
 
 function getListKeys(section: Record<string, any>): string[] {

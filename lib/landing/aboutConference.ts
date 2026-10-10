@@ -5,8 +5,7 @@ export const aboutConferenceSection: LandingSectionContent = {
   name: "About The Conference",
   enabled: true,
   eyebrow: "ABOUT",
-  headingLine1: "ABOUT",
-  headingLine2: "THE CONFERENCE",
+  heading: "ABOUT\nTHE CONFERENCE",
   subtitle: "INDIA'S PREMIER PLATFORM FOR INTEGRATED HEALTHCARE",
   paragraph1:
     "Now in its 9th Edition, this landmark conference brings together the best minds from across the globe to advance the frontiers of healthcare.",

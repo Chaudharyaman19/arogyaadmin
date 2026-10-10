@@ -8,6 +8,7 @@
 import { api } from "@/lib/api";
 import { defaultLandingSections } from "@/lib/landingContent";
 import { defaultAboutSections } from "@/lib/aboutContent";
+import { defaultPaperPresentationSections } from "@/lib/paperPresentationContent";
 import { defaultAdvisorySections, defaultNominateAdvisorySections } from "@/lib/advisoryContent";
 import { defaultBlogSections } from "@/lib/blogContent";
 import { defaultParticipateAsExhibitorSections } from "@/lib/participateAsExhibitorContent";
@@ -55,6 +56,7 @@ export function getDefaultSectionsForPage(page: any): Array<Record<string, any>>
   if (key === "nominateadvisorypage" || slug.includes("nominate_advisory_board")) return defaultNominateAdvisorySections;
   if (key === "supportservicespage" || slug.includes("suport_services")) return defaultSupportServicesSections;
   if (key === "aboutpage" || title.includes("about") || slug === "/about") return defaultAboutSections;
+  if (key === "paperpresentationpage" || title.includes("paper") || slug.includes("paper-presentation")) return defaultPaperPresentationSections;
   if (key === "advisorypage" || title.includes("advisory") || slug.includes("advisory")) return defaultAdvisorySections;
   if (key === "blogpage" || title.includes("blog") || slug.includes("blog")) return defaultBlogSections;
   if (key === "participateasexhibitorpage" || title.includes("participate as exhibitor") || slug.includes("participate-as-exhibitor")) return defaultParticipateAsExhibitorSections;

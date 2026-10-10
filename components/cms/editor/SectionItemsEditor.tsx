@@ -56,6 +56,14 @@ const LIST_META: Record<string, ListMeta> = {
   "about-initiatives:focusAreas": { heading: "Key Focus Areas", add: "Add Focus Area", fallback: "Focus Area" },
   "about-faq:items": { heading: "FAQ Entries", add: "Add FAQ", fallback: "FAQ" },
   "our-impact:items": { heading: "Impact Stats", add: "Add Impact Stat", fallback: "Impact Stat" },
+  "paper-hero:items": { heading: "Hero Stats", add: "Add Stat", fallback: "Stat" },
+  "paper-important-dates:items": { heading: "Important Dates", add: "Add Date", fallback: "Date" },
+  "paper-important-dates:reasons": { heading: "Why Present Reasons", add: "Add Reason", fallback: "Reason" },
+  "paper-topics:items": { heading: "Topic Cards", add: "Add Topic", fallback: "Topic" },
+  "paper-guidelines:items": { heading: "Author Guidelines", add: "Add Guideline", fallback: "Guideline" },
+  "paper-guidelines:steps": { heading: "Submission Steps", add: "Add Step", fallback: "Step" },
+  "paper-awards:items": { heading: "Award Cards", add: "Add Award", fallback: "Award" },
+  "paper-why-choose:items": { heading: "Why Choose Features", add: "Add Feature", fallback: "Feature" },
 };
 
 const ICON_OPTIONS = [

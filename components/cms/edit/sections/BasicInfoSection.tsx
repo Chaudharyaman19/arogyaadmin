@@ -16,6 +16,7 @@ import {
 } from "@/components/cms/editor/FormPrimitives";
 import { defaultLandingSections } from "@/lib/landingContent";
 import { defaultAboutSections } from "@/lib/aboutContent";
+import { defaultPaperPresentationSections } from "@/lib/paperPresentationContent";
 import { defaultAdvisorySections, defaultNominateAdvisorySections } from "@/lib/advisoryContent";
 import { defaultBlogSections } from "@/lib/blogContent";
 import { defaultParticipateAsExhibitorSections } from "@/lib/participateAsExhibitorContent";
@@ -221,8 +222,10 @@ export function BasicInfoSection() {
                 setSectionsDraft(defaultSubPartnershipSections.map((s) => ({ ...s })));
               } else if (value === "Awards Nomination Form") {
                 setSectionsDraft(defaultAwardsNominationSections.map((s) => ({ ...s })));
-              } else if (value === "About Expo" || value === "About Page" || value === "About Us") {
+              } else if (value.includes("About")) {
                 setSectionsDraft(defaultAboutSections.map((s) => ({ ...s })));
+              } else if (value.includes("Paper")) {
+                setSectionsDraft(defaultPaperPresentationSections.map((s) => ({ ...s })));
               } else if (value === "Advisory Board Members" || value === "Advisory Board") {
                 setSectionsDraft(defaultAdvisorySections.map((s) => ({ ...s })));
               } else if (value === "Blogs & News") {
@@ -273,6 +276,9 @@ export function BasicInfoSection() {
             }}
             options={[
               "Blank Template",
+              "Home",
+              "About",
+              "Paper Presentation",
             ]}
           />
         </div>
@@ -318,6 +324,8 @@ export function BasicInfoSection() {
                   setSectionsDraft(defaultAwardsNominationSections.map((s) => ({ ...s })));
                 } else if (targetName.includes("About")) {
                   setSectionsDraft(defaultAboutSections.map((s) => ({ ...s })));
+                } else if (targetName.includes("Paper")) {
+                  setSectionsDraft(defaultPaperPresentationSections.map((s) => ({ ...s })));
                 } else if (targetName.includes("Advisory")) {
                   setSectionsDraft(defaultAdvisorySections.map((s) => ({ ...s })));
                 } else if (targetName.includes("Blog")) {
