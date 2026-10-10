@@ -7,6 +7,7 @@ import {
   Toggle,
 } from "./FormPrimitives";
 import { ImageUploadField, PdfUploadField, VideoUploadField } from "./UploadFields";
+import { TopbarContactEditor } from "./TopbarContactEditor";
 import {
   IMAGE_KEY_PATTERN,
   LONG_TEXT_KEY_PATTERN,
@@ -41,14 +42,19 @@ export function SectionFieldsEditor({
     return <FooterFieldsEditor section={section} onFieldChange={onFieldChange} />;
   }
 
+  // The topbar's email & phone are edited as lists saved to the backend (TopbarContactEditor),
+  // so its old single phone/email text fields are not shown.
+  const isTopbar = section.key === "topbar" || section.name === "Topbar & Header Contact";
+
   const entries = Object.entries(section).filter(
     ([key, value]) => {
       if (SECTION_SKIP_KEYS.has(key)) return false;
+      if (isTopbar && (key === "phoneNumber" || key === "contactEmail")) return false;
       return typeof value === "string" || typeof value === "boolean";
     },
   );
 
-  if (!entries.length) {
+  if (!entries.length && !isTopbar) {
     return null;
   }
 
@@ -120,6 +126,8 @@ export function SectionFieldsEditor({
           </div>
         );
       })}
+
+      {isTopbar && <TopbarContactEditor />}
     </div>
   );
 }

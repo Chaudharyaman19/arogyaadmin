@@ -41,7 +41,6 @@ import {
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 
-import LottieAvatar from "@/components/LottieAvatar";
 import { authApi } from "@/lib/authApi";
 import { getSwal } from "@/lib/swal";
 import { casesApi, SlaBreach } from "@/lib/casesApi";
@@ -293,12 +292,13 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
 
   const firstName = admin?.name?.split(" ")[0] || "Admin";
 
-  const initials = admin?.name
-    ?.split(" ")
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  // First letter of the first name + first letter of the last name ("Vansh Chaudhary" → "VC").
+  const nameParts = (admin?.name || "Admin").trim().split(/\s+/).filter(Boolean);
+  const initials = (
+    nameParts.length > 1
+      ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`
+      : (nameParts[0] || "A").slice(0, 2)
+  ).toUpperCase();
 
   const displayName = firstName;
 
@@ -696,9 +696,9 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
               }}
               className="relative flex items-center gap-2 p-1 sm:pr-3 bg-white border-2 border-slate-300 shadow-xs rounded-full hover:bg-slate-50 transition-all duration-200"
             >
-              {/* Profile Avatar: image if uploaded, Lottie animation if not */}
+              {/* Profile Avatar: image if uploaded, name initials if not */}
               <div className="relative flex-shrink-0">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-slate-200 flex-shrink-0 flex items-center justify-center shadow-xs bg-white">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-slate-200 flex-shrink-0 flex items-center justify-center shadow-xs bg-[#1b5e20]">
                   {admin?.avatarUrl && admin.avatarUrl.trim() !== "" && admin.avatarUrl !== "null" ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -707,7 +707,9 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <LottieAvatar style={{ width: "100%", height: "100%", transform: "scale(1.2)" }} />
+                    <span className="select-none text-[12px] font-bold leading-none tracking-wide text-white sm:text-[13px]">
+                      {initials}
+                    </span>
                   )}
                 </div>
 

@@ -733,8 +733,8 @@ async function request<T>(path: string, options?: ApiRequestOptions, isRetry = f
   // A write can change any list, so cached GET responses are dropped before it runs.
   if (options?.method && options.method !== "GET") getCache.clear();
 
-  // Auth, Staff, Roles, Contact Enquiry and Partner logos are served by backend-arogya; every other module still runs on mock data.
-  const isRealBackendPath = ["/auth/", "/users/admin/", "/roles/", "/contact-enquiry", "/partner-logos/"].some((prefix) => path.startsWith(prefix));
+  // Auth, Staff, Roles, Contact Enquiry, Partner logos, Delegate passes, Delegate categories, Coupons and Website topbar contact are served by backend-arogya; every other module still runs on mock data.
+  const isRealBackendPath = ["/auth/", "/users/admin/", "/roles/", "/contact-enquiry", "/partner-logos/", "/delegate-passes", "/delegate-categories", "/coupons", "/site-settings/"].some((prefix) => path.startsWith(prefix));
 
   // In standalone/mock mode, return mock data instantly (0ms latency) without blocking navigation on failed network timeouts
   if (!isRealBackendPath) {
