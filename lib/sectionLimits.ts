@@ -196,6 +196,64 @@ export const SECTION_FIELD_LIMITS: Record<string, FieldLimits> = {
     contactEmail: 100,
     phoneNumber: 24,
   },
+  "gallery-hero": {
+    heading: 16,
+    subheading: 60,
+    description: 300,
+  },
+  "gallery-filters": {
+    breadcrumbHome: 12,
+    breadcrumbGallery: 12,
+    breadcrumbCurrent: 16,
+    searchPlaceholder: 30,
+    searchButton: 12,
+    moreButton: 10,
+  },
+  "gallery-videos": {
+    heading: 24,
+    shareTitle: 24,
+    shareButton: 24,
+  },
+  "gallery-join-us": {
+    tagline: 45,
+    title: 45,
+    buttonLabel: 20,
+    date: 24,
+    dateSub: 20,
+    location: 20,
+    locationSub: 20,
+  },
+  "blog-hero": {
+    title: 24,
+    searchPlaceholder: 40,
+    description: 250,
+  },
+  "blog-featured": {
+    badge: 18,
+    date: 14,
+    title: 75,
+    description: 220,
+    buttonLabel: 22,
+    listHeading: 32,
+    viewMoreLabel: 24,
+    readMoreLabel: 16,
+  },
+  "blog-sidebar": {
+    newsletterTitle: 24,
+    newsletterPlaceholder: 32,
+    newsletterButton: 14,
+    categoriesTitle: 16,
+    categoriesViewAll: 12,
+    popularTitle: 16,
+    eventsTitle: 18,
+    eventsViewAll: 20,
+  },
+  "blog-newsletter": {
+    subtitle: 80,
+    title: 60,
+    inputPlaceholder: 32,
+    submitLabel: 14,
+  },
 };
 
 /* ---------- repeatable item fields (all lists of a section) ---------- */
@@ -293,6 +351,41 @@ export const SECTION_ITEM_LIMITS: Record<string, FieldLimits> = {
   },
   "paper-why-choose": {
     title: 32,
+  },
+  "gallery-filters": {
+    label: 12,
+  },
+  "gallery-categories": {
+    title: 24,
+  },
+  "gallery-counters": {
+    value: 10,
+    label: 26,
+  },
+  "gallery-videos": {
+    title: 30,
+    sourceType: 12,
+  },
+  "blog-categories": {
+    title: 26,
+  },
+  "blog-quotes": {
+    quote: 200,
+    name: 30,
+    role: 55,
+  },
+  "blog-sidebar": {
+    name: 28,
+    countText: 4,
+    title: 55,
+    date: 12,
+    month: 5,
+    location: 32,
+    time: 22,
+  },
+  "blog-stats": {
+    value: 10,
+    label: 16,
   },
 };
 

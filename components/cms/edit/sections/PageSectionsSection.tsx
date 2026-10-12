@@ -52,6 +52,7 @@ const SECTION_LIST_KEYS: Record<string, string[]> = {
   "about-initiatives": ["items", "focusAreas"],
   "paper-important-dates": ["items", "reasons"],
   "paper-guidelines": ["items", "steps"],
+  "blog-sidebar": ["items", "popularPosts", "events"],
 };
 
 /* Home sections whose content lives in backend-arogya — each has its own editor and Save button. */
