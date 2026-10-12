@@ -534,9 +534,11 @@ export default function PagesCmsPage() {
       value: pages.length.toString(),
       note: `Published: ${publishedCount}`,
       icon: FileText,
-      tone: "violet",
-      gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 55%, #f8f5ff 100%)",
-      numColor: "#6d28d9",
+      tone: "navy",
+      gradient: "linear-gradient(135deg, #ffffff 10%, #f0f4ff 50%, #e0e9fe 100%)",
+      borderColor: "#93c5fd",
+      numColor: "#1e40af",
+      noteColor: "text-blue-700",
       footer: "View all pages",
     },
     {
@@ -544,9 +546,11 @@ export default function PagesCmsPage() {
       value: draftCount.toString(),
       note: `Unpublished: ${draftCount}`,
       icon: Pencil,
-      tone: "amber",
-      gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 55%, #fffdf0 100%)",
-      numColor: "#b45309",
+      tone: "wine",
+      gradient: "linear-gradient(135deg, #ffffff 10%, #fff1f2 50%, #ffe4e6 100%)",
+      borderColor: "#fda4af",
+      numColor: "#be123c",
+      noteColor: "text-rose-700",
       footer: "View drafts",
     },
     {
@@ -554,9 +558,11 @@ export default function PagesCmsPage() {
       value: totalSections.toString(),
       note: "Across all pages",
       icon: Layers,
-      tone: "blue",
-      gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 55%, #f0f7ff 100%)",
-      numColor: "#1d4ed8",
+      tone: "teal",
+      gradient: "linear-gradient(135deg, #ffffff 10%, #f0fdfa 50%, #ccfbf1 100%)",
+      borderColor: "#5eead4",
+      numColor: "#0f766e",
+      noteColor: "text-teal-700",
       footer: "Manage sections",
     },
 
@@ -566,19 +572,27 @@ export default function PagesCmsPage() {
       suffix: "/100",
       note: averageSeoRating,
       icon: TrendingUp,
-      tone: "emerald",
-      gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 55%, #f0fdf4 100%)",
-      numColor: "#047857",
+      tone: "gold",
+      gradient: "linear-gradient(135deg, #ffffff 10%, #fefce8 50%, #fef08a 100%)",
+      borderColor: "#facc15",
+      numColor: "#a16207",
+      noteColor: "text-amber-800",
       footer: "View SEO report",
     },
   ];
 
   const toneClass = {
-    emerald: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-    violet: "bg-violet-50 text-violet-700 ring-violet-100",
-    amber: "bg-amber-50 text-amber-700 ring-amber-100",
-    blue: "bg-blue-50 text-blue-700 ring-blue-100",
-    rose: "bg-rose-50 text-rose-700 ring-rose-100",
+    navy: "bg-blue-100 text-blue-700 ring-1 ring-blue-300",
+    wine: "bg-rose-100 text-rose-700 ring-1 ring-rose-300",
+    teal: "bg-teal-100 text-teal-700 ring-1 ring-teal-300",
+    gold: "bg-amber-100 text-amber-800 ring-1 ring-amber-300",
+    violet: "bg-purple-100 text-purple-700 ring-1 ring-purple-300",
+    orange: "bg-orange-100 text-orange-700 ring-1 ring-orange-300",
+    sky: "bg-sky-100 text-sky-700 ring-1 ring-sky-300",
+    emerald: "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-300",
+    amber: "bg-amber-100 text-amber-700 ring-1 ring-amber-300",
+    blue: "bg-blue-100 text-blue-700 ring-1 ring-blue-300",
+    rose: "bg-rose-100 text-rose-700 ring-1 ring-rose-300",
   };
 
   return (
@@ -670,15 +684,16 @@ export default function PagesCmsPage() {
                 return (
                   <div
                     key={item.title}
-                    className="relative flex flex-col justify-center overflow-hidden rounded-[7px] p-2"
+                    className="relative flex flex-col justify-center overflow-hidden rounded-[8px] p-2.5 transition-all duration-200 hover:shadow-sm"
                     style={{
                       background: item.gradient,
-                      boxShadow: "rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px",
+                      border: `1.5px solid ${item.borderColor}`,
+                      boxShadow: "0 2px 4px -1px rgba(0, 0, 0, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.95)",
                     }}
                   >
-                    <div className="flex items-start gap-1.5">
+                    <div className="flex items-start gap-2">
                       <div
-                        className={`grid h-[30px] w-[30px] shrink-0 place-items-center rounded-full ring-1 ${
+                        className={`grid h-[32px] w-[32px] shrink-0 place-items-center rounded-full ring-1 shadow-2xs ${
                           toneClass[item.tone as keyof typeof toneClass]
                         }`}
                       >
@@ -686,14 +701,14 @@ export default function PagesCmsPage() {
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-[8px] tracking-[0.01em] text-slate-900" style={{ color: "#0f172a" }}>
+                        <p className="truncate text-[8.5px] font-bold tracking-[0.03em] uppercase text-slate-800">
                           {item.title}
                         </p>
 
-                        <div className="mt-1.5 flex items-end gap-1">
+                        <div className="mt-1 flex items-end gap-1">
                           <span
-                            className={`tracking-[-0.04em] ${
-                              item.title === "LAST UPDATED" ? "text-[11px] leading-[1.2]" : "text-[17px] leading-none"
+                            className={`font-extrabold tracking-[-0.04em] ${
+                              item.title === "LAST UPDATED" ? "text-[11px] leading-[1.2]" : "text-[18px] leading-none"
                             }`}
                             style={{ color: item.numColor }}
                           >
@@ -701,23 +716,13 @@ export default function PagesCmsPage() {
                           </span>
 
                           {item.suffix && (
-                            <span className="mb-0.5 text-[8px]">
+                            <span className="mb-0.5 text-[8.5px] font-semibold text-slate-500">
                               {item.suffix}
                             </span>
                           )}
                         </div>
 
-                        <p
-                          className={`mt-0.5 text-[7.5px] ${
-                            item.title === "DRAFT PAGES"
-                              ? "text-amber-600"
-                              : item.title === "TOTAL SECTIONS"
-                              ? "text-blue-600"
-                              : item.title === "LAST UPDATED"
-                              ? "text-rose-600"
-                              : "text-emerald-700"
-                          }`}
-                        >
+                        <p className={`mt-0.5 text-[8px] font-semibold ${item.noteColor}`}>
                           {item.note}
                         </p>
                       </div>
@@ -806,7 +811,7 @@ export default function PagesCmsPage() {
 
               {/* TABLE HEADER */}
 
-              <div className="grid h-[32px] shrink-0 grid-cols-[minmax(0,2.7fr)_minmax(0,1.8fr)_minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1.15fr)_minmax(0,1.45fr)] items-center border-b border-[#e8e5df] bg-[#233D4D] px-[10px]">
+              <div className="grid h-[32px] shrink-0 grid-cols-[minmax(0,2.7fr)_minmax(0,1.8fr)_minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1.15fr)_minmax(0,1.45fr)] items-center border-b border-[#0a0f2e] bg-[#111844] px-[10px]">
                 <div className="min-w-0 overflow-hidden px-[4px] text-[8.5px] font-bold text-white">
                   Page Title
                 </div>
@@ -869,7 +874,7 @@ export default function PagesCmsPage() {
                         <PageTypeIcon type={page.type} />
 
                         <div className="flex min-w-0 max-w-full items-center gap-[5px] overflow-hidden">
-                          <span className="truncate text-[8px] font-semibold text-[#293681]">
+                          <span className="truncate text-[8px] font-semibold text-[#1e3a8a]">
                             {page.title}
                           </span>
 
@@ -884,7 +889,7 @@ export default function PagesCmsPage() {
                       {/* URL */}
 
                       <div className="flex min-w-0 items-center gap-[5px] overflow-hidden px-[4px]">
-                        <span className="truncate text-[7.5px] font-medium text-[#4B1426]">
+                        <span className="truncate text-[7.5px] font-medium text-[#0f766e]">
                           {page.slug}
                         </span>
 
@@ -897,7 +902,7 @@ export default function PagesCmsPage() {
                       {/* AUTHOR */}
 
                       <div className="flex min-w-0 items-center gap-[6px] overflow-hidden px-[4px]">
-                        <span className="truncate text-[7.5px] font-medium text-[#BE1A1A]">
+                        <span className="truncate text-[7.5px] font-medium text-[#7c3aed]">
                           {page.author}
                         </span>
                       </div>
@@ -946,11 +951,11 @@ export default function PagesCmsPage() {
                       {/* UPDATED */}
 
                       <div className="min-w-0 overflow-hidden px-[4px] pl-[12px]">
-                        <p suppressHydrationWarning className="truncate text-[7.5px] font-semibold leading-[1.3] text-[#293681]">
+                        <p suppressHydrationWarning className="truncate text-[7.5px] font-semibold leading-[1.3] text-[#374151]">
                           {page.updated.split(",")[0]}
                         </p>
 
-                        <p suppressHydrationWarning className="mt-[2px] truncate text-[7.5px] font-semibold leading-[1.3] text-blue-600">
+                        <p suppressHydrationWarning className="mt-[2px] truncate text-[7.5px] font-semibold leading-[1.3] text-[#9ca3af]">
                           {page.updated.split(",")[1]?.trim()}
                         </p>
                       </div>

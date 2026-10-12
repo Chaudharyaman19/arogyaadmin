@@ -50,7 +50,7 @@ export default function Sidebar({
           className={`
             flex h-[31px] w-full items-center gap-[6px] rounded-[7px] px-[9px]
             text-left text-[12px] font-medium transition-all duration-150
-            ${childActive ? "bg-white/[0.08] text-white" : "text-[#F2F5F7] hover:bg-white/[0.07] hover:text-white"}
+            ${childActive ? "bg-white/[0.08] text-white" : "text-white hover:bg-white/[0.07] hover:text-white"}
           `}
         >
           <span className="grid h-[21px] w-[21px] shrink-0 place-items-center">
@@ -74,7 +74,7 @@ export default function Sidebar({
                     text-[11.5px] font-medium transition-all duration-150
                     ${active
                       ? "bg-[linear-gradient(90deg,#8b5a2b_0%,#2e7d32_100%)] text-white shadow-[0_3px_10px_rgba(0,0,0,0.32)]"
-                      : "text-[#F2F5F7]/85 hover:bg-white/[0.07] hover:text-white"}
+                      : "text-white/90 hover:bg-white/[0.07] hover:text-white"}
                   `}
                 >
                   <span className="truncate">{child.label}</span>
@@ -118,19 +118,18 @@ export default function Sidebar({
             <span
               className="
                 flex
-                h-[19px]
-                min-w-[24px]
+                h-[16px]
+                min-w-[20px]
                 shrink-0
                 items-center
                 justify-center
-                rounded-[4px]
-                bg-[#8B2626]
-                px-[5px]
-                text-[9px]
-                font-bold
+                rounded-[3px]
+                bg-[#F5B52E]
+                px-[4px]
+                text-[8px]
+                font-semibold
                 leading-none
-                text-white
-                shadow-[0_2px_5px_rgba(0,0,0,0.25)]
+                text-black
               "
             >
               {item.badge}
@@ -214,7 +213,7 @@ export default function Sidebar({
                 shadow-[0_3px_10px_rgba(0,0,0,0.32)]
               `
             : `
-                text-[#F2F5F7]
+                text-white
                 hover:bg-white/[0.07]
                 hover:text-white
               `
