@@ -64,6 +64,16 @@ const LIST_META: Record<string, ListMeta> = {
   "paper-guidelines:steps": { heading: "Submission Steps", add: "Add Step", fallback: "Step" },
   "paper-awards:items": { heading: "Award Cards", add: "Add Award", fallback: "Award" },
   "paper-why-choose:items": { heading: "Why Choose Features", add: "Add Feature", fallback: "Feature" },
+  "gallery-filters:items": { heading: "Year Filter Tabs", add: "Add Year", fallback: "Year" },
+  "gallery-categories:items": { heading: "Category Filter Tabs", add: "Add Category", fallback: "Category" },
+  "gallery-counters:items": { heading: "Counter Stats", add: "Add Stat", fallback: "Stat" },
+  "gallery-videos:items": { heading: "Highlight Videos", add: "Add Video", fallback: "Video" },
+  "blog-categories:items": { heading: "Category Navigation Links", add: "Add Category", fallback: "Category" },
+  "blog-quotes:items": { heading: "Expert Quote Cards", add: "Add Quote", fallback: "Quote" },
+  "blog-sidebar:items": { heading: "Sidebar Categories", add: "Add Category", fallback: "Category" },
+  "blog-sidebar:popularPosts": { heading: "Popular Posts", add: "Add Post", fallback: "Post" },
+  "blog-sidebar:events": { heading: "Upcoming Events", add: "Add Event", fallback: "Event" },
+  "blog-stats:items": { heading: "Blog Stats", add: "Add Stat", fallback: "Stat" },
 };
 
 const ICON_OPTIONS = [

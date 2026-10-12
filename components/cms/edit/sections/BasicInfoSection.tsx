@@ -168,6 +168,11 @@ export function BasicInfoSection() {
               "Home",
               "About",
               "Paper Presentation",
+              "Speakers",
+              "Partners",
+              "Supporters",
+              "Gallery",
+              "Blog",
             ]}
           />
         </div>

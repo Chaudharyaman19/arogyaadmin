@@ -43,6 +43,9 @@ import { defaultContactSections } from "@/lib/contactContent";
 import { defaultSponsorshipSections, defaultEPromotionSections, defaultPartnershipPageSections, defaultSubPartnershipSections } from "@/lib/opportunityContent";
 import { defaultSupportServicesSections } from "@/lib/extraPagesContent";
 import { defaultCareersSections } from "@/lib/careersContent";
+import { defaultSpeakersSections } from "@/lib/speakersContent";
+import { defaultPartnersSections } from "@/lib/partnersContent";
+import { defaultSupportersSections } from "@/lib/supportersContent";
 
 export function getDefaultSectionsForPage(page: any): Array<Record<string, any>> {
   const key = (page.configKey || "").toLowerCase();
@@ -57,6 +60,9 @@ export function getDefaultSectionsForPage(page: any): Array<Record<string, any>>
   if (key === "awardsnominationpage" || slug.includes("awards/nominations")) return defaultAwardsNominationSections;
   if (key === "nominateadvisorypage" || slug.includes("nominate_advisory_board")) return defaultNominateAdvisorySections;
   if (key === "supportservicespage" || slug.includes("suport_services")) return defaultSupportServicesSections;
+  if (key === "speakerspage" || title.includes("speaker") || slug.includes("speaker")) return defaultSpeakersSections;
+  if (key === "partnerspage" || title.includes("partner") || slug.includes("partner")) return defaultPartnersSections;
+  if (key === "supporterspage" || title.includes("supporter") || slug.includes("supporter")) return defaultSupportersSections;
   if (key === "aboutpage" || title.includes("about") || slug === "/about") return defaultAboutSections;
   if (key === "paperpresentationpage" || title.includes("paper") || slug.includes("paper-presentation")) return defaultPaperPresentationSections;
   if (key === "advisorypage" || title.includes("advisory") || slug.includes("advisory")) return defaultAdvisorySections;
@@ -103,6 +109,9 @@ export function getDefaultSectionsForTemplateName(
   if (n.includes("career")) return defaultCareersSections;
   if (n.includes("nominate advisory")) return defaultNominateAdvisorySections;
   if (n.includes("support services")) return defaultSupportServicesSections;
+  if (n.includes("speaker")) return defaultSpeakersSections;
+  if (n.includes("partner") && !n.includes("collaboration")) return defaultPartnersSections;
+  if (n.includes("supporter")) return defaultSupportersSections;
   if (n.includes("eligibility check")) return defaultMsmeEligibilityCheckSections;
   if (n.includes("apply for pms")) return defaultMsmeApplySections;
   if (n.includes("participation details")) return defaultMsmeParticipationDetailsSections;
