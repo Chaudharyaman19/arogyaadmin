@@ -14,6 +14,10 @@ import {
   FileText,
   GalleryHorizontalEnd,
   Globe,
+  Mic,
+  ImageIcon,
+  Award,
+  UsersRound,
   Gauge,
   Handshake,
   History,
@@ -45,6 +49,8 @@ export interface NavItem {
   icon: LucideIcon;
   disabled?: boolean;
   badge?: string;
+  /** Turns the item into a dropdown of these pages */
+  children?: NavItem[];
 }
 
 export interface NavSection {
@@ -83,6 +89,18 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: "Testimonials", href: "/testimonials", icon: MessageSquare },
       { label: "Video Testimonials", href: "/video-testimonials", icon: Clapperboard },
       { label: "Global Voices", href: "/global-voices", icon: Globe },
+      {
+        label: "Speakers Section",
+        icon: Mic,
+        children: [
+          { label: "Add Bg Image", href: "/speakers/bg-image", icon: ImageIcon },
+          { label: "Add Speakers", href: "/speakers/esteemed", icon: Mic },
+          { label: "More Speakers", href: "/speakers/more", icon: Users },
+          { label: "Add Previous Speakers", href: "/speakers/previous", icon: History },
+          { label: "Eminent Speakers", href: "/speakers/eminent", icon: Award },
+          { label: "Organising Committee", href: "/speakers/organising", icon: UsersRound },
+        ],
+      },
       { label: "FAQs", href: "/faqs", icon: MessageSquare },
       { label: "Navigation Menus", href: "/navigation-menus", icon: ListTree },
     ],

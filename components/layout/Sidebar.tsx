@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Headphones } from "lucide-react";
+import { ChevronDown, Headphones } from "lucide-react";
 import {
   NAV_SECTIONS,
   type NavItem,
@@ -31,8 +32,63 @@ export default function Sidebar({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  // Dropdowns the admin toggled; a dropdown holding the current page is always open
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+
+  const renderGroup = (item: NavItem) => {
+    const Icon = item.icon;
+    const children = item.children ?? [];
+    const childActive = children.some((child) => isActive(pathname, child.href));
+    const open = openGroups[item.label] ?? childActive;
+
+    return (
+      <div key={item.label}>
+        <button
+          type="button"
+          aria-expanded={open}
+          onClick={() => setOpenGroups((prev) => ({ ...prev, [item.label]: !open }))}
+          className={`
+            flex h-[31px] w-full items-center gap-[6px] rounded-[7px] px-[9px]
+            text-left text-[12px] font-medium transition-all duration-150
+            ${childActive ? "bg-white/[0.08] text-white" : "text-[#F2F5F7] hover:bg-white/[0.07] hover:text-white"}
+          `}
+        >
+          <span className="grid h-[21px] w-[21px] shrink-0 place-items-center">
+            <Icon className="h-[15px] w-[15px]" strokeWidth={1.8} />
+          </span>
+          <span className="min-w-0 flex-1 truncate">{item.label}</span>
+          <ChevronDown className={`h-[14px] w-[14px] shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`} strokeWidth={2} />
+        </button>
+
+        {open && (
+          <div className="ml-[19px] mt-[1px] space-y-[1px] border-l border-[#6b9a82]/35 pl-[7px]">
+            {children.map((child) => {
+              const active = isActive(pathname, child.href);
+              return (
+                <Link
+                  key={child.label}
+                  href={child.href ?? "#"}
+                  onClick={onNavigate}
+                  className={`
+                    relative flex h-[27px] items-center overflow-hidden rounded-[6px] px-[9px]
+                    text-[11.5px] font-medium transition-all duration-150
+                    ${active
+                      ? "bg-[linear-gradient(90deg,#8b5a2b_0%,#2e7d32_100%)] text-white shadow-[0_3px_10px_rgba(0,0,0,0.32)]"
+                      : "text-[#F2F5F7]/85 hover:bg-white/[0.07] hover:text-white"}
+                  `}
+                >
+                  <span className="truncate">{child.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderItem = (item: NavItem) => {
+    if (item.children?.length) return renderGroup(item);
     const Icon = item.icon;
     const active = isActive(pathname, item.href);
 

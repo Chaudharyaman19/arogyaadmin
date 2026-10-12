@@ -114,7 +114,9 @@ type Countdown = ReturnType<typeof useCountdown>;
 
 function currentPageTitle(pathname: string): string {
   for (const section of NAV_SECTIONS) {
-    for (const item of section.items) {
+    // Dropdown pages count as their own items ("Speakers Section" → "Add Speakers")
+    for (const item of section.items.flatMap((i) => i.children ?? [i])) {
+      if (!item.href) continue;
       if (
         item.href === "/"
           ? pathname === "/"
