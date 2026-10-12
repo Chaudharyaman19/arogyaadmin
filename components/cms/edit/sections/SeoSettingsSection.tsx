@@ -15,11 +15,32 @@ import {
   EditorToolbar,
   Toggle,
 } from "@/components/cms/editor/FormPrimitives";
+import { useEffect, useRef } from "react";
 import { useCmsEdit } from "../CmsEditContext";
-import { canonicalTagFor, canonicalUrlFor, LIVE_SITE_URL, LOCAL_SITE_URL } from "@/lib/pageSeoApi";
+import { canonicalTagFor, canonicalUrlFor, LIVE_SITE_URL, LOCAL_SITE_URL, replaceSeoText } from "@/lib/pageSeoApi";
 
 export function SeoSettingsSection() {
   const { autoGenerateSeo, canonicalEditorRef, execCommand, form, handleCanonicalInput, handleCanonicalPaste, handleOgImageUpload, ogPreview, ogUploading, page, removeOgImage, updateField } = useCmsEdit();
+
+  // Last title / description copied into the OG tags & schema (null = take the loaded value)
+  const syncedRef = useRef<{ metaTitle: string | null; metaDescription: string | null }>({ metaTitle: null, metaDescription: null });
+  useEffect(() => {
+    syncedRef.current = { metaTitle: null, metaDescription: null };
+  }, [page.slug]);
+
+  /** Meta title / description edits also update the same text inside the OG tags and the JSON-LD */
+  const updateSynced = (key: "metaTitle" | "metaDescription", value: string) => {
+    updateField(key, value);
+    const previous = syncedRef.current[key] ?? form[key];
+    if (!value.trim()) {
+      // Field cleared to be retyped — remember the text still sitting in the tags
+      syncedRef.current[key] = previous;
+      return;
+    }
+    updateField("openGraphTags", replaceSeoText(form.openGraphTags || "", previous, value, "html"));
+    updateField("schemaMarkup", replaceSeoText(form.schemaMarkup || "", previous, value, "json"));
+    syncedRef.current[key] = value;
+  };
 
   // Canonical is generated from the page URL — Local (website on localhost) or Live
   const setCanonical = (env: "local" | "live") => {
@@ -113,7 +134,7 @@ export function SeoSettingsSection() {
             maxLength={65}
             onChange={(e) => {
               if (e.target.value.length <= 65) {
-                updateField("metaTitle", e.target.value);
+                updateSynced("metaTitle", e.target.value);
               }
             }}
             placeholder="Enter meta title"
@@ -155,7 +176,7 @@ export function SeoSettingsSection() {
             value={form.metaDescription}
             onChange={(e) => {
               if (e.target.value.length <= 155) {
-                updateField("metaDescription", e.target.value);
+                updateSynced("metaDescription", e.target.value);
               }
             }}
             placeholder="Enter meta description"

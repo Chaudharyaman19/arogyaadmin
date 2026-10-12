@@ -30,6 +30,17 @@ import { TestimonialsSectionEditor } from "@/components/cms/editor/TestimonialsS
 import { FooterEditor } from "@/components/cms/editor/FooterEditor";
 import { AboutHeroEditor } from "@/components/cms/editor/AboutHeroEditor";
 import { AboutFounderEditor } from "@/components/cms/editor/AboutFounderEditor";
+import { AboutNamoGangeEditor } from "@/components/cms/editor/AboutNamoGangeEditor";
+import { AboutInitiativesEditor } from "@/components/cms/editor/AboutInitiativesEditor";
+import { AboutImpactEditor } from "@/components/cms/editor/AboutImpactEditor";
+import { AboutFaqEditor } from "@/components/cms/editor/AboutFaqEditor";
+import { PaperHeroEditor } from "@/components/cms/editor/PaperHeroEditor";
+import { PaperDatesEditor } from "@/components/cms/editor/PaperDatesEditor";
+import { PaperTopicsEditor } from "@/components/cms/editor/PaperTopicsEditor";
+import { PaperGuidelinesEditor } from "@/components/cms/editor/PaperGuidelinesEditor";
+import { PaperAwardsEditor } from "@/components/cms/editor/PaperAwardsEditor";
+import { PaperWhyChooseEditor } from "@/components/cms/editor/PaperWhyChooseEditor";
+import { PaperNeedHelpEditor } from "@/components/cms/editor/PaperNeedHelpEditor";
 import { useCmsEdit } from "../CmsEditContext";
 
 /* Sections that own more than one repeatable list. */
@@ -57,6 +68,17 @@ const BACKEND_SECTIONS: Record<string, ReactNode> = {
   footer: <FooterEditor />,
   "about-hero": <AboutHeroEditor />,
   "about-founder": <AboutFounderEditor />,
+  "about-namo-gange": <AboutNamoGangeEditor />,
+  "about-initiatives": <AboutInitiativesEditor />,
+  "our-impact": <AboutImpactEditor />,
+  "about-faq": <AboutFaqEditor />,
+  "paper-hero": <PaperHeroEditor />,
+  "paper-important-dates": <PaperDatesEditor />,
+  "paper-topics": <PaperTopicsEditor />,
+  "paper-guidelines": <PaperGuidelinesEditor />,
+  "paper-awards": <PaperAwardsEditor />,
+  "paper-why-choose": <PaperWhyChooseEditor />,
+  "paper-need-help": <PaperNeedHelpEditor />,
 };
 
 function getListKeys(section: Record<string, any>): string[] {

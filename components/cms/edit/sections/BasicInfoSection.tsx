@@ -12,12 +12,15 @@ import {
   TextInput,
 } from "@/components/cms/editor/FormPrimitives";
 import { getDefaultSectionsForTemplateName } from "@/components/cms/edit/sectionDefaults";
-import { PUBLIC_SITE_URL } from "@/lib/cmsPages";
+import { getCmsPageRouteKey, PUBLIC_SITE_URL } from "@/lib/cmsPages";
 import type { Status, Visibility } from "../types";
 import { useCmsEdit } from "../CmsEditContext";
 
+/* "Select Template" lists every Pages & CMS page (value = its config key); this one only clears the sections */
+const BLANK_TEMPLATE = "__blank";
+
 export function BasicInfoSection() {
-  const { form, page, pages, setSectionsDraft, updateField } = useCmsEdit();
+  const { form, page, pages, router, setSectionsDraft, updateField } = useCmsEdit();
 
   return (
     <>
@@ -155,21 +158,28 @@ export function BasicInfoSection() {
           </FieldLabel>
 
           <SelectField
-            value={
-              form.template
-            }
+            value={page.configKey ?? ""}
             onChange={(value) => {
-              updateField("template", value);
-              const sections = getDefaultSectionsForTemplateName(value);
-              if (sections) setSectionsDraft(sections.map((s) => ({ ...s })));
+              if (value === BLANK_TEMPLATE) {
+                updateField("template", "Blank Template");
+                const sections = getDefaultSectionsForTemplateName("Blank Template");
+                if (sections) setSectionsDraft(sections.map((s) => ({ ...s })));
+                return;
+              }
+              // Every option is a website page — open it, so its own sections and SEO load (the URL changes too)
+              const target = pages.find((p) => p.configKey === value);
+              if (target && target.configKey !== page.configKey) {
+                router.push(`/pages/${getCmsPageRouteKey(target)}/edit`);
+              }
             }}
             options={[
-              "Blank Template",
-              "Home",
-              "About",
-              "Paper Presentation",
+              ...pages.map((p) => ({ label: `${p.title} (${p.slug})`, value: p.configKey ?? "" })),
+              { label: "Blank Template (clear the sections)", value: BLANK_TEMPLATE },
             ]}
           />
+          <p className="mt-[3px] text-[9px] font-medium text-[#64748b]">
+            Pick a page to open it with its own sections and SEO Information.
+          </p>
         </div>
 
         <div>

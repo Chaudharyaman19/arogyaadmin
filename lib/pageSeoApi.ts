@@ -50,6 +50,24 @@ export const isValidSchemaMarkup = (raw: string) => {
   }
 };
 
+/**
+ * Swaps whole values equal to `oldText` for `newText`, so editing the meta title or description
+ * keeps og:title, twitter:title, the schema "name" etc. in step:
+ * - "html": attribute values in the Open Graph tags — content="…" (HTML-escaped)
+ * - "json": string values in the JSON-LD — "…" (JSON-escaped)
+ * Only a complete quoted value is replaced (never part of another text), and values the admin
+ * wrote differently on purpose are left alone.
+ */
+export const replaceSeoText = (source: string, oldText: string, newText: string, kind: "html" | "json") => {
+  if (!source || !oldText || oldText === newText) return source;
+  const escape =
+    kind === "html"
+      ? (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;")
+      : (s: string) => JSON.stringify(s).slice(1, -1);
+  const from = `"${escape(oldText)}"`;
+  return source.split(from).join(`"${escape(newText)}"`);
+};
+
 export interface PageSeo {
   path: string;
   metaTitle: string;
