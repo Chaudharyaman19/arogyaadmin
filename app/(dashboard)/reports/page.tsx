@@ -67,15 +67,20 @@ export default function ReportsPage() {
     );
   }
 
+  const cases = overview.cases ?? { total: 0, open: 0, critical: 0, byStatus: {} };
+  const donations = overview.donations ?? { totalRaised: 0, byCause: {} };
+  const expenses = overview.expenses ?? { pendingAmount: 0, pendingCount: 0, approvedAmount: 0, approvedCount: 0 };
+
   const raisedTrend = snapshots.map((s) => ({ label: shortDate(s.date), value: s.donations.totalRaised }));
   const openCasesTrend = snapshots.map((s) => ({ label: shortDate(s.date), value: s.cases.open }));
 
-  const statusData: MagnitudeDatum[] = ALL_STATUSES.filter((s) => overview.cases.byStatus[s] > 0).map((status) => ({
+  const byStatus = cases.byStatus ?? {};
+  const statusData: MagnitudeDatum[] = ALL_STATUSES.filter((s) => (byStatus[s] ?? 0) > 0).map((status) => ({
     label: CASE_STATUS_META[status].label,
-    value: overview.cases.byStatus[status],
+    value: byStatus[status] ?? 0,
   }));
 
-  const causeEntries = Object.entries(overview.donations.byCause).filter(([, v]) => v > 0);
+  const causeEntries = Object.entries((donations.byCause ?? {}) as Record<string, number>).filter(([, v]) => v > 0);
   const causeData: DonutDatum[] = causeEntries.map(([cause, amount]) => ({
     key: cause,
     label: CAUSE_LABELS[cause] ?? cause,
@@ -104,29 +109,29 @@ export default function ReportsPage() {
         <StatCard
           icon={FolderKanban}
           label="Total Cases"
-          value={overview.cases.total}
-          hint={`${overview.cases.open} open`}
+          value={cases.total}
+          hint={`${cases.open} open`}
           accentColor={KPI_COLORS.cases}
         />
         <StatCard
           icon={HeartHandshake}
           label="Total Raised"
-          value={formatCurrency(overview.donations.totalRaised)}
+          value={formatCurrency(donations.totalRaised)}
           accentColor={KPI_COLORS.donations}
         />
         <StatCard
           icon={Receipt}
           label="Expenses Approved"
-          value={formatCurrency(overview.expenses.approvedAmount)}
-          hint={`${overview.expenses.approvedCount} entries`}
+          value={formatCurrency(expenses.approvedAmount)}
+          hint={`${expenses.approvedCount} entries`}
           accentColor={KPI_COLORS.requests}
         />
         <StatCard
           icon={Receipt}
           label="Pending Approval"
-          value={formatCurrency(overview.expenses.pendingAmount)}
-          hint={`${overview.expenses.pendingCount} entries`}
-          tone={overview.expenses.pendingCount > 0 ? "danger" : "neutral"}
+          value={formatCurrency(expenses.pendingAmount)}
+          hint={`${expenses.pendingCount} entries`}
+          tone={expenses.pendingCount > 0 ? "danger" : "neutral"}
         />
       </div>
 

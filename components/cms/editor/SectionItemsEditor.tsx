@@ -71,6 +71,17 @@ const LIST_META: Record<string, ListMeta> = {
   "blog-sidebar:popularPosts": { heading: "Popular Posts", add: "Add Post", fallback: "Post" },
   "blog-sidebar:events": { heading: "Upcoming Events", add: "Add Event", fallback: "Event" },
   "blog-stats:items": { heading: "Blog Stats", add: "Add Stat", fallback: "Stat" },
+  "login-info-panel:items": { heading: "Event Highlights", add: "Add Highlight", fallback: "Highlight" },
+  "login-form:items": { heading: "Login Form Fields", add: "Add Form Field", fallback: "Field" },
+  "delegate-hero:items": { heading: "Hero Stats", add: "Add Stat", fallback: "Stat" },
+  "day-themes:items": { heading: "Day Theme Cards", add: "Add Day Theme", fallback: "Day" },
+  "registration-fees:items": { heading: "Delegate Pass Cards", add: "Add Pass Card", fallback: "Pass" },
+  "registration-fees:bandItems": { heading: "Included Perks Band", add: "Add Perk", fallback: "Perk" },
+  "conference-themes:items": { heading: "Conference Themes", add: "Add Theme", fallback: "Theme" },
+  "why-attend:items": { heading: "Why Attend Points", add: "Add Point", fallback: "Point" },
+  "paper-presentation-call:items": { heading: "Paper Presentation Highlights", add: "Add Highlight", fallback: "Highlight" },
+  "paper-presentation-call:steps": { heading: "Submission Steps", add: "Add Step", fallback: "Step" },
+  "organising-committee:items": { heading: "Advisory Board Members", add: "Add Advisory Member", fallback: "Member" },
 };
 
 const ICON_OPTIONS = [
@@ -95,6 +106,7 @@ const ICON_OPTIONS = [
   { label: "Mic / Speaker", value: "Mic" },
   { label: "Calendar", value: "Calendar" },
   { label: "Calendar Days", value: "CalendarDays" },
+  { label: "Map Pin / Venue", value: "MapPin" },
   { label: "Eye / View", value: "Eye" },
   { label: "Sprout / Plant", value: "Sprout" },
   { label: "Heart Pulse / Health", value: "HeartPulse" },

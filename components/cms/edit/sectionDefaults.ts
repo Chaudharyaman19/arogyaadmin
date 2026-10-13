@@ -120,6 +120,7 @@ export function getDefaultSectionsForTemplateName(
   if (n.includes("buyer login")) return defaultBuyerLoginSections;
   if (n.includes("delegates login")) return defaultDelegatesLoginSections;
   if (n.includes("user login")) return defaultUserLoginSections;
+  if (n.includes("login")) return defaultUserLoginSections;
   if (n.includes("partner") && !n.includes("collaboration")) return defaultSubPartnershipSections;
   if (n.includes("awards nomination")) return defaultAwardsNominationSections;
   if (n.includes("about")) return defaultAboutSections;

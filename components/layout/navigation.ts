@@ -10,6 +10,7 @@ import {
   ClipboardList,
   Clapperboard,
   DatabaseBackup,
+  FileCode,
   FileSearch,
   FileText,
   GalleryHorizontalEnd,
@@ -123,8 +124,9 @@ export const NAV_SECTIONS: NavSection[] = [
     title: "SEO & Performance",
     items: [
       { label: "SEO Audit", href: "/seo", icon: SearchCheck, badge: "NEW" },
+      { label: "Advanced SEO", href: "/advanced-seo", icon: FileCode, badge: "NEW" },
       { label: "Audited Pages", href: "/auditpage", icon: FileSearch },
-      { label: "SEO Center", href: "/reports", icon: SearchCheck },
+      { label: "SEO Center", href: "/seo-center", icon: SearchCheck },
       { label: "Google Search Console", icon: BarChart3, disabled: true },
       { label: "Analytics Dashboard", icon: Gauge, disabled: true },
       { label: "Performance Center", icon: Activity, disabled: true },

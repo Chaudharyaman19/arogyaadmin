@@ -35,6 +35,33 @@ const BLANK_ITEMS: Record<string, Record<string, any>> = {
     title: "STEP",
     desc: "",
   },
+  "registration-fees:items": {
+    title: "",
+    price: "",
+    badge: "",
+    features: [],
+  },
+  "day-themes:items": {
+    badge: "DAY",
+    date: "",
+    title: "",
+    subtitle: "",
+    topics: [],
+  },
+  "login-info-panel:items": {
+    icon: "",
+    title: "",
+    subtitle: "",
+  },
+  "login-form:items": {
+    title: "",
+    placeholder: "",
+    buttonLabel: "",
+  },
+  "paper-presentation-call:steps": {
+    title: "",
+    text: "",
+  },
 };
 
 export function blankItemFor(
