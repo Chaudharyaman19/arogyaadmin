@@ -318,7 +318,7 @@ export default function SeoPagesTable({ onSelectPage, onAuditStarted, selectedPa
     setError(null);
     try {
       const response = await seoAuditApi.pages(filters);
-      setRows(response.pages);
+      setRows(response.pages ?? []);
       setMessage(response.message);
       if (response.meta) setMeta(response.meta);
     } catch (caught) {
