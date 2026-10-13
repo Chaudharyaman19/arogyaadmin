@@ -746,7 +746,7 @@ async function request<T>(path: string, options?: ApiRequestOptions, isRetry = f
   if (options?.method && options.method !== "GET") getCache.clear();
 
   // Auth, Staff, Roles, Contact Enquiry, Partner logos, Delegate passes, Delegate categories, Coupons, Website topbar contact, Home hero, Supported By, Site page visibility, Why Arogya, About Conference, Stats Band, Vision/Mission, Upcoming Event, Event Highlights, Testimonials section, Testimonial cards, Video testimonials, Global Voices and Careers are served by backend-arogya; every other module still runs on mock data.
-  const isRealBackendPath = ["/auth/", "/users/admin/", "/roles/", "/contact-enquiry", "/partner-logos/", "/delegate-passes", "/delegate-categories", "/coupons", "/site-settings/", "/home-hero", "/supported-by", "/site-pages", "/why-arogya", "/about-conference", "/stats-band", "/vision-mission", "/upcoming-event", "/event-highlights", "/testimonials-section", "/testimonial-items", "/video-testimonials", "/global-voices/", "/careers/", "/page-seo", "/about-hero", "/about-founder", "/about-namo-gange", "/about-initiatives", "/about-impact", "/about-faq", "/paper-hero", "/paper-important-dates", "/paper-topics", "/paper-guidelines", "/paper-awards", "/paper-why-choose", "/paper-need-help", "/expert-speakers", "/speaker-hero", "/more-speakers", "/previous-speakers", "/eminent-speakers", "/organising-committee"].some((prefix) => path.startsWith(prefix));
+  const isRealBackendPath = ["/auth/", "/users/admin/", "/roles/", "/contact-enquiry", "/partner-logos/", "/delegate-passes", "/delegate-categories", "/coupons", "/site-settings/", "/home-hero", "/supported-by", "/site-pages", "/why-arogya", "/about-conference", "/stats-band", "/vision-mission", "/upcoming-event", "/event-highlights", "/testimonials-section", "/testimonial-items", "/video-testimonials", "/global-voices/", "/careers/", "/page-seo", "/about-hero", "/about-founder", "/about-namo-gange", "/about-initiatives", "/about-impact", "/about-faq", "/paper-hero", "/paper-important-dates", "/paper-topics", "/paper-guidelines", "/paper-awards", "/paper-why-choose", "/paper-need-help", "/expert-speakers", "/speaker-hero", "/more-speakers", "/previous-speakers", "/eminent-speakers", "/organising-committee", "/gallery-hero", "/gallery-counters", "/gallery-video-section", "/gallery-join-us", "/registration-cards", "/blog-page/", "/blogs"].some((prefix) => path.startsWith(prefix));
 
   // In standalone/mock mode, return mock data instantly (0ms latency) without blocking navigation on failed network timeouts
   if (!isRealBackendPath) {
@@ -837,6 +837,21 @@ async function requestBlob(path: string): Promise<Blob> {
   } catch {
     return new Blob(["Mock Document Data"], { type: "text/plain" });
   }
+}
+
+/** fetch() to backend-arogya with the admin's access token (refreshed once on a 401). For
+ * pages that work with the raw Response instead of the shared JSON `api` client. */
+export async function authFetch(url: string, init: RequestInit = {}, isRetry = false): Promise<Response> {
+  syncTokensFromStorage();
+  const headers: Record<string, string> = { ...(init.headers as Record<string, string> | undefined) };
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+
+  const res = await fetch(url, { ...init, headers });
+  if (res.status === 401 && !isRetry) {
+    if (await refreshAccessToken()) return authFetch(url, init, true);
+    onRefreshFailed?.();
+  }
+  return res;
 }
 
 export const api = {

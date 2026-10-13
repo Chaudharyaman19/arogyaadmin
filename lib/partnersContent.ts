@@ -1,12 +1,9 @@
 import { LandingSectionContent } from "./landingContent";
 import { partnersHeroSection } from "./partners/partnersHero";
-import { partnersGridSection } from "./partners/partnersGrid";
-import { partnerCategoriesSection } from "./partners/partnerCategories";
 import { becomePartnerSection } from "./partners/becomePartner";
 
+// Partner categories and logos are managed from the Exhibitor List page, so they have no section here.
 export const defaultPartnersSections: LandingSectionContent[] = [
   partnersHeroSection,
-  partnersGridSection,
-  partnerCategoriesSection,
   becomePartnerSection,
 ];

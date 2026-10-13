@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Modal from "@/components/ui/Modal";
+import ImageCropModal from "@/components/ui/ImageCropModal";
 import { Input, Label } from "@/components/ui/Input";
 import typography from "../pages/PagesTypography.module.css";
 import { useAppSelector } from "@/store/hooks";
@@ -14,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Copy,
+  Crop as CropIcon,
   Download,
   ExternalLink,
   Eye,
@@ -539,14 +541,55 @@ export default function ExhibitorListPage() {
     }
   };
 
-  // Handle Logo Upload file
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isReplace = false) => {
+  // Image waiting in the crop dialog: a newly picked file, or the current logo being re-cropped
+  const [cropSource, setCropSource] = useState<{
+    url: string;
+    type: string;
+    name: string;
+    file?: File;
+    isReplace: boolean;
+  } | null>(null);
+
+  const closeCrop = () => {
+    if (cropSource) URL.revokeObjectURL(cropSource.url);
+    setCropSource(null);
+  };
+
+  // Picking a file opens the crop dialog first; the upload happens once the crop is confirmed
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, isReplace = false) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
+    setCropSource({ url: URL.createObjectURL(file), type: file.type, name: file.name, file, isReplace });
+  };
 
+  // Re-crop the logo already set in the Add / Edit form
+  const handleCropExisting = async () => {
+    const url = formLogo.trim();
+    if (!url) return;
+    try {
+      // Fetched as a blob so the crop canvas can read it (a plain cross-origin <img> cannot be exported)
+      const res = await fetch(url);
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      setCropSource({ url: URL.createObjectURL(blob), type: blob.type, name: formName.trim() || "logo", isReplace: false });
+    } catch {
+      showError("Could not open this logo for cropping. Please choose the image file again.");
+    }
+  };
+
+  const handleCropped = async (blob: Blob) => {
+    if (!cropSource) return;
+    const baseName = cropSource.name.replace(/\.[^.]+$/, "") || "logo";
+    const file = new File([blob], `${baseName}.${blob.type === "image/jpeg" ? "jpg" : "png"}`, { type: blob.type });
+    await uploadLogoFile(file, cropSource.isReplace);
+  };
+
+  // Upload the (cropped or original) file, then replace the selected logo or fill the form
+  const uploadLogoFile = async (file: File, isReplace: boolean) => {
     const uploaded = await uploadImageFile(file);
     if (!uploaded) return;
+    closeCrop();
 
     if (isReplace && selected) {
       try {
@@ -1504,6 +1547,21 @@ export default function ExhibitorListPage() {
                         </>
                       )}
                     </button>
+                    {formLogo.trim() && (
+                      <button
+                        type="button"
+                        disabled={isUploading}
+                        onClick={handleCropExisting}
+                        className="inline-flex h-[28px] items-center gap-1.5 border border-[#cbd5e1] bg-[#f8fafc] px-3 text-[11px] font-semibold text-[#334155] transition hover:bg-slate-100 disabled:opacity-50 active:scale-95"
+                        style={{
+                          borderRadius: "4px",
+                          boxShadow: "rgba(0,0,0,0.02) 0px 1px 3px 0px, rgba(27,31,35,0.15) 0px 0px 0px 1px",
+                        }}
+                      >
+                        <CropIcon className="h-3 w-3 text-slate-600" />
+                        Crop
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1520,6 +1578,16 @@ export default function ExhibitorListPage() {
             />
           </div>
         </Modal>
+
+        {/* CROP DIALOG: opens on every logo pick (Add / Edit / Replace) and from the form's Crop button */}
+        <ImageCropModal
+          src={cropSource?.url ?? null}
+          mimeType={cropSource?.type}
+          busy={isUploading}
+          onCancel={closeCrop}
+          onCropped={handleCropped}
+          onUseOriginal={cropSource?.file ? () => uploadLogoFile(cropSource.file!, cropSource.isReplace) : undefined}
+        />
       </div>
     </main>
   );

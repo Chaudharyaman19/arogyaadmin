@@ -41,6 +41,14 @@ import { PaperGuidelinesEditor } from "@/components/cms/editor/PaperGuidelinesEd
 import { PaperAwardsEditor } from "@/components/cms/editor/PaperAwardsEditor";
 import { PaperWhyChooseEditor } from "@/components/cms/editor/PaperWhyChooseEditor";
 import { PaperNeedHelpEditor } from "@/components/cms/editor/PaperNeedHelpEditor";
+import { GalleryHeroEditor } from "@/components/cms/editor/GalleryHeroEditor";
+import { GalleryCountersEditor } from "@/components/cms/editor/GalleryCountersEditor";
+import { GalleryVideoSectionEditor } from "@/components/cms/editor/GalleryVideoSectionEditor";
+import { GalleryJoinUsEditor } from "@/components/cms/editor/GalleryJoinUsEditor";
+import { PartnersHeroEditor } from "@/components/cms/editor/PartnersHeroEditor";
+import { PartnersCtaEditor } from "@/components/cms/editor/PartnersCtaEditor";
+import { ContactHeroEditor } from "@/components/cms/editor/ContactHeroEditor";
+import { BlogHeroEditor, BlogCategoriesEditor, BlogStatsEditor } from "@/components/cms/editor/BlogPageEditors";
 import { useCmsEdit } from "../CmsEditContext";
 
 /* Sections that own more than one repeatable list. */
@@ -80,6 +88,16 @@ const BACKEND_SECTIONS: Record<string, ReactNode> = {
   "paper-awards": <PaperAwardsEditor />,
   "paper-why-choose": <PaperWhyChooseEditor />,
   "paper-need-help": <PaperNeedHelpEditor />,
+  "gallery-hero": <GalleryHeroEditor />,
+  "gallery-counters": <GalleryCountersEditor />,
+  "gallery-videos": <GalleryVideoSectionEditor />,
+  "gallery-join-us": <GalleryJoinUsEditor />,
+  "partners-hero": <PartnersHeroEditor />,
+  "become-partner": <PartnersCtaEditor />,
+  "contact-hero": <ContactHeroEditor />,
+  "blog-hero": <BlogHeroEditor />,
+  "blog-categories": <BlogCategoriesEditor />,
+  "blog-stats": <BlogStatsEditor />,
 };
 
 function getListKeys(section: Record<string, any>): string[] {

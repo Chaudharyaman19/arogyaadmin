@@ -17,17 +17,28 @@ export const Label = ({ children, required }: { children: React.ReactNode; requi
   </label>
 );
 
-type InputProps = InputHTMLAttributes<HTMLInputElement> & FieldWrapperProps;
+type InputProps = InputHTMLAttributes<HTMLInputElement> &
+  FieldWrapperProps & {
+    /** Shown inside the field on the right, e.g. a show / hide password button */
+    rightSlot?: React.ReactNode;
+  };
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, hint, required, className = "", id, ...props }, ref) => (
+  ({ label, error, hint, required, className = "", id, rightSlot, ...props }, ref) => (
     <div>
       {label && (
         <Label required={required}>
           {label}
         </Label>
       )}
-      <input ref={ref} id={id} className={`${FIELD_CLASSES} ${className}`} {...props} />
+      {rightSlot ? (
+        <div className="relative">
+          <input ref={ref} id={id} className={`${FIELD_CLASSES} pr-10 ${className}`} {...props} />
+          <div className="absolute inset-y-0 right-0 flex items-center pr-2">{rightSlot}</div>
+        </div>
+      ) : (
+        <input ref={ref} id={id} className={`${FIELD_CLASSES} ${className}`} {...props} />
+      )}
       {hint && !error && <p className="mt-1 text-[11px] text-[#4B1426]">{hint}</p>}
       {error && <p className="mt-1 text-[11px] font-medium text-red-600">{error}</p>}
     </div>

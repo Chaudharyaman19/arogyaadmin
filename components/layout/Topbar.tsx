@@ -37,6 +37,8 @@ import {
   Package,
   Loader2,
   Key,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
@@ -511,7 +513,27 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
     }
   };
 
+  // Show / hide toggles (the eye buttons) of the Change password fields
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  const passwordEye = (shown: boolean, toggle: () => void) => (
+    <button
+      type="button"
+      onClick={toggle}
+      title={shown ? "Hide password" : "Show password"}
+      aria-label={shown ? "Hide password" : "Show password"}
+      className="flex h-[26px] w-[26px] items-center justify-center rounded-[4px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+    >
+      {shown ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+    </button>
+  );
+
   const handleChangePassword = async () => {
+    if (!currentPassword) return setPasswordError("Enter your current password.");
+    if (newPassword.length < 8) return setPasswordError("The new password must be at least 8 characters.");
+    if (newPassword === currentPassword) return setPasswordError("The new password must be different from the current one.");
+
     setPasswordSaving(true);
     setPasswordError("");
 
@@ -551,7 +573,7 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
               <h1 className="flex min-w-0 items-center gap-1.5 text-[15px] font-semibold tracking-tight">
                 <span
                   className="truncate"
-                  style={{ color: "#00291b" }}
+                  style={{ color: "#4B1426" }}
                 >
                   {currentPageTitle(pathname)}
                 </span>
@@ -563,7 +585,7 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
             ) : (
               <h1
                 className="truncate text-[15px] font-bold tracking-tight"
-                style={{ color: "#00291b" }}
+                style={{ color: "#4B1426" }}
               >
                 {currentPageTitle(pathname)}
               </h1>
@@ -696,11 +718,11 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                 setMenuOpen(!menuOpen);
                 setActiveTitle(null);
               }}
-              className="relative flex items-center gap-2 p-1 sm:pr-3 bg-white border-2 border-slate-300 shadow-xs rounded-full hover:bg-slate-50 transition-all duration-200"
+              className="relative flex items-center gap-1.5 p-[3px] sm:pr-2.5 bg-white border-2 border-slate-300 shadow-xs rounded-full hover:bg-slate-50 transition-all duration-200"
             >
               {/* Profile Avatar: image if uploaded, name initials if not */}
               <div className="relative flex-shrink-0">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-slate-200 flex-shrink-0 flex items-center justify-center shadow-xs bg-[#1b5e20]">
+                <div className="w-7 h-7 sm:w-[30px] sm:h-[30px] rounded-full overflow-hidden border-2 border-slate-200 flex-shrink-0 flex items-center justify-center shadow-xs bg-[#1b5e20]">
                   {admin?.avatarUrl && admin.avatarUrl.trim() !== "" && admin.avatarUrl !== "null" ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -709,31 +731,31 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <span className="select-none text-[12px] font-bold leading-none tracking-wide text-white sm:text-[13px]">
+                    <span className="select-none text-[10.5px] font-bold leading-none tracking-wide text-white sm:text-[11px]">
                       {initials}
                     </span>
                   )}
                 </div>
 
                 {/* Online Status Dot */}
-                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 border-2 border-white rounded-full z-10 flex items-center justify-center">
+                <div className="absolute bottom-0 right-0 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 border-2 border-white rounded-full z-10 flex items-center justify-center">
                   <div className="absolute inset-0 w-full h-full bg-green-500 rounded-full animate-ping opacity-75" />
                 </div>
               </div>
 
               {/* User Info */}
-              <div className="hidden sm:flex flex-col text-left leading-none ml-1">
-                <span className="text-[12px] font-bold text-slate-800">
+              <div className="hidden sm:flex flex-col text-left leading-none ml-0.5">
+                <span className="text-[10.5px] font-bold text-slate-800">
                   {admin?.name || displayName}
                 </span>
 
-                <span className="text-[10px] font-bold uppercase tracking-wide mt-0.5" style={{ color: "#4B1426" }}>
+                <span className="text-[8.5px] font-bold uppercase tracking-wide mt-0.5" style={{ color: "#4B1426" }}>
                   {displayRole}
                 </span>
               </div>
 
               <ChevronDown
-                size={14}
+                size={12}
                 className={`text-slate-500 transition-transform duration-200 ${menuOpen ? "rotate-180" : ""}`}
               />
             </button>
@@ -794,6 +816,8 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
                       setCurrentPassword("");
                       setNewPassword("");
                       setPasswordError("");
+                      setShowCurrentPassword(false);
+                      setShowNewPassword(false);
                       setPasswordModalOpen(true);
                     }}
                     className="flex items-center gap-3 w-full px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 transition-colors duration-150"
@@ -910,18 +934,22 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
         <div className="space-y-3">
           <Input
             label="Current password"
-            type="password"
+            type={showCurrentPassword ? "text" : "password"}
+            autoComplete="current-password"
             required
             value={currentPassword}
             onChange={(event) => setCurrentPassword(event.target.value)}
+            rightSlot={passwordEye(showCurrentPassword, () => setShowCurrentPassword((v) => !v))}
           />
 
           <Input
             label="New password"
-            type="password"
+            type={showNewPassword ? "text" : "password"}
+            autoComplete="new-password"
             required
             value={newPassword}
             onChange={(event) => setNewPassword(event.target.value)}
+            rightSlot={passwordEye(showNewPassword, () => setShowNewPassword((v) => !v))}
             hint="At least 8 characters. You'll be signed out of every session after this."
           />
 

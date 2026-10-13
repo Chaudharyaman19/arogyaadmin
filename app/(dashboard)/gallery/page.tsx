@@ -1,11 +1,16 @@
 "use client";
+import { getImageSizeError, showUploadError } from "@/lib/uploadLimit";
 
 import { useMemo, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/ui/Modal";
+import CropImageModal from "@/components/gallery/CropImageModal";
+import SkeletonBentoView from "@/components/gallery/SkeletonBentoView";
+import GalleryPagination from "@/components/gallery/GalleryPagination";
 import { Input, Label } from "@/components/ui/Input";
 import typography from "../pages/PagesTypography.module.css";
 import { useAppSelector } from "@/store/hooks";
+import { authFetch, getApiBaseUrl } from "@/lib/api";
 import {
   ArrowRight,
   Calendar,
@@ -14,6 +19,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Copy,
+  Crop,
   Download,
   ExternalLink,
   Eye,
@@ -26,6 +32,7 @@ import {
   HardDrive,
   Image as ImageIcon,
   Layers,
+  LayoutTemplate,
   List,
   MoreVertical,
   Music2,
@@ -38,14 +45,27 @@ import {
   Sparkles,
   Tag,
   Trash2,
+  Type,
   Upload,
   Video,
   X,
 } from "lucide-react";
-import { createToast, lazySwal } from "@/lib/toast";
+import Swal from "sweetalert2";
 
 // SweetAlert2 theme matching admin portal dark style with zero shadow
-const Toast = createToast({
+const Toast = Swal.mixin({
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 3500,
+  timerProgressBar: true,
+  background: "#1e2433",
+  color: "#e2e8f0",
+  iconColor: "#4ade80",
+  customClass: {
+    popup: "swal-toast-popup",
+    title: "swal-toast-title",
+  },
   didOpen: (toast) => {
     toast.style.boxShadow = "none";
     (toast.style as any).webkitBoxShadow = "none";
@@ -70,7 +90,9 @@ export type MediaStatus = "Published" | "Draft";
 export interface MediaItem {
   id: number;
   _id?: string;
+  order?: number;
   title: string;
+  imageAlt?: string;
   year: string;
   category: string;
   size?: string;
@@ -107,7 +129,16 @@ const INITIAL_YEARS: string[] = [
 
 const INITIAL_MEDIA: MediaItem[] = [];
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+// Photos, categories and years live in backend-arogya (/api/v1/media-library) — the same
+// collections the website's Gallery page reads through /api/glimpse.
+const GALLERY_API = `${getApiBaseUrl()}/media-library`;
+const WEBSITE_GALLERY_URL = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/gallery`;
+
+// Same ordering as the backend and the live gallery: highest `order` first. Array sort is
+// stable, so photos sharing an order keep their current relative position (the backend's
+// createdAt tie-break from the initial load).
+const sortByDisplayOrder = (items: MediaItem[]) =>
+  [...items].sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
 
 const formatTimestamp = () => {
   const d = new Date();
@@ -222,12 +253,12 @@ function AnimatedCounter({ value, duration = 1200 }: { value: string | number; d
 }
 
 const toneClass = {
-  emerald: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  violet: "bg-violet-50 text-violet-700 ring-violet-200",
+  emerald: "bg-violet-50 text-violet-700 ring-violet-200",
+  violet: "bg-sky-50 text-sky-700 ring-sky-200",
   amber: "bg-amber-50 text-amber-700 ring-amber-200",
-  blue: "bg-sky-50 text-sky-700 ring-sky-200",
-  rose: "bg-rose-50 text-rose-700 ring-rose-200",
-  teal: "bg-teal-50 text-teal-700 ring-teal-200",
+  blue: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  rose: "bg-pink-50 text-pink-700 ring-pink-200",
+  teal: "bg-indigo-50 text-indigo-700 ring-indigo-200",
 } as const;
 
 export default function MediaLibraryPage() {
@@ -277,8 +308,11 @@ export default function MediaLibraryPage() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  // 12 matches the public Gallery / Glimpses page's own PAGE_SIZE and bento
+  // layout cycle (frontend/app/components/gallery/GalleryGrid.tsx), so a full
+  // admin page always maps 1:1 onto one live bento layout.
+  const [pageSize, setPageSize] = useState<number>(12);
+  const [viewMode, setViewMode] = useState<"table" | "grid" | "skeleton">("table");
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
@@ -296,26 +330,38 @@ export default function MediaLibraryPage() {
 
   // Form states for upload / edit (Static fields as requested: Title, Year, Category, Status, Image)
   const [formTitle, setFormTitle] = useState("");
+  const [formImageAlt, setFormImageAlt] = useState("");
+  const [formOrder, setFormOrder] = useState(1);
+  // Only true once the admin actually edits the Order box — until then we don't send an
+  // order at all, so the backend places the new upload at the top on its own.
+  const [formOrderTouched, setFormOrderTouched] = useState(false);
   const [formYear, setFormYear] = useState("2026");
   const [formCategory, setFormCategory] = useState("Inauguration");
   const [formStatus, setFormStatus] = useState<MediaStatus>("Published");
   const [formImageUrl, setFormImageUrl] = useState("");
   const [formFileSize, setFormFileSize] = useState("250 KB");
 
+  // Crop modal state — reused both for the file picked in the Upload/Edit modal
+  // ("form" context) and for cropping an already-published asset from the right
+  // sidebar ("existing" context, which re-uploads + saves immediately).
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [cropContext, setCropContext] = useState<"form" | "existing" | null>(null);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+
   // Load from localStorage and backend MongoDB on mount
   useEffect(() => {
     try {
-      const savedCats = localStorage.getItem("bharat_gallery_categories");
+      const savedCats = localStorage.getItem("arogya_gallery_categories");
       if (savedCats) {
         const parsed = JSON.parse(savedCats);
         if (Array.isArray(parsed) && parsed.length > 0) setCategories(parsed);
       }
-      const savedYears = localStorage.getItem("bharat_gallery_years");
+      const savedYears = localStorage.getItem("arogya_gallery_years");
       if (savedYears) {
         const parsed = JSON.parse(savedYears);
         if (Array.isArray(parsed) && parsed.length > 0) setYears(parsed);
       }
-      const savedMedia = localStorage.getItem("bharat_media_library_items");
+      const savedMedia = localStorage.getItem("arogya_media_library_items");
       if (savedMedia) {
         const parsed = JSON.parse(savedMedia);
         const clean = Array.isArray(parsed)
@@ -330,8 +376,8 @@ export default function MediaLibraryPage() {
     const fetchBackendData = async () => {
       try {
         const [metaRes, itemsRes] = await Promise.all([
-          fetch(`${BACKEND_URL}/api/website/gallery/meta`, { signal: AbortSignal.timeout(100) }).catch(() => null),
-          fetch(`${BACKEND_URL}/api/website/gallery/items`, { signal: AbortSignal.timeout(100) }).catch(() => null),
+          authFetch(`${GALLERY_API}/meta`).catch(() => null),
+          authFetch(`${GALLERY_API}/items`).catch(() => null),
         ]);
 
         if (metaRes && metaRes.ok) {
@@ -353,9 +399,12 @@ export default function MediaLibraryPage() {
           if (Array.isArray(itemsJson.data)) {
             const clean = itemsJson.data.filter((item: any) => !item.image?.includes("images.unsplash.com"));
             const mapped: MediaItem[] = clean.map((item: any, idx: number) => ({
-              id: item.order || idx + 1,
+              // Must be unique per row: selection, delete and React keys all rely on it, and `order` repeats.
+              id: idx + 1,
               _id: item._id,
+              order: typeof item.order === "number" ? item.order : idx + 1,
               title: item.title,
+              imageAlt: item.imageAlt || "",
               year: item.year,
               category: item.category,
               size: item.size || "",
@@ -384,19 +433,19 @@ export default function MediaLibraryPage() {
 
   const saveMediaToLocal = (items: MediaItem[]) => {
     try {
-      localStorage.setItem("bharat_media_library_items", JSON.stringify(items));
+      localStorage.setItem("arogya_media_library_items", JSON.stringify(items));
     } catch {}
   };
 
   const saveCatsToLocal = (cats: string[]) => {
     try {
-      localStorage.setItem("bharat_gallery_categories", JSON.stringify(cats));
+      localStorage.setItem("arogya_gallery_categories", JSON.stringify(cats));
     } catch {}
   };
 
   const saveYearsToLocal = (yrs: string[]) => {
     try {
-      localStorage.setItem("bharat_gallery_years", JSON.stringify(yrs));
+      localStorage.setItem("arogya_gallery_years", JSON.stringify(yrs));
     } catch {}
   };
 
@@ -411,7 +460,7 @@ export default function MediaLibraryPage() {
     const updated = [...categories, val];
     setCategories(updated);
     saveCatsToLocal(updated);
-    fetch(`${BACKEND_URL}/api/website/gallery/meta`, {
+    authFetch(`${GALLERY_API}/meta`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ categories: updated }),
@@ -425,7 +474,7 @@ export default function MediaLibraryPage() {
     const updated = categories.filter((c) => c !== cat);
     setCategories(updated);
     saveCatsToLocal(updated);
-    fetch(`${BACKEND_URL}/api/website/gallery/meta`, {
+    authFetch(`${GALLERY_API}/meta`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ categories: updated }),
@@ -444,7 +493,7 @@ export default function MediaLibraryPage() {
     const updated = [val, ...years];
     setYears(updated);
     saveYearsToLocal(updated);
-    fetch(`${BACKEND_URL}/api/website/gallery/meta`, {
+    authFetch(`${GALLERY_API}/meta`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ years: updated }),
@@ -458,7 +507,7 @@ export default function MediaLibraryPage() {
     const updated = years.filter((y) => y !== yr);
     setYears(updated);
     saveYearsToLocal(updated);
-    fetch(`${BACKEND_URL}/api/website/gallery/meta`, {
+    authFetch(`${GALLERY_API}/meta`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ years: updated }),
@@ -466,40 +515,58 @@ export default function MediaLibraryPage() {
     showSuccess(`Year "${yr}" removed.`);
   };
 
-  // Upload helper directly to Cloudinary CDN
-  const uploadToCloudinary = async (file: File): Promise<string> => {
+  // Upload helper directly to Cloudinary CDN (or backend local upload)
+  // `target` must be passed when the upload belongs to an existing photo (Replace / Crop
+  // from the sidebar) — the form's year/category are left over from whatever modal was
+  // opened last, so they would file the image under the wrong category folder.
+  const uploadToCloudinary = async (
+    file: File,
+    target: { year: string; category: string } = { year: formYear, category: formCategory }
+  ): Promise<string> => {
+    const sizeError = await getImageSizeError(file);
+    if (sizeError) throw new Error(sizeError);
     try {
       setIsUploading(true);
+      const targetFolder = `gallery/${target.year || "2026"}/${(target.category || "general").toLowerCase().replace(/\s+/g, "-")}`;
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("folder", `bharat-organic/gallery/${formYear}/${formCategory.toLowerCase().replace(/\s+/g, "-")}`);
+      formData.append("folder", targetFolder);
 
-      let res = await fetch(`${BACKEND_URL}/api/uploads?folder=bharat-organic/gallery`, {
+      // Uploaded to Cloudinary through backend-arogya
+      const res = await authFetch(`${GALLERY_API}/upload?folder=${encodeURIComponent(targetFolder)}`, {
         method: "POST",
         body: formData,
-      });
+      }).catch(() => null);
+      const reachedServer = Boolean(res);
 
-      if (!res.ok) {
-        res = await fetch(`/api/uploads?folder=bharat-organic/gallery`, {
-          method: "POST",
-          body: formData,
-        });
-      }
-
-      if (res.ok) {
-        const json = await res.json();
-        const finalUrl = json.data?.url || json.url || json.data?.secure_url || json.secure_url;
+      if (res && res.ok) {
+        const json = await res.json().catch(() => null);
+        const finalUrl = json?.data?.url || json?.url || json?.data?.secure_url || json?.secure_url;
         if (finalUrl) {
-          if (finalUrl.startsWith("http")) return finalUrl;
-          return `${BACKEND_URL.replace(/\/$/, "")}${finalUrl.startsWith("/") ? "" : "/"}${finalUrl}`;
+          return finalUrl;
         }
       }
-    } catch (err) {
-      console.error("Cloudinary upload error:", err);
+
+      // The server responded but rejected the upload (e.g. over the configured max image
+      // size) — surface the real reason instead of silently degrading to a base64 embed.
+      if (reachedServer && res) {
+        const errorBody = await res.json().catch(() => null);
+        throw new Error(errorBody?.message || `Upload failed (status ${res.status}).`);
+      }
     } finally {
       setIsUploading(false);
     }
-    return URL.createObjectURL(file);
+
+    // The server was genuinely unreachable (not a rejection) — fall back to embedding the
+    // file directly so the admin doesn't lose their work over a transient network blip.
+    console.warn("Could not reach the upload server; embedding image as a data URL instead.");
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   // Stat calculations
@@ -516,9 +583,9 @@ export default function MediaLibraryPage() {
         suffix: "",
         icon: ImageIcon,
         tone: "emerald" as const,
-        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #bbf7d0 100%)",
-        borderColor: "#bbf7d0",
-        numColor: "#15803d",
+        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #ede9fe 100%)",
+        borderColor: "#ddd6fe",
+        numColor: "#6d28d9",
         footer: "View all photos",
         onClick: () => {
           setSelectedCategory("All Activities");
@@ -531,9 +598,9 @@ export default function MediaLibraryPage() {
         suffix: "",
         icon: Check,
         tone: "violet" as const,
-        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #ddd6fe 100%)",
-        borderColor: "#ddd6fe",
-        numColor: "#6d28d9",
+        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #e0f2fe 100%)",
+        borderColor: "#bae6fd",
+        numColor: "#0369a1",
         footer: "View published",
         onClick: () => setStatusFilter("Published"),
       },
@@ -543,9 +610,9 @@ export default function MediaLibraryPage() {
         suffix: "",
         icon: Tag,
         tone: "amber" as const,
-        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #fed7aa 100%)",
-        borderColor: "#fed7aa",
-        numColor: "#c2410c",
+        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #fef3c7 100%)",
+        borderColor: "#fde68a",
+        numColor: "#b45309",
         footer: "Manage categories",
         onClick: () => setIsCategoryYearModalOpen(true),
       },
@@ -555,9 +622,9 @@ export default function MediaLibraryPage() {
         suffix: "",
         icon: Calendar,
         tone: "blue" as const,
-        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #bae6fd 100%)",
-        borderColor: "#bae6fd",
-        numColor: "#0284c7",
+        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #d1fae5 100%)",
+        borderColor: "#a7f3d0",
+        numColor: "#047857",
         footer: "Manage years",
         onClick: () => setIsCategoryYearModalOpen(true),
       },
@@ -567,9 +634,9 @@ export default function MediaLibraryPage() {
         suffix: "",
         icon: Sparkles,
         tone: "rose" as const,
-        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #fecdd3 100%)",
-        borderColor: "#fecdd3",
-        numColor: "#be123c",
+        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #fce7f3 100%)",
+        borderColor: "#fbcfe8",
+        numColor: "#be185d",
         footer: "Review drafts",
         onClick: () => setStatusFilter("Draft"),
       },
@@ -579,11 +646,11 @@ export default function MediaLibraryPage() {
         suffix: "",
         icon: Globe,
         tone: "teal" as const,
-        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #99f6e4 100%)",
-        borderColor: "#99f6e4",
-        numColor: "#0f766e",
+        gradient: "linear-gradient(135deg, #ffffff 0%, #ffffff 42%, #e0e7ff 100%)",
+        borderColor: "#c7d2fe",
+        numColor: "#4338ca",
         footer: "Live on website",
-        onClick: () => window.open("http://localhost:3002/gallery", "_blank"),
+        onClick: () => window.open(WEBSITE_GALLERY_URL, "_blank"),
       },
     ],
     [totalFiles, publishedCount, draftCount, categories.length, years.length]
@@ -613,6 +680,20 @@ export default function MediaLibraryPage() {
     return filteredRows.slice(start, start + pageSize);
   }, [filteredRows, currentPage, pageSize]);
 
+  // The Skeleton (live layout) view shows what the live site shows: drafts never appear
+  // there. It pages by the same "per page" selector as the table and grid (the website
+  // itself always shows 12 per page, i.e. one bento block of this preview).
+  const layoutRows = useMemo(
+    () => filteredRows.filter((item) => item.status === "Published"),
+    [filteredRows]
+  );
+  const layoutTotalPages = Math.ceil(layoutRows.length / pageSize) || 1;
+  const layoutPage = Math.min(currentPage, layoutTotalPages);
+  const layoutPageRows = useMemo(() => {
+    const start = (layoutPage - 1) * pageSize;
+    return layoutRows.slice(start, start + pageSize);
+  }, [layoutRows, layoutPage, pageSize]);
+
   // Selected item for right details panel
   const selected = useMemo(() => {
     return mediaItems.find((item) => item.id === selectedId) || mediaItems[0] || null;
@@ -640,11 +721,187 @@ export default function MediaLibraryPage() {
     );
   };
 
+  const handleSelectAllFiltered = () => {
+    setSelectedIds(filteredRows.map((x) => x.id));
+  };
+
+  const handleClearSelection = () => {
+    setSelectedIds([]);
+  };
+
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+
+  /** Deletes the given items from the backend and local state. No confirmation — callers must confirm first. */
+  const deleteItemsBulk = async (targets: MediaItem[]) => {
+    setBulkDeleting(true);
+    // One request per chunk of ids — per-item DELETE calls hit the backend's 100 req/min rate limit.
+    const CHUNK_SIZE = 500;
+    const deletedIds = new Set<number>();
+    let failed = 0;
+
+    targets.filter((item) => !item._id).forEach((item) => deletedIds.add(item.id));
+    const serverTargets = targets.filter((item) => item._id);
+
+    for (let i = 0; i < serverTargets.length; i += CHUNK_SIZE) {
+      const chunk = serverTargets.slice(i, i + CHUNK_SIZE);
+      const res = await authFetch(`${GALLERY_API}/items/bulk-delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: chunk.map((item) => item._id) }),
+      }).catch(() => null);
+
+      if (res && res.ok) {
+        chunk.forEach((item) => deletedIds.add(item.id));
+      } else {
+        failed += chunk.length;
+      }
+    }
+    const succeeded = deletedIds.size;
+
+    const updated = mediaItems.filter((x) => !deletedIds.has(x.id));
+    setMediaItems(updated);
+    saveMediaToLocal(updated);
+    setSelectedIds([]);
+    if (selectedId !== null && deletedIds.has(selectedId)) {
+      setSelectedId(updated[0]?.id ?? null);
+    }
+    setBulkDeleting(false);
+
+    if (failed === 0) {
+      showSuccess(`${succeeded} photo${succeeded === 1 ? "" : "s"} deleted from Media Library.`);
+    } else {
+      Swal.fire({
+        title: "Some deletes failed",
+        text: `${succeeded} deleted successfully, ${failed} failed. Try again for the remaining items.`,
+        icon: "warning",
+        confirmButtonColor: "#218DAE",
+        background: "#1e2433",
+        color: "#f8fafc",
+      });
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    const targets = mediaItems.filter((x) => selectedIds.includes(x.id));
+
+    const confirm = await Swal.fire({
+      title: `Delete ${targets.length} photo${targets.length === 1 ? "" : "s"}?`,
+      text: "These photo assets will be permanently removed from the Media Library and from the live website.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: `Yes, Delete ${targets.length}`,
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#64748b",
+      background: "#1e2433",
+      color: "#f8fafc",
+      customClass: {
+        popup: "swal-toast-popup",
+      },
+    });
+    if (!confirm.isConfirmed) return;
+    await deleteItemsBulk(targets);
+  };
+
+  /** One common alt text for every photo — replaces whatever alt text each photo already has. */
+  const handleCommonAltText = async () => {
+    if (mediaItems.length === 0) {
+      showInfo("Upload some photos first.");
+      return;
+    }
+    const result = await Swal.fire({
+      title: "Common Alt Text",
+      input: "text",
+      inputLabel: `Applied to all ${mediaItems.length} photos. Any alt text already set on a photo is replaced.`,
+      inputPlaceholder: "e.g. Arogya Sangoshthi event photo gallery",
+      inputAttributes: { maxlength: "250" },
+      showCancelButton: true,
+      confirmButtonText: `Apply to all ${mediaItems.length}`,
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#16a34a",
+      cancelButtonColor: "#64748b",
+      background: "#1e2433",
+      color: "#f8fafc",
+      width: 400,
+      customClass: {
+        title: "!text-[16px] !pt-4",
+        inputLabel: "!text-[11px] !leading-[1.5] !mt-2 !px-5",
+        input: "!text-[12px] !h-[36px] !mx-5 !my-3",
+        validationMessage: "!text-[11px]",
+        actions: "!mt-1",
+        confirmButton: "!text-[12px] !px-4 !py-2",
+        cancelButton: "!text-[12px] !px-4 !py-2",
+      },
+      inputValidator: (value) => (!value || !value.trim() ? "Please enter the alt text" : undefined),
+    });
+    if (!result.isConfirmed || typeof result.value !== "string") return;
+    const imageAlt = result.value.trim();
+
+    const res = await authFetch(`${GALLERY_API}/items/alt-text`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ imageAlt }),
+    }).catch(() => null);
+
+    if (!res || !res.ok) {
+      const body = res ? await res.json().catch(() => null) : null;
+      showError(body?.message || "Could not apply the alt text. Please try again.");
+      return;
+    }
+    const updated = mediaItems.map((x) => ({ ...x, imageAlt }));
+    setMediaItems(updated);
+    saveMediaToLocal(updated);
+    showSuccess(`Alt text applied to all ${updated.length} photos.`);
+  };
+
+  /** Deletes every photo currently matching the search box / dropdown filters, in one click — no need to tick checkboxes first. */
+  const handleBulkDeleteFiltered = async () => {
+    const targets = filteredRows;
+    const noFilterActive =
+      searchQuery.trim() === "" &&
+      selectedCategory === "All Activities" &&
+      selectedYear === "All Years" &&
+      statusFilter === "All Status";
+
+    if (targets.length === 0) {
+      Swal.fire({
+        title: "Nothing to delete",
+        text: "No photos match the current search/filter.",
+        icon: "info",
+        confirmButtonColor: "#218DAE",
+        background: "#1e2433",
+        color: "#f8fafc",
+      });
+      return;
+    }
+
+    const confirm = await Swal.fire({
+      title: `Delete ${targets.length} photo${targets.length === 1 ? "" : "s"}?`,
+      html: noFilterActive
+        ? `<p style="color:#fca5a5;font-weight:700;">No search/filter is active — this will delete <u>ALL ${targets.length}</u> photos in the Media Library.</p>`
+        : `<p>These ${targets.length} photos match your current search/filter and will be permanently removed from the Media Library and the live website.</p>`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: `Yes, Delete ${targets.length}`,
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#64748b",
+      background: "#1e2433",
+      color: "#f8fafc",
+      customClass: {
+        popup: "swal-toast-popup",
+      },
+    });
+    if (!confirm.isConfirmed) return;
+    await deleteItemsBulk(targets);
+  };
+
   // Status Change
   const handleStatusChange = async (id: number, newStatus: MediaStatus) => {
     const target = mediaItems.find((x) => x.id === id);
     if (target?._id) {
-      await fetch(`${BACKEND_URL}/api/website/gallery/items/${target._id}/status`, {
+      await authFetch(`${GALLERY_API}/items/${target._id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -661,7 +918,7 @@ export default function MediaLibraryPage() {
 
   // Delete media item
   const handleDelete = async (item: MediaItem) => {
-    const confirm = await lazySwal.fire({
+    const confirm = await Swal.fire({
       title: `Delete "${item.title}"?`,
       text: "This photo asset will be removed from the Media Library.",
       icon: "warning",
@@ -679,7 +936,7 @@ export default function MediaLibraryPage() {
 
     if (confirm.isConfirmed) {
       if (item._id) {
-        await fetch(`${BACKEND_URL}/api/website/gallery/items/${item._id}`, {
+        await authFetch(`${GALLERY_API}/items/${item._id}`, {
           method: "DELETE",
         }).catch(() => null);
       }
@@ -696,6 +953,11 @@ export default function MediaLibraryPage() {
   // Open Upload Modal
   const handleOpenUploadModal = () => {
     setFormTitle("");
+    setFormImageAlt("");
+    // Preview only — order is a simple counter (1, 2, 3...); new uploads get the next number
+    // after the current highest, matching what the backend will assign if left untouched.
+    setFormOrder(mediaItems.length > 0 ? Math.max(...mediaItems.map((x) => x.order ?? 1)) + 1 : 1);
+    setFormOrderTouched(false);
     setFormYear(years[0] || "2026");
     setFormCategory(categories[0] || "Inauguration");
     setFormStatus("Published");
@@ -708,6 +970,9 @@ export default function MediaLibraryPage() {
   const handleOpenEdit = (item: MediaItem) => {
     setEditingItem(item);
     setFormTitle(item.title);
+    setFormImageAlt(item.imageAlt || "");
+    setFormOrder(item.order ?? 1);
+    setFormOrderTouched(true);
     setFormYear(item.year);
     setFormCategory(item.category);
     setFormStatus(item.status);
@@ -727,19 +992,24 @@ export default function MediaLibraryPage() {
     const ts = formatTimestamp();
 
     try {
-      const payload = {
+      const payload: Record<string, unknown> = {
         title: finalTitle,
+        imageAlt: formImageAlt.trim(),
         year: formYear,
         category: formCategory,
         image: formImageUrl,
         uploadedBy: loggedInAdminName,
         status: formStatus,
-        order: mediaItems.length + 1,
         date: ts.date,
         time: ts.time,
       };
+      // Only send an explicit order when the admin actually edited the box — otherwise
+      // leave it out so the backend auto-places the new upload at the top of the list.
+      if (formOrderTouched) {
+        payload.order = formOrder;
+      }
 
-      const res = await fetch(`${BACKEND_URL}/api/website/gallery/items`, {
+      const res = await authFetch(`${GALLERY_API}/items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -750,9 +1020,11 @@ export default function MediaLibraryPage() {
         const json = await res.json();
         const serverItem = json.data;
         newItem = {
-          id: serverItem.order || mediaItems.length + 1,
+          id: mediaItems.length > 0 ? Math.max(...mediaItems.map((x) => x.id)) + 1 : 1,
           _id: serverItem._id,
+          order: typeof serverItem.order === "number" ? serverItem.order : formOrder,
           title: serverItem.title || finalTitle,
+          imageAlt: serverItem.imageAlt || formImageAlt.trim(),
           year: serverItem.year || formYear,
           category: serverItem.category || formCategory,
           size: formFileSize || "250 KB",
@@ -765,7 +1037,9 @@ export default function MediaLibraryPage() {
       } else {
         newItem = {
           id: mediaItems.length > 0 ? Math.max(...mediaItems.map((x) => x.id)) + 1 : 1,
+          order: formOrder,
           title: finalTitle,
+          imageAlt: formImageAlt.trim(),
           year: formYear,
           category: formCategory,
           size: formFileSize || "250 KB",
@@ -777,7 +1051,7 @@ export default function MediaLibraryPage() {
         };
       }
 
-      const updated = [newItem, ...mediaItems];
+      const updated = sortByDisplayOrder([newItem, ...mediaItems]);
       setMediaItems(updated);
       saveMediaToLocal(updated);
       setSelectedId(newItem.id);
@@ -787,7 +1061,9 @@ export default function MediaLibraryPage() {
       console.error("Failed to save media item:", err);
       const newItem: MediaItem = {
         id: mediaItems.length > 0 ? Math.max(...mediaItems.map((x) => x.id)) + 1 : 1,
+        order: formOrder,
         title: finalTitle,
+        imageAlt: formImageAlt.trim(),
         year: formYear,
         category: formCategory,
         size: formFileSize || "250 KB",
@@ -797,7 +1073,7 @@ export default function MediaLibraryPage() {
         status: formStatus,
         image: formImageUrl,
       };
-      const updated = [newItem, ...mediaItems];
+      const updated = sortByDisplayOrder([newItem, ...mediaItems]);
       setMediaItems(updated);
       saveMediaToLocal(updated);
       setSelectedId(newItem.id);
@@ -814,11 +1090,13 @@ export default function MediaLibraryPage() {
     const finalTitle = formTitle.trim() || formCategory || editingItem.title;
 
     if (editingItem._id) {
-      await fetch(`${BACKEND_URL}/api/website/gallery/items/${editingItem._id}`, {
+      await authFetch(`${GALLERY_API}/items/${editingItem._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: finalTitle,
+          imageAlt: formImageAlt.trim(),
+          order: formOrder,
           year: formYear,
           category: formCategory,
           status: formStatus,
@@ -830,11 +1108,13 @@ export default function MediaLibraryPage() {
       }).catch(() => null);
     }
 
-    const updated = mediaItems.map((item) =>
+    const updated = sortByDisplayOrder(mediaItems.map((item) =>
       item.id === editingItem.id
         ? {
             ...item,
             title: finalTitle,
+            imageAlt: formImageAlt.trim(),
+            order: formOrder,
             year: formYear,
             category: formCategory,
             status: formStatus,
@@ -845,7 +1125,7 @@ export default function MediaLibraryPage() {
             time: ts.time,
           }
         : item
-    );
+    ));
 
     setMediaItems(updated);
     saveMediaToLocal(updated);
@@ -859,9 +1139,16 @@ export default function MediaLibraryPage() {
     if (file && selected) {
       const sizeStr = `${(file.size / 1024).toFixed(1)} KB`;
       const ts = formatTimestamp();
-      const newUrl = await uploadToCloudinary(file);
+      let newUrl: string;
+      try {
+        newUrl = await uploadToCloudinary(file, { year: selected.year, category: selected.category });
+      } catch (err) {
+        showUploadError(err);
+        e.target.value = "";
+        return;
+      }
       if (selected._id) {
-        await fetch(`${BACKEND_URL}/api/website/gallery/items/${selected._id}`, {
+        await authFetch(`${GALLERY_API}/items/${selected._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -890,6 +1177,143 @@ export default function MediaLibraryPage() {
     }
   };
 
+  // Opens the crop modal for the image currently in the Upload/Edit form.
+  const handleOpenCropForForm = () => {
+    if (!formImageUrl) return;
+    setCropContext("form");
+    setCropImageSrc(formImageUrl);
+    setIsCropModalOpen(true);
+  };
+
+  // Opens the crop modal for an already-published asset selected in the right sidebar.
+  const handleOpenCropForExisting = () => {
+    if (!selected) return;
+    setCropContext("existing");
+    setCropImageSrc(selected.image);
+    setIsCropModalOpen(true);
+  };
+
+  const handleCloseCropModal = () => {
+    setIsCropModalOpen(false);
+    setCropContext(null);
+    setCropImageSrc(null);
+  };
+
+  // Uploads the cropped result and, depending on context, either fills the open
+  // form (new upload / edit-in-progress) or saves it straight to the already
+  // published asset — mirroring handleQuickReplace's persistence logic.
+  const handleCropApplied = async (file: File) => {
+    let newUrl: string;
+    try {
+      newUrl = await uploadToCloudinary(
+        file,
+        cropContext === "existing" && selected ? { year: selected.year, category: selected.category } : undefined
+      );
+    } catch (err) {
+      showUploadError(err);
+      return;
+    }
+
+    if (cropContext === "form") {
+      setFormImageUrl(newUrl);
+      setFormFileSize(`${(file.size / 1024).toFixed(1)} KB`);
+      showSuccess("Photo cropped and uploaded!");
+    } else if (cropContext === "existing" && selected) {
+      const ts = formatTimestamp();
+      if (selected._id) {
+        await authFetch(`${GALLERY_API}/items/${selected._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            image: newUrl,
+            uploadedBy: loggedInAdminName,
+            date: ts.date,
+            time: ts.time,
+          }),
+        }).catch(() => null);
+      }
+      const updated = mediaItems.map((item) =>
+        item.id === selected.id
+          ? {
+              ...item,
+              image: newUrl,
+              size: `${(file.size / 1024).toFixed(1)} KB`,
+              uploadedBy: loggedInAdminName,
+              date: ts.date,
+              time: ts.time,
+            }
+          : item
+      );
+      setMediaItems(updated);
+      saveMediaToLocal(updated);
+      showSuccess("Cropped photo saved to Cloudinary CDN!");
+    }
+
+    handleCloseCropModal();
+  };
+
+  // Dragging a photo onto another in the Skeleton layout view swaps their
+  // `order` values — the same field that determines each photo's position
+  // (and therefore its bento slot) on the live Gallery / Glimpses page.
+  //
+  // If two photos share an `order` value, swapping those numbers changes nothing (and the
+  // backend's createdAt tie-break can shuffle them unexpectedly), so in that case the whole
+  // list is renumbered 1..n in its current display order first — only the two swapped
+  // photos actually move.
+  const handleSwapOrder = async (itemA: MediaItem, itemB: MediaItem) => {
+    if (itemA.id === itemB.id) return;
+    const previous = mediaItems;
+    const current = sortByDisplayOrder(mediaItems);
+
+    const orders = current.map((x) => x.order ?? 0);
+    const hasDuplicates = new Set(orders).size !== orders.length;
+
+    let updated: MediaItem[];
+    if (!hasDuplicates) {
+      const orderA = itemA.order ?? 0;
+      const orderB = itemB.order ?? 0;
+      updated = sortByDisplayOrder(
+        current.map((item) => {
+          if (item.id === itemA.id) return { ...item, order: orderB };
+          if (item.id === itemB.id) return { ...item, order: orderA };
+          return item;
+        })
+      );
+    } else {
+      const positions = [...current];
+      const ia = positions.findIndex((x) => x.id === itemA.id);
+      const ib = positions.findIndex((x) => x.id === itemB.id);
+      if (ia === -1 || ib === -1) return;
+      [positions[ia], positions[ib]] = [positions[ib], positions[ia]];
+      updated = positions.map((item, i) => ({ ...item, order: positions.length - i }));
+    }
+
+    const previousOrder = new Map(previous.map((x) => [x.id, x.order]));
+    const changes = updated
+      .filter((x) => x._id && previousOrder.get(x.id) !== x.order)
+      .map((x) => ({ id: x._id as string, order: x.order as number }));
+
+    setMediaItems(updated);
+    saveMediaToLocal(updated);
+
+    if (changes.length > 0) {
+      const res = await authFetch(`${GALLERY_API}/items/reorder`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: changes }),
+      }).catch(() => null);
+
+      if (!res || !res.ok) {
+        setMediaItems(previous);
+        saveMediaToLocal(previous);
+        showError("Could not save the new position. Please try again.");
+        return;
+      }
+    }
+
+    showSuccess("Layout position swapped!");
+  };
+
   return (
     <main
       className={`${typography.pages} h-full min-h-0 w-full overflow-y-auto overflow-x-hidden bg-[#fffefb] px-[18px] py-[14px] text-[#142347] [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300`}
@@ -909,15 +1333,15 @@ export default function MediaLibraryPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-[10px]">
+          <div className="flex shrink-0 items-center gap-[6px]">
             {/* 1. LIVE WEBSITE PREVIEW BUTTON (Aage/First) */}
             <a
-              href="http://localhost:3002/gallery"
+              href={WEBSITE_GALLERY_URL}
               target="_blank"
               rel="noreferrer"
-              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] border border-[#fed7aa] bg-[#fff7ed] px-[14px] text-[8.5px] font-semibold text-[#ea580c] transition hover:bg-[#ffedd5] shadow-sm active:scale-95"
+              className="flex h-[26px] shrink-0 items-center justify-center gap-[4px] whitespace-nowrap rounded-[6px] border border-[#fed7aa] bg-[#fff7ed] px-[9px] text-[7.5px] font-semibold text-[#ea580c] transition hover:bg-[#ffedd5] shadow-sm active:scale-95"
             >
-              <ExternalLink className="h-[12px] w-[12px] text-[#ea580c]" strokeWidth={1.7} />
+              <ExternalLink className="h-[10px] w-[10px] text-[#ea580c]" strokeWidth={1.7} />
               View on Website
             </a>
 
@@ -925,21 +1349,45 @@ export default function MediaLibraryPage() {
             <button
               type="button"
               onClick={() => setIsCategoryYearModalOpen(true)}
-              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] bg-[#006199] px-[14px] text-[8.5px] font-semibold text-white shadow-sm transition hover:bg-[#005180] active:scale-95"
-              style={{ backgroundColor: "#006199", color: "#ffffff" }}
+              className="flex h-[26px] shrink-0 items-center justify-center gap-[4px] whitespace-nowrap rounded-[6px] bg-[#111844] px-[9px] text-[7.5px] font-semibold text-white shadow-sm transition hover:bg-[#0b1033] active:scale-95"
+              style={{ backgroundColor: "#111844", color: "#ffffff" }}
             >
-              <Tag className="h-[12px] w-[12px] text-white" strokeWidth={1.7} />
+              <Tag className="h-[10px] w-[10px] text-white" strokeWidth={1.7} />
               Add Category & Year
+            </button>
+
+            {/* COMMON ALT TEXT (one alt text for every photo) */}
+            <button
+              type="button"
+              onClick={handleCommonAltText}
+              className="flex h-[26px] shrink-0 items-center justify-center gap-[4px] whitespace-nowrap rounded-[6px] bg-[#0f766e] px-[9px] text-[7.5px] font-semibold text-white shadow-sm transition hover:bg-[#0b5c56] active:scale-95"
+              title="Set one alt text on every photo (replaces existing alt text)"
+            >
+              <Type className="h-[10px] w-[10px]" strokeWidth={1.7} />
+              Common Alt Text
             </button>
 
             {/* 3. UPLOAD NEW MEDIA BUTTON */}
             <button
               type="button"
               onClick={handleOpenUploadModal}
-              className="flex h-[30px] items-center justify-center gap-[5px] rounded-[6px] bg-[#4B1426] px-[14px] text-[8.5px] font-semibold text-white shadow-[0_5px_12px_rgba(75,20,38,0.25)] transition hover:bg-[#3a0f1d] active:scale-95"
+              className="flex h-[26px] shrink-0 items-center justify-center gap-[4px] whitespace-nowrap rounded-[6px] bg-[#1b5e20] px-[9px] text-[7.5px] font-semibold text-white shadow-[0_5px_12px_rgba(27,94,32,0.25)] transition hover:bg-[#14491a] active:scale-95"
             >
-              <Plus className="h-[12px] w-[12px]" strokeWidth={1.7} />
+              <Plus className="h-[10px] w-[10px]" strokeWidth={1.7} />
               Upload New Media
+            </button>
+
+            {/* 4. BULK DELETE (deletes everything matching the current search/filter) */}
+            <button
+              type="button"
+              onClick={handleBulkDeleteFiltered}
+              disabled={bulkDeleting}
+              className="flex h-[26px] shrink-0 items-center justify-center gap-[4px] whitespace-nowrap rounded-[6px] bg-[#dc2626] px-[9px] text-[7.5px] font-semibold text-white shadow-[0_5px_12px_rgba(220,38,38,0.3)] transition hover:bg-[#b91c1c] active:scale-95 disabled:opacity-60"
+              title={`Deletes all ${filteredRows.length} photo${filteredRows.length === 1 ? "" : "s"} matching the current search/filter`}
+            >
+              <Trash2 className="h-[10px] w-[10px]" strokeWidth={1.7} />
+              {/* The count is always shown so it is clear how many photos this button removes */}
+              {bulkDeleting ? "Deleting..." : `Bulk Delete (${filteredRows.length})`}
             </button>
           </div>
         </div>
@@ -1104,6 +1552,18 @@ export default function MediaLibraryPage() {
                 >
                   <Grid className="h-[15px] w-[15px]" />
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("skeleton")}
+                  className={`flex h-[32px] w-[32px] items-center justify-center rounded-[4px] transition ${
+                    viewMode === "skeleton"
+                      ? "bg-[#233D4D] text-white shadow-xs"
+                      : "text-[#59657a] hover:bg-slate-100"
+                  }`}
+                  title="Live Website Layout Preview"
+                >
+                  <LayoutTemplate className="h-[15px] w-[15px]" />
+                </button>
               </div>
 
               <button
@@ -1116,13 +1576,46 @@ export default function MediaLibraryPage() {
               </button>
             </div>
 
+            {selectedIds.length > 0 && (
+              <div className="mt-[10px] flex flex-wrap items-center gap-[10px] rounded-[6px] border border-[#fecaca] bg-[#fef2f2] px-[12px] py-[8px]">
+                <span className="text-[10.5px] font-bold text-[#991b1b]">
+                  {selectedIds.length} of {filteredRows.length} selected
+                </span>
+                {selectedIds.length < filteredRows.length && (
+                  <button
+                    type="button"
+                    onClick={handleSelectAllFiltered}
+                    className="text-[10px] font-semibold text-[#218DAE] hover:underline"
+                  >
+                    Select all {filteredRows.length} matching this filter
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={handleClearSelection}
+                  className="text-[10px] font-semibold text-[#64748b] hover:underline"
+                >
+                  Clear selection
+                </button>
+                <button
+                  type="button"
+                  onClick={handleBulkDelete}
+                  disabled={bulkDeleting}
+                  className="ml-auto inline-flex h-[32px] items-center justify-center gap-[6px] rounded-[6px] bg-[#dc2626] px-[14px] text-[10.5px] font-bold text-white shrink-0 hover:bg-[#b91c1c] disabled:opacity-60"
+                >
+                  <Trash2 className="h-[13px] w-[13px]" />
+                  {bulkDeleting ? "Deleting..." : `Delete Selected (${selectedIds.length})`}
+                </button>
+              </div>
+            )}
+
             {/* MEDIA DATA: TABLE VIEW */}
             {viewMode === "table" ? (
               <div className="mt-[12px] flex min-h-0 flex-1 flex-col overflow-hidden rounded-[7px] bg-white border border-[#e8e5df]">
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[920px] border-collapse text-left">
                     <thead>
-                      <tr className="h-[32px] border-b border-[#e8e5df] bg-[#233D4D]">
+                      <tr className="h-[32px] border-b border-[#e8e5df] bg-[#111844]">
                         <th className="w-[42px] rounded-tl-[6px] px-[12px] py-[6px] text-center">
                           <input
                             type="checkbox"
@@ -1185,7 +1678,7 @@ export default function MediaLibraryPage() {
 
                               <td className="px-[12px] py-[8px] whitespace-nowrap">
                                 <span className="text-[8px] font-semibold text-[#293681]">
-                                  #{item.id}
+                                  #{item.order ?? item.id}
                                 </span>
                               </td>
 
@@ -1300,71 +1793,47 @@ export default function MediaLibraryPage() {
                   </table>
                 </div>
 
-                {/* Table Footer Stats & Pagination (Staff & Exhibitor List style) */}
-                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#e8e5df] bg-[#fafafa] px-[12px] py-[6px] text-[8px]">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-[#2563eb]">
-                      Total Photos: <strong className="font-bold text-[#1d4ed8]">{filteredRows.length}</strong>
-                    </span>
-                    <span className="text-[7.5px] text-[#8a92a0]">
-                      (Showing {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, filteredRows.length)} of {filteredRows.length})
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-[4px]">
-                    <button
-                      type="button"
-                      disabled={currentPage <= 1}
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      className="flex h-[22px] w-[22px] items-center justify-center rounded-[4px] border border-[#d8dce2] bg-white text-[#334155] transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
-                      title="Previous Page"
-                    >
-                      <ChevronLeft className="h-3 w-3" />
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                      <button
-                        key={pageNum}
-                        type="button"
-                        onClick={() => setCurrentPage(pageNum)}
-                        className={`flex h-[22px] min-w-[22px] px-1.5 items-center justify-center rounded-[4px] border text-[8px] font-bold transition ${
-                          currentPage === pageNum
-                            ? "border-[#233D4D] bg-[#233D4D] text-white shadow-xs"
-                            : "border-[#d8dce2] bg-white text-[#334155] hover:bg-slate-50"
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    ))}
-
-                    <button
-                      type="button"
-                      disabled={currentPage >= totalPages}
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      className="flex h-[22px] w-[22px] items-center justify-center rounded-[4px] border border-[#d8dce2] bg-white text-[#334155] transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
-                      title="Next Page"
-                    >
-                      <ChevronRight className="h-3 w-3" />
-                    </button>
-
-                    <select
-                      value={pageSize}
-                      onChange={(e) => {
-                        setPageSize(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                      className="ml-2 h-[22px] rounded-[4px] border border-[#d8dce2] bg-white px-[6px] text-[8px] font-semibold text-[#334155] outline-none"
-                    >
-                      <option value={10}>10 / page</option>
-                      <option value={20}>20 / page</option>
-                      <option value={50}>50 / page</option>
-                    </select>
-                  </div>
-                </div>
+                <GalleryPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  totalCount={filteredRows.length}
+                  onPageChange={setCurrentPage}
+                  onPageSizeChange={(size) => {
+                    setPageSize(size);
+                    setCurrentPage(1);
+                  }}
+                />
+              </div>
+            ) : viewMode === "skeleton" ? (
+              /* SKELETON / LIVE LAYOUT VIEW — mirrors the public Gallery /
+                 Glimpses page's bento layout exactly, filled photos draggable
+                 onto each other to swap their live display position. */
+              <div className="mt-[12px] rounded-[7px] bg-white border border-[#e8e5df] p-3">
+                <SkeletonBentoView
+                  items={layoutPageRows}
+                  slotCount={pageSize}
+                  allItems={mediaItems}
+                  selectedId={selectedId}
+                  onSelect={setSelectedId}
+                  onSwapOrder={handleSwapOrder}
+                />
+                <GalleryPagination
+                  currentPage={layoutPage}
+                  totalPages={layoutTotalPages}
+                  pageSize={pageSize}
+                  totalCount={layoutRows.length}
+                  onPageChange={setCurrentPage}
+                  onPageSizeChange={(size) => {
+                    setPageSize(size);
+                    setCurrentPage(1);
+                  }}
+                />
               </div>
             ) : (
               /* GRID VIEW */
-              <div className="mt-[12px] grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              <div className="mt-[12px] rounded-[7px] bg-white border border-[#e8e5df] p-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                 {paginatedRows.map((item) => {
                   const isCurrent = selectedId === item.id;
                   return (
@@ -1396,6 +1865,18 @@ export default function MediaLibraryPage() {
                     </div>
                   );
                 })}
+              </div>
+              <GalleryPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                totalCount={filteredRows.length}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setCurrentPage(1);
+                }}
+              />
               </div>
             )}
           </div>
@@ -1469,6 +1950,12 @@ export default function MediaLibraryPage() {
                         {selected.uploadedBy || loggedInAdminName}
                       </span>
                     </p>
+                    <p>
+                      <span className="font-semibold text-[#69758c]">Alt Text:</span>{" "}
+                      <span className="font-semibold text-[#34425e]">
+                        {selected.imageAlt || selected.title}
+                      </span>
+                    </p>
                   </div>
 
                   {/* ASSET URL DISPLAY WITH COPY BUTTON */}
@@ -1492,15 +1979,24 @@ export default function MediaLibraryPage() {
                     </div>
                   </div>
 
-                  {/* ACTIONS: EDIT, REPLACE, DELETE */}
-                  <div className="mt-[14px] flex items-center gap-2 border-t border-[#f0f2f5] pt-3">
+                  {/* ACTIONS: EDIT, CROP, REPLACE, DELETE */}
+                  <div className="mt-[14px] grid grid-cols-2 gap-2 border-t border-[#f0f2f5] pt-3">
                     <button
                       type="button"
                       onClick={() => handleOpenEdit(selected)}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-[4px] border border-[#d8dce2] bg-white py-1.5 text-[8.5px] font-bold text-[#334155] shadow-xs transition hover:bg-slate-50"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-[4px] border border-[#d8dce2] bg-white py-1.5 text-[8.5px] font-bold text-[#334155] shadow-xs transition hover:bg-slate-50"
                     >
                       <Pencil className="h-3 w-3 text-blue-600" />
                       Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleOpenCropForExisting}
+                      className="inline-flex items-center justify-center gap-1.5 rounded-[4px] border border-[#d8dce2] bg-white py-1.5 text-[8.5px] font-bold text-[#334155] shadow-xs transition hover:bg-slate-50"
+                    >
+                      <Crop className="h-3 w-3 text-violet-600" />
+                      Crop
                     </button>
 
                     <input
@@ -1515,7 +2011,7 @@ export default function MediaLibraryPage() {
                       type="button"
                       onClick={() => replaceFileRef.current?.click()}
                       disabled={isUploading}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-[4px] border border-[#d8dce2] bg-white py-1.5 text-[8.5px] font-bold text-[#334155] shadow-xs transition hover:bg-slate-50 disabled:opacity-50"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-[4px] border border-[#d8dce2] bg-white py-1.5 text-[8.5px] font-bold text-[#334155] shadow-xs transition hover:bg-slate-50 disabled:opacity-50"
                     >
                       <RefreshCw className={`h-3 w-3 text-emerald-600 ${isUploading ? "animate-spin" : ""}`} />
                       {isUploading ? "Uploading..." : "Replace"}
@@ -1524,7 +2020,7 @@ export default function MediaLibraryPage() {
                     <button
                       type="button"
                       onClick={() => handleDelete(selected)}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-[4px] border border-rose-200 bg-rose-50 py-1.5 text-[8.5px] font-bold text-rose-700 shadow-xs transition hover:bg-rose-100"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-[4px] border border-rose-200 bg-rose-50 py-1.5 text-[8.5px] font-bold text-rose-700 shadow-xs transition hover:bg-rose-100"
                     >
                       <Trash2 className="h-3 w-3 text-rose-600" />
                       Delete
@@ -1542,34 +2038,6 @@ export default function MediaLibraryPage() {
                   </p>
                 </div>
               )}
-            </section>
-
-            {/* FILE USAGE CARD */}
-            <section
-              className="bg-white px-[14px] py-[13px]"
-              style={{
-                borderRadius: "0px",
-                boxShadow:
-                  "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset",
-              }}
-            >
-              <h2 className="text-[12px] font-bold text-[#19274a]">
-                File Usage
-              </h2>
-              <p className="mt-[6px] text-[8.5px] font-medium text-[#64748b]">
-                Active in 5 website components
-              </p>
-              <div className="mt-[8px] flex flex-wrap gap-1.5">
-                {["Home Highlights", "Gallery Glimpses", "Expo Showcase", "Conference", "Awards Gallery"].map((page) => (
-                  <span
-                    key={page}
-                    className="inline-flex items-center gap-1 rounded-[3px] bg-[#f1f5f9] px-2 py-0.5 text-[8px] font-semibold text-[#334155]"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    {page}
-                  </span>
-                ))}
-              </div>
             </section>
 
             {/* QUICK ACTIONS CARD */}
@@ -1596,7 +2064,7 @@ export default function MediaLibraryPage() {
                 </button>
 
                 <a
-                  href="http://localhost:3002/gallery"
+                  href={WEBSITE_GALLERY_URL}
                   target="_blank"
                   rel="noreferrer"
                   className="flex h-[32px] items-center justify-center gap-[6px] rounded-[5px] border border-[#cbd5e1] bg-white text-[8.5px] font-bold text-[#334155] shadow-xs transition hover:bg-slate-50 active:scale-95"
@@ -1661,6 +2129,29 @@ export default function MediaLibraryPage() {
               onChange={(e) => setFormTitle(e.target.value)}
               placeholder="e.g. Grand Inaugural Ceremony (Defaults to Category)"
             />
+
+            {/* ALT TEXT (Optional) */}
+            <Input
+              label="Image Alt Text (Optional)"
+              value={formImageAlt}
+              onChange={(e) => setFormImageAlt(e.target.value)}
+              placeholder="Describe the photo for screen readers & SEO (Defaults to Title)"
+            />
+
+            {/* ORDER — auto-filled with the next position, editable to reorder manually */}
+            <div>
+              <Label>Order</Label>
+              <input
+                type="number"
+                min={1}
+                value={formOrder}
+                onChange={(e) => {
+                  setFormOrder(Math.max(1, Number(e.target.value) || 1));
+                  setFormOrderTouched(true);
+                }}
+                className="h-[38px] w-full rounded-[4px] border border-surface-border bg-surface-card px-[12px] text-[11px] font-semibold text-[#1e293b] outline-none transition-all hover:border-[#FF9D50] focus:border-[#FF9D50] [box-shadow:rgba(0,0,0,0.02)_0px_1px_3px_0px,rgba(27,31,35,0.15)_0px_0px_0px_1px]"
+              />
+            </div>
 
             {/* SELECT YEAR & SELECT CATEGORY GRID */}
             <div className="grid grid-cols-2 gap-3">
@@ -1756,9 +2247,14 @@ export default function MediaLibraryPage() {
                         if (file) {
                           if (!formTitle) setFormTitle(file.name.replace(/\.[^/.]+$/, ""));
                           setFormFileSize(`${(file.size / 1024).toFixed(1)} KB`);
-                          const cloudUrl = await uploadToCloudinary(file);
-                          setFormImageUrl(cloudUrl);
-                          showSuccess("Uploaded directly to Cloudinary!");
+                          try {
+                            const cloudUrl = await uploadToCloudinary(file);
+                            setFormImageUrl(cloudUrl);
+                            showSuccess("Image uploaded!");
+                          } catch (err) {
+                            showUploadError(err);
+                            e.target.value = "";
+                          }
                         }
                       }}
                     />
@@ -1784,12 +2280,34 @@ export default function MediaLibraryPage() {
                         </>
                       )}
                     </button>
+
+                    <button
+                      type="button"
+                      disabled={isUploading || !formImageUrl}
+                      onClick={handleOpenCropForForm}
+                      className="inline-flex h-[28px] items-center gap-1.5 border border-[#cbd5e1] bg-[#f8fafc] px-3 text-[11px] font-semibold text-[#334155] transition hover:bg-slate-100 disabled:opacity-50 active:scale-95"
+                      style={{
+                        borderRadius: "4px",
+                        boxShadow: "rgba(0,0,0,0.02) 0px 1px 3px 0px, rgba(27,31,35,0.15) 0px 0px 0px 1px",
+                      }}
+                    >
+                      <Crop className="h-3 w-3 text-violet-600" />
+                      Crop
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </Modal>
+
+        {/* MODAL: CROP PHOTO (shared by the Upload/Edit form and the right-sidebar "Crop" action) */}
+        <CropImageModal
+          isOpen={isCropModalOpen}
+          imageSrc={cropImageSrc}
+          onCancel={handleCloseCropModal}
+          onCropped={handleCropApplied}
+        />
 
         {/* MODAL 2: MANAGE CATEGORIES & YEARS MODAL */}
         <Modal
