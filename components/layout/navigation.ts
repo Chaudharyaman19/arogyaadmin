@@ -43,6 +43,9 @@ import {
   Users,
   type LucideIcon,
   MessageSquareText,
+  CalendarDays,
+  PieChart,
+  UserRound,
 } from "lucide-react";
 
 export interface NavItem {
@@ -74,6 +77,27 @@ export const NAV_SECTIONS: NavSection[] = [
     items: [
       { label: "Engagement & Leads", href: "/engagement-leads", icon: Users, badge: "48" },
       { label: "Contact Enquiry", href: "/contact-enquiry", icon: MessageSquareText },
+      { label: "Delegates Overview", href: "/delegates-overview", icon: PieChart },
+      {
+        label: "Single Registration",
+        icon: UserRound,
+        children: [
+          { label: "All Days", href: "/delegates/single/all", icon: CalendarDays },
+          { label: "Day 1", href: "/delegates/single/day-1", icon: CalendarDays },
+          { label: "Day 2", href: "/delegates/single/day-2", icon: CalendarDays },
+          { label: "Day 3", href: "/delegates/single/day-3", icon: CalendarDays },
+        ],
+      },
+      {
+        label: "Group Registration",
+        icon: UsersRound,
+        children: [
+          { label: "All Days", href: "/delegates/group/all", icon: CalendarDays },
+          { label: "Day 1", href: "/delegates/group/day-1", icon: CalendarDays },
+          { label: "Day 2", href: "/delegates/group/day-2", icon: CalendarDays },
+          { label: "Day 3", href: "/delegates/group/day-3", icon: CalendarDays },
+        ],
+      },
       { label: "Forms & Submissions", href: "/forms-submissions", icon: Mail, badge: "125" },
       { label: "Help Requests", href: "/requests", icon: ClipboardList, badge: "210" },
       { label: "Partners & CSR Enquiries", href: "/enquiries?category=csr", icon: Handshake, badge: "36" },

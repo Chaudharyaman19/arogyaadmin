@@ -9,6 +9,31 @@ export const defaultVisitorRegistrationSections: LandingSectionContent[] = [];
 // 3. BUYER REGISTRATION PAGE SECTIONS
 export const defaultBuyerRegistrationSections: LandingSectionContent[] = [];
 
+// 3A. REGISTER NOW PAGE SECTIONS (/register-now) — each one is edited by its own
+// backend-wired editor (components/cms/editor/RegisterNowEditors.tsx)
+export const defaultRegisterNowSections: LandingSectionContent[] = [
+  { key: "register-hero", name: "Register Now Hero Banner", enabled: true },
+  { key: "register-stats", name: "Stats Band (Counters)", enabled: true },
+  { key: "register-cards", name: "Registration Cards (Single & Group)", enabled: true },
+  { key: "register-event-details", name: "Event Details Card", enabled: true },
+  { key: "register-why-attend", name: "Why Attend Card", enabled: true },
+  { key: "register-need-help", name: "Need Help Card", enabled: true },
+];
+
+// 3A-2. SINGLE & GROUP REGISTRATION PAGES (/new-single-registration, /new-group-registration).
+// Both pages share the Register Now hero, the delegate passes and "Your Registration Includes".
+export const defaultSingleRegistrationSections: LandingSectionContent[] = [
+  { key: "reg-shared-hero", name: "Hero Banner & Stats (same as Register Now)", enabled: true },
+  { key: "reg-shared-fees", name: "Registration Fees & Passes", enabled: true },
+  { key: "registration-includes", name: "Your Registration Includes", enabled: true },
+];
+
+export const defaultGroupRegistrationSections: LandingSectionContent[] = [
+  { key: "reg-shared-hero", name: "Hero Banner & Stats (same as Register Now)", enabled: true },
+  { key: "reg-shared-fees", name: "Registration Fees & Passes", enabled: true },
+  { key: "registration-includes-common", name: "Your Registration Includes (common with Single Registration)", enabled: true },
+];
+
 // 3B. DELEGATE REGISTRATION PAGE SECTIONS (/delegate-registration)
 // Mirrors the live website sections rendered by DelegateRegistrationClient:
 // DelegateHero > RegistrationStepper > DelegateInfoSections (+ RegistrationFees) > DelegateCommittees > DelegateFooter

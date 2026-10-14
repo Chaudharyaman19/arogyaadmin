@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { getBackendUrl } from "@/lib/api";
-import { advancedSeoApi, type AdvancedSeoData, type SeoFile } from "@/lib/advancedSeoApi";
+import { advancedSeoApi, type AdvancedSeoData, type RootFilesStatus, type SeoFile } from "@/lib/advancedSeoApi";
 import typography from "../pages/PagesTypography.module.css";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://arogya.namogange.org";
@@ -142,6 +142,7 @@ export default function AdvancedSeoPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [allowIndex, setAllowIndex] = useState(true);
   const [allowFollow, setAllowFollow] = useState(true);
+  const [rootFiles, setRootFiles] = useState<RootFilesStatus | null>(null);
 
   const [socialLinks, setSocialLinks] = useState({
     facebook: "",
@@ -164,13 +165,20 @@ export default function AdvancedSeoPage() {
 
   const backendUrl = getBackendUrl();
 
+  const applyFiles = (data: Pick<AdvancedSeoData, "seoFiles" | "rootFiles">) => {
+    setSeoFiles(data.seoFiles || []);
+    setRootFiles(data.rootFiles || null);
+  };
+
   const fetchData = useCallback(() => {
     const applySettings = (data: AdvancedSeoData) => {
       setScripts({
         headerScripts: data.headerScripts || "",
         footerScripts: data.footerScripts || "",
       });
-      setSeoFiles(data.seoFiles || []);
+      applyFiles(data);
+      setAllowIndex(data.allowIndex !== false);
+      setAllowFollow(data.allowFollow !== false);
       setTrackingKeys({
         ga4MeasurementId: data.ga4MeasurementId || "",
         gtmContainerId: data.gtmContainerId || "",
@@ -214,6 +222,8 @@ export default function AdvancedSeoPage() {
       const data = await advancedSeoApi.saveScripts({
         ...scripts,
         ...trackingKeys,
+        allowIndex,
+        allowFollow,
         socialLinks,
       });
 
@@ -224,12 +234,15 @@ export default function AdvancedSeoPage() {
           headerScripts: data.headerScripts ?? scripts.headerScripts,
           footerScripts: data.footerScripts ?? scripts.footerScripts,
         });
+        // Saved values as the backend cleaned them (e.g. the code taken out of a pasted <meta> tag)
         setTrackingKeys({
-          ga4MeasurementId: data.ga4MeasurementId || trackingKeys.ga4MeasurementId,
-          gtmContainerId: data.gtmContainerId || trackingKeys.gtmContainerId,
-          googleSearchConsoleVerification:
-            data.googleSearchConsoleVerification || trackingKeys.googleSearchConsoleVerification,
+          ga4MeasurementId: data.ga4MeasurementId ?? "",
+          gtmContainerId: data.gtmContainerId ?? "",
+          googleSearchConsoleVerification: data.googleSearchConsoleVerification ?? "",
         });
+        setAllowIndex(data.allowIndex !== false);
+        setAllowFollow(data.allowFollow !== false);
+        applyFiles(data);
         setSocialLinks((prev) => ({
           ...prev,
           ...data.socialLinks,
@@ -266,13 +279,7 @@ export default function AdvancedSeoPage() {
 
     try {
       setUploadingFile(true);
-      const response = await advancedSeoApi.uploadFile(file);
-
-      if (Array.isArray(response)) {
-        setSeoFiles(response as SeoFile[]);
-      } else {
-        await fetchData();
-      }
+      applyFiles(await advancedSeoApi.uploadFile(file));
 
       showSuccess(`${file.name} uploaded successfully and active at root!`);
     } catch (error) {
@@ -286,7 +293,11 @@ export default function AdvancedSeoPage() {
   const handleDeleteFile = async (fileId: string, fileName: string) => {
     const result = await Swal.fire({
       title: "Delete this SEO file?",
-      html: `<p style="color:#e2e8f0;font-size:0.9rem;">Are you sure you want to permanently delete <strong>${fileName}</strong> from server storage?<br/>Crawlers requesting this root path will receive a 404.</p>`,
+      html: `<p style="color:#e2e8f0;font-size:0.9rem;">Are you sure you want to permanently delete <strong>${fileName}</strong>?<br/>${
+        fileName === "robots.txt" || fileName === "sitemap.xml"
+          ? "The website goes back to the auto-generated " + fileName + "."
+          : "Crawlers requesting this root path will receive a 404."
+      }</p>`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, Delete File",
@@ -300,12 +311,7 @@ export default function AdvancedSeoPage() {
     if (!result.isConfirmed) return;
 
     try {
-      const response = await advancedSeoApi.deleteFile(fileId);
-      if (Array.isArray(response)) {
-        setSeoFiles(response as SeoFile[]);
-      } else {
-        setSeoFiles((prev) => prev.filter((f) => f._id !== fileId && f.fileName !== fileId));
-      }
+      applyFiles(await advancedSeoApi.deleteFile(fileId));
 
       showSuccess(`"${fileName}" deleted successfully.`);
     } catch (error) {
@@ -343,7 +349,8 @@ export default function AdvancedSeoPage() {
 
   // Quick Template Injectors
   const insertGtmTemplate = (env: "local" | "live") => {
-    const gtmId = env === "local" ? "GTM-TEST001" : "GTM-AROGYA";
+    const typedId = trackingKeys.gtmContainerId.trim();
+    const gtmId = env === "live" && /^GTM-[A-Z0-9]+$/i.test(typedId) ? typedId : env === "local" ? "GTM-TEST001" : "GTM-AROGYA";
     const headSnippet = `<!-- Google Tag Manager (${env.toUpperCase()}) -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -736,6 +743,57 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </span>
               </div>
 
+              {/* robots.txt + sitemap.xml: auto-generated unless a file with that name is uploaded */}
+              {rootFiles && (
+                <div className="mb-5 space-y-2">
+                  {[
+                    {
+                      name: "robots.txt",
+                      source: rootFiles.robots.source,
+                      detail:
+                        rootFiles.robots.source === "uploaded"
+                          ? "Your uploaded file is live. Delete it to go back to the auto one."
+                          : "Auto-generated: allows all crawlers, blocks private delegate pages, links the sitemap.",
+                    },
+                    {
+                      name: "sitemap.xml",
+                      source: rootFiles.sitemap.source,
+                      detail:
+                        rootFiles.sitemap.source === "uploaded"
+                          ? "Your uploaded file is live (new blogs are not added to it). Delete it to go back to the auto one."
+                          : `Auto-generated: ${rootFiles.sitemap.pageCount} pages + ${rootFiles.sitemap.blogCount} blog posts. New blogs are added on their own.`,
+                    },
+                  ].map((item) => (
+                    <div key={item.name} className="flex items-start justify-between gap-3 border border-gray-200 bg-gray-50 p-3">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-gray-900 font-mono">/{item.name}</span>
+                          <span
+                            className={`text-[9.5px] px-1.5 rounded font-semibold border ${
+                              item.source === "uploaded"
+                                ? "text-blue-800 bg-blue-50 border-blue-200"
+                                : "text-emerald-800 bg-emerald-50 border-emerald-200"
+                            }`}
+                          >
+                            {item.source === "uploaded" ? "Uploaded" : "Auto"}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-[10.5px] leading-snug text-gray-500">{item.detail}</p>
+                      </div>
+                      <a
+                        href={`${backendUrl}/${item.name}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="shrink-0 p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        title={`Open ${item.name}`}
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {/* Upload Drag & Drop Area */}
               <div className="mb-5">
                 <label className="block text-xs font-bold text-gray-700 mb-1.5">
@@ -874,9 +932,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <p className="text-[11px] text-orange-800 leading-relaxed font-medium">
                   Files uploaded here are served directly from the root domain (e.g.,{" "}
                   <code className="bg-orange-100 px-1 py-0.5 rounded font-mono text-[10px]">
-                    {SITE_HOST}/sitemap.xml
+                    {SITE_HOST}/google123.html
                   </code>
-                  ) for search crawlers and search console verification.
+                  ) for search crawlers and search console verification. Uploading robots.txt or sitemap.xml
+                  replaces the auto-generated one.
                 </p>
               </div>
             </section>

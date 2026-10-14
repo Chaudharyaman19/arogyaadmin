@@ -17,6 +17,9 @@ import {
   defaultBookAStandSections,
   defaultVisitorRegistrationSections,
   defaultDelegateRegistrationSections,
+  defaultRegisterNowSections,
+  defaultSingleRegistrationSections,
+  defaultGroupRegistrationSections,
   defaultBuyerRegistrationSections,
   defaultTermsAndConditionsSections,
   defaultPrivacyPolicySections,
@@ -52,6 +55,9 @@ export function getDefaultSectionsForPage(page: any): Array<Record<string, any>>
   const title = (page.title || "").toLowerCase();
   const slug = (page.slug || "").toLowerCase();
   if (key === "careerspage" || slug === "/careers") return defaultCareersSections;
+  if (key === "registernowpage" || slug === "/register-now") return defaultRegisterNowSections;
+  if (key === "newsingleregistrationpage" || slug === "/new-single-registration") return defaultSingleRegistrationSections;
+  if (key === "newgroupregistrationpage" || slug === "/new-group-registration") return defaultGroupRegistrationSections;
   if (key === "msmeeligibilitycheckpage" || slug.includes("eligibility-check")) return defaultMsmeEligibilityCheckSections;
   if (key === "msmeapplypaymentpage" || slug.includes("participate/msme/apply/payment")) return defaultMsmeApplyPaymentSections;
   if (key === "msmeapplyparticipationdetailspage" || slug.includes("participation-details")) return defaultMsmeParticipationDetailsSections;

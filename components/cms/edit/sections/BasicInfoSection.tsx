@@ -19,6 +19,17 @@ import { useCmsEdit } from "../CmsEditContext";
 /* "Select Template" lists every Pages & CMS page (value = its config key); this one only clears the sections */
 const BLANK_TEMPLATE = "__blank";
 
+/* Pages left out of "Select Template": delegate registration happens through Register Now,
+   and the login / dashboard / profile / receipt / verify pages have no editable sections */
+const HIDDEN_TEMPLATES = [
+  "delegateRegistrationPage",
+  "loginPage",
+  "delegateDashboardPage",
+  "delegateProfilePage",
+  "paymentReceiptPage",
+  "verifyDelegatePage",
+];
+
 export function BasicInfoSection() {
   const { form, page, pages, router, setSectionsDraft, updateField } = useCmsEdit();
 
@@ -173,7 +184,9 @@ export function BasicInfoSection() {
               }
             }}
             options={[
-              ...pages.map((p) => ({ label: `${p.title} (${p.slug})`, value: p.configKey ?? "" })),
+              ...pages
+                .filter((p) => !HIDDEN_TEMPLATES.includes(p.configKey ?? "") || p.configKey === page.configKey)
+                .map((p) => ({ label: `${p.title} (${p.slug})`, value: p.configKey ?? "" })),
               { label: "Blank Template (clear the sections)", value: BLANK_TEMPLATE },
             ]}
           />

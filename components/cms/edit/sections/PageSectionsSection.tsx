@@ -49,6 +49,16 @@ import { PartnersHeroEditor } from "@/components/cms/editor/PartnersHeroEditor";
 import { PartnersCtaEditor } from "@/components/cms/editor/PartnersCtaEditor";
 import { ContactHeroEditor } from "@/components/cms/editor/ContactHeroEditor";
 import { BlogHeroEditor, BlogCategoriesEditor, BlogStatsEditor } from "@/components/cms/editor/BlogPageEditors";
+import {
+  RegisterNowHeroEditor,
+  RegisterNowStatsEditor,
+  RegisterNowEventDetailsEditor,
+  RegisterNowWhyAttendEditor,
+  RegisterNowNeedHelpEditor,
+  RegisterNowCardsNote,
+  RegistrationIncludesEditor,
+  SharedSectionNote,
+} from "@/components/cms/editor/RegisterNowEditors";
 import { useCmsEdit } from "../CmsEditContext";
 
 /* Sections that own more than one repeatable list. */
@@ -100,6 +110,28 @@ const BACKEND_SECTIONS: Record<string, ReactNode> = {
   "blog-hero": <BlogHeroEditor />,
   "blog-categories": <BlogCategoriesEditor />,
   "blog-stats": <BlogStatsEditor />,
+  "register-hero": <RegisterNowHeroEditor />,
+  "register-stats": <RegisterNowStatsEditor />,
+  "register-cards": <RegisterNowCardsNote />,
+  "register-event-details": <RegisterNowEventDetailsEditor />,
+  "register-why-attend": <RegisterNowWhyAttendEditor />,
+  "register-need-help": <RegisterNowNeedHelpEditor />,
+  "reg-shared-hero": (
+    <SharedSectionNote href="/pages/register-now/edit" linkText="Pages & CMS → Register Now">
+      This page shows the same banner and stats band as the Register Now page. Edit them on
+    </SharedSectionNote>
+  ),
+  "reg-shared-fees": (
+    <SharedSectionNote href="/delegate-passes" linkText="Delegate Passes">
+      The passes and prices in the Registration Fees box (Delegate Pass, Paper / Poster Presentation) are managed on
+    </SharedSectionNote>
+  ),
+  "registration-includes": <RegistrationIncludesEditor />,
+  "registration-includes-common": (
+    <SharedSectionNote href="/pages/single-registration/edit" linkText="Pages & CMS → Single Registration">
+      This is the common "Your Registration Includes" section — the Single and Group registration pages show the same one. Edit it on
+    </SharedSectionNote>
+  ),
 };
 
 function getListKeys(section: Record<string, any>): string[] {
