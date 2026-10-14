@@ -201,14 +201,6 @@ export const SECTION_FIELD_LIMITS: Record<string, FieldLimits> = {
     subheading: 60,
     description: 300,
   },
-  "gallery-filters": {
-    breadcrumbHome: 12,
-    breadcrumbGallery: 12,
-    breadcrumbCurrent: 16,
-    searchPlaceholder: 30,
-    searchButton: 12,
-    moreButton: 10,
-  },
   "gallery-videos": {
     heading: 24,
     shareTitle: 24,
@@ -352,19 +344,9 @@ export const SECTION_ITEM_LIMITS: Record<string, FieldLimits> = {
   "paper-why-choose": {
     title: 32,
   },
-  "gallery-filters": {
-    label: 12,
-  },
-  "gallery-categories": {
-    title: 24,
-  },
   "gallery-counters": {
     value: 10,
     label: 26,
-  },
-  "gallery-videos": {
-    title: 30,
-    sourceType: 12,
   },
   "blog-categories": {
     title: 26,

@@ -39,6 +39,61 @@ export type PartnerLogoInput = {
   fileSize?: string;
 };
 
+/** Hero banner at the top of the website's Partners & Supporters page. */
+export interface PartnersHero {
+  /** First line of the page's H1 (blue) */
+  blueTitle: string;
+  /** Second line of the page's H1 (green) */
+  greenTitle: string;
+  description: string;
+  bgImage: string;
+  bgImageAlt: string;
+  badge1Title: string;
+  badge1Icon: string;
+  badge1IconAlt: string;
+  badge2Title: string;
+  badge2Icon: string;
+  badge2IconAlt: string;
+  badge3Title: string;
+  badge3Icon: string;
+  badge3IconAlt: string;
+  updatedAt?: string;
+  updatedBy?: string;
+}
+
+/** "Become a Partner" banner at the bottom of the page. */
+export interface PartnersCta {
+  headingWhite: string;
+  headingGreen: string;
+  subtitle: string;
+  buttonLabel: string;
+  /** "/contact" (a page on the website) or a full https:// link */
+  buttonHref: string;
+  image: string;
+  imageAlt: string;
+  updatedAt?: string;
+  updatedBy?: string;
+}
+
+/** Uploads to Cloudinary (arogya_2026/partners/page) and returns the image URL */
+const uploadPageImage = (file: File) => {
+  const form = new FormData();
+  form.append("file", file);
+  return api.postForm<{ url: string; fileSize: string }>("/partner-logos/page-upload", form);
+};
+
+export const partnersHeroApi = {
+  get: () => api.get<PartnersHero>("/partner-logos/hero"),
+  save: (input: Omit<PartnersHero, "updatedAt" | "updatedBy">) => api.put<PartnersHero>("/partner-logos/hero", input),
+  upload: uploadPageImage,
+};
+
+export const partnersCtaApi = {
+  get: () => api.get<PartnersCta>("/partner-logos/cta"),
+  save: (input: Omit<PartnersCta, "updatedAt" | "updatedBy">) => api.put<PartnersCta>("/partner-logos/cta", input),
+  upload: uploadPageImage,
+};
+
 export const partnerLogosApi = {
   categories: () => api.get<PartnerCategory[]>("/partner-logos/categories"),
   createCategory: (input: { name: string; color?: string }) =>

@@ -177,9 +177,6 @@ export function BasicInfoSection() {
               { label: "Blank Template (clear the sections)", value: BLANK_TEMPLATE },
             ]}
           />
-          <p className="mt-[3px] text-[9px] font-medium text-[#64748b]">
-            Pick a page to open it with its own sections and SEO Information.
-          </p>
         </div>
 
         <div>

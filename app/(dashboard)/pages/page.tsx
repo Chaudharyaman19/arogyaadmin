@@ -264,9 +264,11 @@ export default function PagesCmsPage() {
 
   const [toastMessage, setToastMessage] = useState<{ title: string; type: "success" | "error" } | null>(null);
 
-  const handleToggleStatus = async (isActive: boolean) => {
-    if (!selectedPage || !selectedPage.configKey) return;
-    if (!isActive && selectedPage.type === "home") {
+  // Publishes / unpublishes a page: the selected one (Page Details toggle) or the row whose
+  // Status dropdown was changed in the table.
+  const handleToggleStatus = async (isActive: boolean, target: CmsPage | null = selectedPage) => {
+    if (!target || !target.configKey) return;
+    if (!isActive && target.type === "home") {
       setToastMessage({ title: "The Home page cannot be unpublished.", type: "error" });
       setTimeout(() => setToastMessage(null), 4000);
       return;
@@ -274,8 +276,8 @@ export default function PagesCmsPage() {
     const newStatus = isActive ? "Published" : "Draft";
     const oldStatus = isActive ? "Draft" : "Published";
     const applyStatus = (status: "Published" | "Draft", extra: Partial<CmsPage> = {}) => {
-      setPages((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, status, ...extra } : p)));
-      setSelectedPage((prev: CmsPage | null) => (prev ? { ...prev, status, ...extra } : null));
+      setPages((prev) => prev.map((p) => (p.id === target.id ? { ...p, status, ...extra } : p)));
+      setSelectedPage((prev: CmsPage | null) => (prev && prev.id === target.id ? { ...prev, status, ...extra } : prev));
     };
 
     // Immediate feedback, then save to the backend — the website shows a 404 for Draft pages
@@ -283,7 +285,7 @@ export default function PagesCmsPage() {
     applyStatus(newStatus);
 
     try {
-      const saved = await sitePagesApi.setPublished(selectedPage.configKey, isActive);
+      const saved = await sitePagesApi.setPublished(target.configKey, isActive);
       applyStatus(newStatus, saved.updatedBy ? { updatedBy: saved.updatedBy, author: saved.updatedBy } : {});
       setToastMessage({
         title: isActive
@@ -861,7 +863,7 @@ export default function PagesCmsPage() {
                         }
                       }}
                       className={`grid min-h-[44px] w-full grid-cols-[minmax(0,2.7fr)_minmax(0,1.8fr)_minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1.15fr)_minmax(0,1.45fr)] items-center border-b border-[#f0f0ec] px-[10px] text-left transition last:border-b-0 ${selected
-                        ? "bg-[#E4DA72]/20"
+                        ? "bg-[#e8f5e9]"
                         : page.status !== "Published"
                           ? "bg-rose-50/60 hover:bg-rose-100/60"
                           : "bg-white hover:bg-slate-50"
@@ -910,21 +912,22 @@ export default function PagesCmsPage() {
                       {/* STATUS */}
 
                       <div className="min-w-0 px-[4px]">
-                        <span
-                          className={`inline-flex max-w-full items-center gap-[4px] whitespace-nowrap rounded-[4px] px-[6px] py-[3px] text-[7px] font-semibold ${page.status === "Published"
-                            ? "bg-[#edf6ee] text-[#327d50]"
-                            : "bg-rose-50 text-rose-700"
+                        {/* Active = live on the website, Inactive = hidden (saved to the backend straight away) */}
+                        <select
+                          value={page.status === "Published" ? "Active" : "Inactive"}
+                          disabled={!page.configKey}
+                          title={page.type === "home" ? "The Home page is always active" : "Change page status"}
+                          onClick={(event) => event.stopPropagation()}
+                          onKeyDown={(event) => event.stopPropagation()}
+                          onChange={(event) => handleToggleStatus(event.target.value === "Active", page)}
+                          className={`h-[20px] max-w-full cursor-pointer rounded-[4px] border px-[4px] text-[7px] font-semibold outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${page.status === "Published"
+                            ? "border-[#a5d6a7] bg-[#edf6ee] text-[#327d50]"
+                            : "border-[#ef9a9a] bg-[#ffebee] text-[#c62828]"
                             }`}
                         >
-                          <span
-                            className={`h-[4px] w-[4px] rounded-full ${page.status === "Published"
-                              ? "bg-[#308052]"
-                              : "bg-rose-600"
-                              }`}
-                          />
-
-                          {page.status === "Published" ? "Active" : "Inactive"}
-                        </span>
+                          <option value="Active" className="bg-white text-[#327d50]">Active</option>
+                          <option value="Inactive" className="bg-white text-[#c62828]">Inactive</option>
+                        </select>
                       </div>
 
                       {/* SCORE */}
@@ -1204,7 +1207,7 @@ export default function PagesCmsPage() {
                       "noopener,noreferrer",
                     )
                   }
-                  className="flex h-[29px] items-center justify-center gap-[6px] rounded-[5px] bg-[#1E104E] text-[8px] font-semibold text-white transition hover:opacity-90"
+                  className="flex h-[29px] items-center justify-center gap-[6px] rounded-[5px] bg-[#4B1426] text-[8px] font-semibold text-white transition hover:opacity-90"
                 >
                   <Pencil
                     className="h-[10px] w-[10px]"
