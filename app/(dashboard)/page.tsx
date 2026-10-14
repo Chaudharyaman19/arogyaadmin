@@ -77,6 +77,7 @@ import {
   DashboardPanelsProvider,
   type DashboardPanelsContextValue,
 } from "@/components/dashboard/DashboardPanelsContext";
+import ServiceRenewalChips from "@/components/dashboard/ServiceRenewalChips";
 
 /* =========================================================
    DASHBOARD
@@ -1146,6 +1147,19 @@ export default function DashboardPage() {
             pb-5
           "
         >
+          {/* DASHBOARD PAGE TITLE (ABOVE SEO HEALTH SCORE & STAT CARDS) */}
+          <div className="mb-2.5 mt-1 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-[17px] font-bold tracking-tight text-slate-800">
+                Dashboard
+              </h1>
+              <p className="text-[11px] font-medium text-slate-500">
+                Website performance &amp; activity
+              </p>
+            </div>
+            <ServiceRenewalChips />
+          </div>
+
           {/* =================================================
               IMPORTANT HEIGHT CHANGE
 

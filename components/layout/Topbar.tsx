@@ -56,8 +56,6 @@ import { ExternalService, Settings } from "@/lib/types";
 import {
   daysRemaining,
   isWithinPopupThreshold,
-  useCountdown,
-  formatCountdown,
 } from "@/lib/systemServiceUtils";
 import { NAV_SECTIONS } from "./navigation";
 import Modal from "@/components/ui/Modal";
@@ -108,8 +106,6 @@ const DATE_OPTIONS = [
 
 const FAR_FUTURE = "2099-01-01T00:00:00.000Z";
 
-type Countdown = ReturnType<typeof useCountdown>;
-
 
 
 function currentPageTitle(pathname: string): string {
@@ -139,86 +135,6 @@ function pagesSubRouteLabel(pathname: string): string | null {
   if (/^\/pages\/[^/]+\/edit$/.test(pathname)) return "Edit Page";
   if (/^\/pages\/[^/]+$/.test(pathname)) return "View Page";
   return null;
-}
-
-/** One renewal clock inside the status cluster. Kept deliberately quiet: the countdown is the
- * content, the icon and the small label only say which clock you are looking at. */
-function ServiceClock({
-  label,
-  name,
-  icon: Icon,
-  countdown,
-  expiryDate,
-  onClick,
-}: {
-  label: string;
-  name: string;
-  icon: typeof Globe2;
-  countdown: Countdown;
-  expiryDate: string;
-  onClick: () => void;
-}) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const days = daysRemaining(expiryDate);
-  const urgent = countdown.isExpired || days <= URGENT_DAYS;
-  // Light glass card (citycalls navbar recipe, light variant): translucent white, white
-  // hairline border, inset top highlight and a soft drop shadow. Only the accent changes with status.
-  const tone = countdown.isExpired
-    ? { accent: "text-red-600", glow: "bg-red-300/40", dot: "bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.7)] animate-pulse", ring: "ring-red-200" }
-    : urgent
-      ? { accent: "text-amber-600", glow: "bg-amber-200/50", dot: "bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.7)] animate-pulse", ring: "ring-amber-200" }
-      : { accent: "text-emerald-600", glow: "bg-emerald-200/50", dot: "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.7)]", ring: "ring-emerald-200" };
-  const parts = [
-    { value: mounted ? countdown.days : 0, unit: "Days" },
-    { value: mounted ? countdown.hours : 0, unit: "Hours" },
-    { value: mounted ? countdown.minutes : 0, unit: "Mins" },
-    { value: mounted ? countdown.seconds : 0, unit: "Secs" },
-  ];
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      suppressHydrationWarning
-      title={mounted ? `${name} — renews ${new Date(expiryDate).toLocaleDateString()}` : name}
-      className="group relative flex h-[52px] min-w-[212px] items-center gap-2.5 overflow-hidden rounded-2xl border border-white/80 bg-[linear-gradient(135deg,rgba(240,253,244,0.75),rgba(255,255,255,0.55))] pl-2.5 pr-3 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_8px_24px_-12px_rgba(0,41,27,0.25),0_0_0_1px_rgba(0,41,27,0.06)] backdrop-blur-2xl backdrop-saturate-150 transition-all duration-300 hover:-translate-y-px hover:shadow-[inset_0_1px_0_rgba(255,255,255,1),0_12px_28px_-12px_rgba(0,41,27,0.32),0_0_0_1px_rgba(0,41,27,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00291b]"
-    >
-      {/* soft status glow + glass sheen */}
-      <span aria-hidden className={`pointer-events-none absolute -right-6 -top-10 h-24 w-24 rounded-full blur-2xl ${tone.glow}`} />
-      <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/60 to-transparent" />
-
-      <span className={`relative grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_2px_6px_rgba(0,41,27,0.06)] ring-1 ${tone.ring} ${tone.accent}`}>
-        <Icon className="h-[18px] w-[18px]" />
-      </span>
-
-      <span className="relative min-w-0 flex-1">
-        <span className="mb-1 flex items-center justify-between gap-2">
-          <span className="truncate text-[10.5px] font-semibold tracking-wide text-[#00291b]">{label} Renews In</span>
-          <span className={`inline-flex shrink-0 items-center gap-1 rounded-full bg-white/80 px-2 py-[2px] text-[8px] font-semibold uppercase tracking-wider ring-1 ring-slate-200 ${tone.accent}`}>
-            <span className={`h-1.5 w-1.5 rounded-full ${tone.dot}`} />
-            {countdown.isExpired ? "Expired" : "Live"}
-          </span>
-        </span>
-        <span className="grid grid-cols-4 gap-1">
-          {parts.map((part) => (
-            <span
-              key={part.unit}
-              className="flex flex-col items-center justify-center rounded-lg bg-white/75 py-[3px] shadow-[inset_0_1px_0_rgba(255,255,255,1)] ring-1 ring-[#00291b]/10"
-            >
-              <span className="font-mono text-[13px] font-bold leading-none tabular-nums text-[#00291b]" suppressHydrationWarning>
-                {String(part.value).padStart(2, "0")}
-              </span>
-              <small className="mt-[2px] text-[6px] font-semibold uppercase leading-none tracking-wider text-slate-500">{part.unit}</small>
-            </span>
-          ))}
-        </span>
-      </span>
-    </button>
-  );
 }
 
 export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
@@ -375,13 +291,6 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
     )
     .sort(byExpiry);
 
-  const fallbackDomainExpiry = "2027-05-31T00:00:00.000Z";
-  const fallbackHostingExpiry = "2027-05-31T00:00:00.000Z";
-  const domainExpiryDate = domainService?.expiryDate ?? fallbackDomainExpiry;
-  const hostingExpiryDate = hostingService?.expiryDate ?? fallbackHostingExpiry;
-  const hostingCountdown = useCountdown(hostingExpiryDate);
-  const domainCountdown = useCountdown(domainExpiryDate);
-
   const urgentOtherCount = otherServices.filter(
     (service) => daysRemaining(service.expiryDate) <= URGENT_DAYS
   ).length;
@@ -413,14 +322,6 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
       EXPIRY_POPUP_DISMISS_KEY,
       new Date().toISOString().slice(0, 10)
     );
-  };
-
-  const goToServices = () => {
-    setExpiringOpen(false);
-    if (typeof window !== "undefined") {
-      sessionStorage.removeItem("arogya_system_services_grant");
-    }
-    router.push("/system-services");
   };
 
   const handleExpiringClick = () => {
@@ -591,26 +492,6 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
               </div>
             </motion.div>
           )}
-        </div>
-
-        {/* CENTER – DOMAIN & HOSTING EXPIRE COUNTDOWN TIMERS */}
-        <div className="hidden lg:flex items-center justify-center gap-2.5 min-w-0 px-2">
-          <ServiceClock
-            label="Domain"
-            name={domainService?.name || "arogya.namogange.org"}
-            icon={Globe2}
-            countdown={domainCountdown}
-            expiryDate={domainExpiryDate}
-            onClick={goToServices}
-          />
-          <ServiceClock
-            label="Hosting"
-            name={hostingService?.name || "Server Hosting"}
-            icon={Server}
-            countdown={hostingCountdown}
-            expiryDate={hostingExpiryDate}
-            onClick={goToServices}
-          />
         </div>
 
         {/* RIGHT – ICONS & PROFILE */}
