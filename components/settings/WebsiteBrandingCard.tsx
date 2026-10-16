@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ExternalLink, FileText, ImageIcon, Loader2, Save, Upload } from "lucide-react";
+import { Check, Copy, ExternalLink, FileText, ImageIcon, Loader2, Save, Upload } from "lucide-react";
 import Card from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { ApiRequestError } from "@/lib/api";
@@ -23,6 +23,7 @@ export default function WebsiteBrandingCard() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const logoInput = useRef<HTMLInputElement>(null);
+  const [logoLinkCopied, setLogoLinkCopied] = useState(false);
   const pdfInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -138,6 +139,46 @@ export default function WebsiteBrandingCard() {
                 <span className="text-[10px] text-[#9aa0aa]">No logo yet</span>
               )}
             </div>
+            {/* The logo's own Cloudinary address, for the SEO team (schema, listings, social profiles) */}
+            {/^https?:\/\//.test(draft.logo || "") && (
+              <div className="mb-2">
+                <p className="mb-1 text-[10px] font-semibold text-[#18233b]">Logo Link (Cloudinary)</p>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    readOnly
+                    value={draft.logo}
+                    onFocus={(e) => e.currentTarget.select()}
+                    aria-label="Logo Cloudinary link"
+                    className="h-[28px] min-w-0 flex-1 rounded-[5px] border border-[#d6d9de] bg-[#fafafa] px-2 font-mono text-[9.5px] text-[#334155] outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigator.clipboard
+                        ?.writeText(draft.logo)
+                        .then(() => {
+                          setLogoLinkCopied(true);
+                          setTimeout(() => setLogoLinkCopied(false), 2000);
+                        })
+                        .catch(() => {})
+                    }
+                    className="inline-flex h-[28px] shrink-0 items-center gap-1 rounded-[5px] border border-[#d6d9de] bg-white px-2 text-[10px] font-semibold text-[#334155] transition hover:bg-slate-50"
+                  >
+                    {logoLinkCopied ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
+                    {logoLinkCopied ? "Copied" : "Copy"}
+                  </button>
+                  <a
+                    href={draft.logo}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex h-[28px] shrink-0 items-center gap-1 rounded-[5px] border border-[#d6d9de] bg-white px-2 text-[10px] font-semibold text-[#0369a1] transition hover:bg-slate-50"
+                  >
+                    Open <ExternalLink className="h-2.5 w-2.5" />
+                  </a>
+                </div>
+                {unsaved && <p className="mt-1 text-[9.5px] text-amber-700">Click Save to show this logo on the website.</p>}
+              </div>
+            )}
             <input
               ref={logoInput}
               type="file"
