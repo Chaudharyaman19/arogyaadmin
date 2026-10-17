@@ -46,6 +46,7 @@ import {
   CalendarDays,
   PieChart,
   UserRound,
+  Scale,
 } from "lucide-react";
 
 export interface NavItem {
@@ -129,6 +130,7 @@ export const NAV_SECTIONS: NavSection[] = [
         ],
       },
       { label: "FAQs", href: "/faqs", icon: MessageSquare },
+      { label: "Legal Pages", href: "/legal-pages", icon: Scale },
       { label: "Navigation Menus", href: "/navigation-menus", icon: ListTree },
     ],
   },

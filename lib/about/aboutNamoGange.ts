@@ -5,9 +5,9 @@ export const aboutNamoGangeSection: LandingSectionContent = {
   name: "About Namo Gange Trust",
   enabled: true,
   heading: "ABOUT NAMO GANGE TRUST",
-  subheading: "The Parent Organization Behind Arogya Sanghosthi",
+  subheading: "The Parent Organization Behind Arogya Sangoshthi",
   paragraph:
-    "Namo Gange Trust is a registered non-profit organization committed to promoting holistic health, wellness and sustainability through integrated healthcare initiatives. Arogya Sanghosthi is its flagship mission that brings together healthcare leaders, experts and changemakers to shape a healthier and sustainable India.",
+    "Namo Gange Trust is a registered non-profit organization committed to promoting holistic health, wellness and sustainability through integrated healthcare initiatives. Arogya Sangoshthi is its flagship mission that brings together healthcare leaders, experts and changemakers to shape a healthier and sustainable India.",
   visionTitle: "Our Vision",
   visionText: "Healthy People. Healthy Communities. Sustainable Future.",
   missionTitle: "Our Mission",

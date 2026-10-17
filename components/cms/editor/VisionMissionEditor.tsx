@@ -19,10 +19,10 @@ import { showError, showSuccess } from "@/lib/toast";
 const MAX_BLOCKS = 6;
 
 const EMPTY_CHAIRMAN: ChairmanCard = {
-  heading: "CHAIRMAN'S MESSAGE",
+  heading: "FOUNDER'S MESSAGE",
   message: "",
   name: "",
-  designation: "Chairman",
+  designation: "Founder, Namo Gange Trust",
   image: "",
   imageAlt: "",
   leafImage: "",

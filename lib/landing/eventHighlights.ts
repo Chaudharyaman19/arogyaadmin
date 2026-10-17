@@ -10,10 +10,10 @@ export const eventHighlightsSection: LandingSectionContent = {
   viewAgendaLabel: "View Detailed Agenda",
   viewAgendaHref: "/delegate-registration",
   detailsHeading: "Event Details",
-  datesValue: "21ST – 23RD AUGUST 2026",
+  datesValue: "19TH – 21ST FEBRUARY 2027",
   venueValue: "PRAGATI MAIDAN, NEW DELHI, INDIA",
   formatValue: "IN-PERSON CONFERENCE & EXHIBITION",
-  organizerValue: "AROGYA SANGHOSTHI FOUNDATION",
+  organizerValue: "AROGYA SANGOSHTHI FOUNDATION",
   mapEmbedUrl:
     "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14009.843655569632!2d77.22758546992978!3d28.61594503757779!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce328b5a553f7%3A0x795cf6ea0f8b5378!2sPragati%20Maidan%2C%20New%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1779771849819!5m2!1sen!2sin",
   ctaHeading: "BE PART OF INDIA'S MOST TRANSFORMATIVE HEALTHCARE EVENT",
@@ -52,17 +52,17 @@ export const eventHighlightsSection: LandingSectionContent = {
   days: [
     {
       badge: "DAY 1",
-      dateText: "21 AUG 2026",
+      dateText: "19 FEB 2027",
       text: "Inauguration, Keynotes, Global Health Outlook, Modern Medicine Innovations",
     },
     {
       badge: "DAY 2",
-      dateText: "22 AUG 2026",
+      dateText: "20 FEB 2027",
       text: "AYUSH Conclave, Pharma & Biotech, Health Tech & AI, Panel Discussions",
     },
     {
       badge: "DAY 3",
-      dateText: "23 AUG 2026",
+      dateText: "21 FEB 2027",
       text: "Startup Pitch, Research Presentations, Workshops, Valedictory & Awards",
     },
   ],

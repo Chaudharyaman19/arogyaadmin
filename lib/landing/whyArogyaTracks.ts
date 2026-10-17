@@ -4,7 +4,7 @@ export const whyArogyaTracksSection: LandingSectionContent = {
   key: "why-arogya-tracks",
   name: "Why Arogya & Conference Tracks",
   enabled: true,
-  leftHeading: "WHY AROGYA SANGHOSTHI?",
+  leftHeading: "WHY AROGYA SANGOSHTHI?",
   rightHeading: "CONFERENCE TRACKS",
   items: [
     {

@@ -63,7 +63,7 @@ export const defaultDelegateRegistrationSections: LandingSectionContent[] = [
     items: [
       {
         badge: "DAY 1",
-        date: "21 AUGUST 2026",
+        date: "19 FEBRUARY 2027",
         title: "INNOVATE",
         subtitle: "Driving Healthcare Through Innovation",
         topics: [
@@ -75,7 +75,7 @@ export const defaultDelegateRegistrationSections: LandingSectionContent[] = [
       },
       {
         badge: "DAY 2",
-        date: "22 AUGUST 2026",
+        date: "20 FEBRUARY 2027",
         title: "COLLABORATE",
         subtitle: "Building Partnerships for a Healthier World",
         topics: [
@@ -87,7 +87,7 @@ export const defaultDelegateRegistrationSections: LandingSectionContent[] = [
       },
       {
         badge: "DAY 3",
-        date: "23 AUGUST 2026",
+        date: "21 FEBRUARY 2027",
         title: "SUSTAIN",
         subtitle: "Sustainable Solutions for Long-Term Impact",
         topics: [
@@ -104,8 +104,8 @@ export const defaultDelegateRegistrationSections: LandingSectionContent[] = [
     name: "Registration Fees & Passes",
     enabled: true,
     title: "DELEGATE REGISTRATION",
-    subtitle: "18th Integrated Arogya Sanghosthi",
-    date: "21 - 23 AUGUST 2026",
+    subtitle: "19th Integrated Arogya Sangoshthi",
+    date: "19 - 21 FEBRUARY 2027",
     location: "PRAGATI MAIDAN, NEW DELHI",
     dividerLabel: "REGISTRATION FEES",
     includesLabel: "Includes",
@@ -189,7 +189,7 @@ export const defaultDelegateRegistrationSections: LandingSectionContent[] = [
     subtitle: "Present Your Research. Influence the Future.",
     buttonLabel: "SUBMIT YOUR ABSTRACT NOW",
     buttonHref: "/paper-presentation",
-    note: "Last Date: 30th June 2026",
+    note: "Last Date: 15th December 2026",
     items: [
       { title: "Open to Doctors, Researchers, Academicians & Students" },
       { title: "Best Paper Awards in Multiple Categories" },

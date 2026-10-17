@@ -1,6 +1,6 @@
 import { api } from "./api";
 
-// Website home "Why Arogya Sanghosthi? / Conference Tracks" — Pages & CMS → Home.
+// Website home "Why Arogya Sangoshthi? / Conference Tracks" — Pages & CMS → Home.
 // Saved to backend-arogya; the website reads it from GET /api/why-arogya.
 
 export type TrackColor = "green" | "blue" | "purple" | "lime" | "brown" | "teal";

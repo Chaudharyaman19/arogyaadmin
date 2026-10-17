@@ -29,21 +29,21 @@ const titleCase = (value?: string) => (value ? value.toLowerCase().replace(/\b\w
 
 const fullName = (d: Pick<Delegate, "title" | "fullName">) => [d.title, d.fullName].filter(Boolean).join(" ");
 
-/** "All Days (21, 22, 23 Aug 2026)" / "Day 2 (22 August 2026)" / "Day 1, Day 2" */
+/** "All Days (19, 20, 21 Feb 2027)" / "Day 2 (20 February 2027)" / "Day 1, Day 2" */
 const daysText = (days: number[]) =>
   days.length === 3
-    ? "All Days (21, 22, 23 Aug 2026)"
+    ? "All Days (19, 20, 21 Feb 2027)"
     : days.length === 1
-      ? `Day ${days[0]} (${20 + days[0]} August 2026)`
+      ? `Day ${days[0]} (${18 + days[0]} February 2027)`
       : days.map((d) => `Day ${d}`).join(", ");
 
 function DaysBadge({ days }: { days: number[] }) {
   const label =
     days.length === 3
-      ? "All 3 Days (21 Aug + 22 Aug + 23 Aug)"
+      ? "All 3 Days (19 Feb + 20 Feb + 21 Feb)"
       : days.length === 2
-        ? `${days.map((d) => `Day ${d} (${20 + d} Aug)`).join(" + ")} (2 Days)`
-        : `Day ${days[0]} (${20 + days[0]} August 2026)`;
+        ? `${days.map((d) => `Day ${d} (${18 + d} Feb)`).join(" + ")} (2 Days)`
+        : `Day ${days[0]} (${18 + days[0]} February 2027)`;
   return <span className="whitespace-nowrap rounded-[5px] border border-slate-200 bg-slate-50 text-slate-800 px-2 py-0.5 text-[9.5px] font-semibold">{label}</span>;
 }
 

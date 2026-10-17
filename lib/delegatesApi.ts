@@ -60,9 +60,9 @@ export const delegatesApi = {
 /* ---------- shared helpers ---------- */
 
 export const CONFERENCE_DAYS: Record<1 | 2 | 3, string> = {
-  1: "21 Aug (Fri)",
-  2: "22 Aug (Sat)",
-  3: "23 Aug (Sun)",
+  1: "19 Feb (Fri)",
+  2: "20 Feb (Sat)",
+  3: "21 Feb (Sun)",
 };
 
 /** "All Days" lists multi-day passes; Day 1 / 2 / 3 list one-day passes for that day */

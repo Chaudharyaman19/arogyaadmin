@@ -204,7 +204,7 @@ const communications = [
     description: "Custom booth design approval",
     enquiry: "Exhibitors",
     status: "Replied",
-    lastDate: "25 May 2026",
+    lastDate: "1 November 2026",
     lastTime: "12:50 PM",
     nextDate: "28 May 2026",
     nextTime: "11:00 AM",

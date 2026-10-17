@@ -23,6 +23,6 @@ export const guidelinesSection: LandingSectionContent = {
     { num: "1", title: "STEP 1", desc: "Submit your abstract through the online portal." },
     { num: "2", title: "STEP 2", desc: "Receive acceptance notification via email." },
     { num: "3", title: "STEP 3", desc: "Submit your full paper (if selected)." },
-    { num: "4", title: "STEP 4", desc: "Present your paper at Arogya Sanghosthi 2026." },
+    { num: "4", title: "STEP 4", desc: "Present your paper at Arogya Sangoshthi 2026." },
   ],
 };

@@ -275,7 +275,7 @@ export default function DelegatesOverviewPage() {
         <div className="border-b-[2px] border-[#293681] pb-[10px]">
           <h1 className="text-[19px] font-bold leading-[1.15] tracking-[-0.018em] text-[#4B1426]">Delegates Overview</h1>
           <p className="mt-0.5 text-[9px] font-medium text-[#6c7587]">
-            Verified delegate registrations from the website and CRM — single and group, day by day (21–23 August 2026).
+            Verified delegate registrations from the website and CRM — single and group, day by day (19–21 February 2027).
           </p>
         </div>
 

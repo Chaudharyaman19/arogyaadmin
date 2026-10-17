@@ -35,8 +35,8 @@ const THEME_OPTIONS: { label: string; value: HeroTheme }[] = [
 ];
 
 const EMPTY_CAROUSEL: HeroCarousel = {
-  editionTag: "18th Edition of",
-  eventDates: "21-23 August 2026",
+  editionTag: "19th Edition of",
+  eventDates: "19-21 February 2027",
   venue: "Pragati Maidan, New Delhi",
   slides: [],
 };
@@ -244,11 +244,11 @@ export function HeroCarouselEditor() {
         <div className="grid grid-cols-3 gap-[12px]">
           <div>
             <FieldLabel>Edition Tag</FieldLabel>
-            <TextInput value={carousel.editionTag} onChange={(v) => setField("editionTag", v)} placeholder="18th Edition of" maxLength={40} />
+            <TextInput value={carousel.editionTag} onChange={(v) => setField("editionTag", v)} placeholder="19th Edition of" maxLength={40} />
           </div>
           <div>
             <FieldLabel>Event Dates</FieldLabel>
-            <TextInput value={carousel.eventDates} onChange={(v) => setField("eventDates", v)} placeholder="21-23 August 2026" maxLength={60} />
+            <TextInput value={carousel.eventDates} onChange={(v) => setField("eventDates", v)} placeholder="19-21 February 2027" maxLength={60} />
           </div>
           <div>
             <FieldLabel>Venue</FieldLabel>

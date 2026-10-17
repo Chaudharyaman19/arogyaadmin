@@ -129,7 +129,7 @@ const FAQS: FAQ[] = [
     visibility: "Public",
     views: 734,
     votes: 198,
-    updatedOn: "25 May 2026",
+    updatedOn: "1 November 2026",
     updatedBy: "Admin User",
   },
   {

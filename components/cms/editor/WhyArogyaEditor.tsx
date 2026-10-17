@@ -36,7 +36,7 @@ const TRACK_COLORS: { value: TrackColor; label: string; text: string; ring: stri
 const COLOR_BY_VALUE = Object.fromEntries(TRACK_COLORS.map((c) => [c.value, c]));
 
 const EMPTY: WhyArogya = {
-  leftHeading: "WHY AROGYA SANGHOSTHI?",
+  leftHeading: "WHY AROGYA SANGOSHTHI?",
   leftHeadingImage: "",
   leftHeadingImageAlt: "Arogya Sangoshthi lotus logo",
   rightHeading: "CONFERENCE TRACKS",

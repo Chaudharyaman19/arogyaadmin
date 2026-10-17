@@ -2,9 +2,9 @@ import { LandingSectionContent } from "../landingContent";
 
 export const whyChoosePaperSection: LandingSectionContent = {
   key: "paper-why-choose",
-  name: "Why Choose Arogya Sanghosthi",
+  name: "Why Choose Arogya Sangoshthi",
   enabled: true,
-  heading: "WHY CHOOSE AROGYA SANGHOSTHI FOR YOUR RESEARCH?",
+  heading: "WHY CHOOSE AROGYA SANGOSHTHI FOR YOUR RESEARCH?",
   footnote: "* Selected papers may be considered for publication in our partner journals.",
   ctaText: "Be a part of insightful sessions and\nmeaningful discussions.",
   ctaHeading: "Share your research.\nMake an impact!",

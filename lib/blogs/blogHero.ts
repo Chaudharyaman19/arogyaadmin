@@ -6,7 +6,7 @@ export const blogHeroSection: LandingSectionContent = {
   enabled: true,
   title: "Blog & News",
   description:
-    "Stay updated with the latest insights, expert opinions, research breakthroughs and announcements from Arogya Sanghosthi.",
+    "Stay updated with the latest insights, expert opinions, research breakthroughs and announcements from Arogya Sangoshthi.",
   searchPlaceholder: "Search articles, news, topics...",
   image: "",
   imageAlt: "Blog hero background",

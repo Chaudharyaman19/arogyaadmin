@@ -408,7 +408,7 @@ export function EventHighlightsEditor() {
               </div>
               <div>
                 <FieldLabel>Date</FieldLabel>
-                <TextInput value={d.date} onChange={(v) => patchList("agendaDays", i, { date: v.toUpperCase() })} placeholder="21 AUG 2026" maxLength={15} />
+                <TextInput value={d.date} onChange={(v) => patchList("agendaDays", i, { date: v.toUpperCase() })} placeholder="19 FEB 2027" maxLength={15} />
               </div>
               <div>
                 <FieldLabel>Text</FieldLabel>

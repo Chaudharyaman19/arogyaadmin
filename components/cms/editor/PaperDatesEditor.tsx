@@ -210,7 +210,7 @@ export function PaperDatesEditor() {
               </div>
               <div>
                 <FieldLabel required>Date</FieldLabel>
-                <TextInput value={item.date} onChange={(v) => setDate(index, { date: v })} placeholder="25 May 2026" maxLength={25} />
+                <TextInput value={item.date} onChange={(v) => setDate(index, { date: v })} placeholder="1 November 2026" maxLength={25} />
               </div>
             </div>
             <div className="grid grid-cols-[auto_1fr] items-end gap-[10px]">

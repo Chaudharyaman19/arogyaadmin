@@ -7,6 +7,6 @@ export const galleryVideosSection: LandingSectionContent = {
   heading: "VIDEO HIGHLIGHTS",
   shareTitle: "Share Your Moments",
   shareDescription:
-    "Were you part of Arogya Sanghoshti? Share your photos!",
+    "Were you part of Arogya Sangoshthi? Share your photos!",
   shareButton: "Upload Your Photos",
 };

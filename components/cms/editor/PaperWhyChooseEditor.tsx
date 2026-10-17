@@ -9,7 +9,7 @@ import { ApiRequestError } from "@/lib/api";
 import { showError, showSuccess } from "@/lib/toast";
 
 /* =========================================================
-   WHY CHOOSE AROGYA SANGHOSTHI — the dark green feature band and
+   WHY CHOOSE AROGYA SANGOSHTHI — the dark green feature band and
    the light CTA card on the website Paper Presentation page.
    Loads from and saves straight to backend-arogya (images go to
    Cloudinary), so it has its own Save button — page sections are
@@ -19,7 +19,7 @@ import { showError, showSuccess } from "@/lib/toast";
 const MAX_FEATURES = 8;
 
 const EMPTY: PaperWhyChoose = {
-  heading: "WHY CHOOSE AROGYA SANGHOSTHI FOR YOUR RESEARCH?",
+  heading: "WHY CHOOSE AROGYA SANGOSHTHI FOR YOUR RESEARCH?",
   features: [],
   footnote: "",
   ctaText: "",
@@ -89,7 +89,7 @@ export function PaperWhyChooseEditor() {
       const saved = await paperWhyChooseApi.save(input);
       setData({ ...EMPTY, ...saved });
       setIsSaved(true);
-      showSuccess("Why Choose Arogya Sanghosthi saved. The website updates within 30 seconds.");
+      showSuccess("Why Choose Arogya Sangoshthi saved. The website updates within 30 seconds.");
     } catch (err) {
       const msg = err instanceof ApiRequestError ? err.message : "Could not save Why Choose.";
       setError(msg);
@@ -103,7 +103,7 @@ export function PaperWhyChooseEditor() {
     return (
       <div className="flex items-center gap-2 py-4 text-[11px] text-[#64748b]">
         <Loader2 className="h-4 w-4 animate-spin text-[#0f766e]" />
-        Loading Why Choose Arogya Sanghosthi...
+        Loading Why Choose Arogya Sangoshthi...
       </div>
     );
   }

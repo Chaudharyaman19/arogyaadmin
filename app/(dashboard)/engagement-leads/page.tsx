@@ -298,7 +298,7 @@ export default function EngagementLeadsOverviewPage() {
             "
           >
             <CalendarDays size={12} />
-            25 May 2026 - 31 May 2026
+            1 November 2026 - 31 May 2026
             <span className="ml-[2px] text-[9px]">▼</span>
           </button>
         </div>

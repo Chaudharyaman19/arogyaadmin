@@ -135,7 +135,7 @@ export function BlogHeroEditor() {
           </div>
           <div>
             <FieldLabel>Bold Text</FieldLabel>
-            <TextInput value={data.descriptionHighlight} onChange={(v) => set("descriptionHighlight", v)} placeholder="e.g. Arogya Sanghosthi" maxLength={40} />
+            <TextInput value={data.descriptionHighlight} onChange={(v) => set("descriptionHighlight", v)} placeholder="e.g. Arogya Sangoshthi" maxLength={40} />
             <p className="mt-[2px] text-[10px] text-[#64748b]">Shown in bold. Must match words in the description.</p>
           </div>
         </div>

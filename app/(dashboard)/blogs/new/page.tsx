@@ -11,7 +11,7 @@ import { blogsApi, blogCategoriesApi } from "@/lib/blogsApi";
 // Articles open on the website at /blogs/<slug>
 const WEBSITE_BLOGS_URL = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/blogs`;
 const DEFAULT_AUTHOR = "Arogya Sangoshthi Team";
-// Longest blog title: the length of "Arogya Sanghosthi 2026: Uniting Knowledge, Nature & Innovation",
+// Longest blog title: the length of "Arogya Sangoshthi 2026: Uniting Knowledge, Nature & Innovation",
 // which fills the Featured Story card on the website without overflowing
 const BLOG_TITLE_MAX = 62;
 // Used only until the categories from Manage Categories have loaded

@@ -4,8 +4,8 @@ export const heroSection: LandingSectionContent = {
   key: "hero",
   name: "Hero Carousel Slides",
   enabled: true,
-  editionTag: "18th Edition of",
-  eventDates: "21-23 August 2026",
+  editionTag: "19th Edition of",
+  eventDates: "19-21 February 2027",
   venue: "Pragati Maidan, New Delhi",
   slides: [
     {

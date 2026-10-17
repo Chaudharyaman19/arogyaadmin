@@ -8,13 +8,13 @@ export const visionMissionSection: LandingSectionContent = {
   visionText:
     "A world where\nintegrated healthcare\nis accessible, evidence-\nbased and rooted in\ncompassion.",
   missionHeading: "OUR MISSION",
-  chairmanHeading: "CHAIRMAN'S MESSAGE",
+  chairmanHeading: "FOUNDER'S MESSAGE",
   chairmanMessage:
-    "Healthcare is not just about treatment, it is about integration – of knowledge, systems and compassion.\n\nWith the 18th Edition, we bring together diverse medical systems, innovations, and human values to create a healthier world.",
-  chairmanName: "Dr. Vansh Chaudhary",
-  chairmanDesignation: "Chairman",
+    "Healthcare is not just about treatment, it is about integration – of knowledge, systems and compassion.\n\nWith the 19th Edition, we bring together diverse medical systems, innovations, and human values to create a healthier world.",
+  chairmanName: "Mr. Vijay Sharma",
+  chairmanDesignation: "Founder, Namo Gange Trust",
   image: "",
-  imageAlt: "Chairman",
+  imageAlt: "Mr. Vijay Sharma, Founder of Namo Gange Trust",
   items: [
     {
       heading: "CONNECT",

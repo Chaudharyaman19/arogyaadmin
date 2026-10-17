@@ -7,11 +7,11 @@ export const importantDatesSection: LandingSectionContent = {
   heading: "IMPORTANT DATES",
   whyHeading: "WHY PRESENT?",
   items: [
-    { label: "Abstract Submission\nStarts", date: "25 May 2026", image: "" },
-    { label: "Last Date for\nAbstract Submission", date: "25 July 2026", image: "" },
-    { label: "Acceptance\nNotification", date: "10 August 2026", image: "" },
-    { label: "Full Paper Submission\n(If Selected)", date: "25 August 2026", image: "" },
-    { label: "Presentation\nDates", date: "10 - 12 Oct 2026", image: "" },
+    { label: "Abstract Submission\nStarts", date: "1 November 2026", image: "" },
+    { label: "Last Date for\nAbstract Submission", date: "15 December 2026", image: "" },
+    { label: "Acceptance\nNotification", date: "5 January 2027", image: "" },
+    { label: "Full Paper Submission\n(If Selected)", date: "31 January 2027", image: "" },
+    { label: "Presentation\nDates", date: "19 - 21 Feb 2027", image: "" },
   ],
   reasons: [
     { text: "Share your innovative research with a global audience" },
